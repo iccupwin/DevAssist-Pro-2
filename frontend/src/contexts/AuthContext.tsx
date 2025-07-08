@@ -1,6 +1,9 @@
 import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
 import { AUTH_CONFIG } from '../config/auth';
-import { LoginFormData, RegisterFormData, ResetPasswordFormData, AuthResponse, User } from '../types/auth';
+import { LoginFormData, RegisterFormData, ResetPasswordFormData, AuthResponse } from '../types/auth';
+import { User } from '../types/shared';
+import { authBridge } from '../services/authBridge';
+import { websocketBridge } from '../services/websocketBridge';
 
 export interface AuthState {
   user: User | null;
@@ -226,8 +229,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     dispatch({ type: 'AUTH_START' });
 
     try {
-      // TODO: Заменить на реальный API вызов
-      const response = await mockLoginAPI(credentials.email, credentials.password);
+      const response = await authBridge.login(credentials);
       
       if (response.success && response.user && response.token && response.refreshToken) {
         dispatch({
@@ -238,6 +240,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             refreshToken: response.refreshToken,
           }
         });
+        
+        // Подключаем WebSocket после успешной авторизации
+        websocketBridge.connect().catch(error => {
+          console.error('WebSocket connection failed:', error);
+        });
+        
         return response;
       } else {
         const errorMessage = response.error || 'Ошибка входа';
@@ -256,14 +264,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     dispatch({ type: 'AUTH_START' });
 
     try {
-      // TODO: Заменить на реальный API вызов
-      const response = await mockRegisterAPI({
-        email: userData.email,
-        password: userData.password,
-        firstName: userData.firstName,
-        lastName: userData.lastName,
-        acceptTerms: userData.acceptTerms
-      });
+      const response = await authBridge.register(userData);
       
       if (response.success && response.user && response.token && response.refreshToken) {
         dispatch({
@@ -274,6 +275,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             refreshToken: response.refreshToken,
           }
         });
+        
+        // Подключаем WebSocket после успешной регистрации
+        websocketBridge.connect().catch(error => {
+          console.error('WebSocket connection failed:', error);
+        });
+        
         return response;
       } else {
         const errorMessage = response.error || 'Ошибка регистрации';
@@ -290,8 +297,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Функция выхода
   const logout = (): void => {
     try {
-      // TODO: Заменить на реальный API вызов для уведомления сервера
-      mockLogoutAPI();
+      // Отключаем WebSocket
+      websocketBridge.disconnect();
+      
+      // Выходим через authBridge
+      authBridge.logout();
     } catch (error) {
       console.error('Ошибка при выходе:', error);
     } finally {
@@ -429,14 +439,18 @@ const mockLoginAPI = async (email: string, password: string): Promise<{
     return {
       success: true,
       user: {
-        id: '1',
+        id: 1,
         email: 'admin@devassist.ru',
+        full_name: 'Александр Петров',
         firstName: 'Александр',
         lastName: 'Петров',
         role: 'admin' as const,
         avatar: '',
         isEmailVerified: true,
         is2FAEnabled: false,
+        is_active: true,
+        is_verified: true,
+        is_superuser: true,
         subscription: {
           plan: 'Professional',
           status: 'active' as const,
@@ -450,7 +464,8 @@ const mockLoginAPI = async (email: string, password: string): Promise<{
             push: true,
           },
         },
-        createdAt: '2024-01-15T00:00:00Z',
+        created_at: '2024-01-15T00:00:00Z',
+        updated_at: new Date().toISOString(),
         lastLoginAt: new Date().toISOString(),
       },
       token: 'mock_jwt_token_' + Date.now(),
@@ -476,14 +491,18 @@ const mockRegisterAPI = async (data: RegisterData): Promise<{
   return {
     success: true,
     user: {
-      id: Date.now().toString(),
+      id: Date.now(),
       email: data.email,
+      full_name: `${data.firstName} ${data.lastName}`,
       firstName: data.firstName,
       lastName: data.lastName,
       role: 'user' as const,
       avatar: '',
       isEmailVerified: false,
       is2FAEnabled: false,
+      is_active: true,
+      is_verified: false,
+      is_superuser: false,
       subscription: {
         plan: 'Free',
         status: 'active' as const,
@@ -497,7 +516,8 @@ const mockRegisterAPI = async (data: RegisterData): Promise<{
           push: false,
         },
       },
-      createdAt: new Date().toISOString(),
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
       lastLoginAt: new Date().toISOString(),
     },
     token: 'mock_jwt_token_' + Date.now(),

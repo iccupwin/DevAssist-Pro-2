@@ -15,14 +15,14 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /app
 
 # Копирование requirements и установка зависимостей
-COPY requirements.txt .
+COPY services/documents/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Копирование shared модулей
-COPY ../shared /app/shared
+COPY shared /app/shared
 
 # Копирование кода приложения
-COPY . .
+COPY services/documents .
 
 # Создание директорий для данных
 RUN mkdir -p data/uploads data/processed

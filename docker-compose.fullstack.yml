@@ -1,0 +1,223 @@
+version: '3.8'
+
+services:
+  # ===== DATABASE =====
+  postgres:
+    image: postgres:15
+    container_name: devassist_postgres_full
+    environment:
+      POSTGRES_DB: devassist_pro
+      POSTGRES_USER: devassist
+      POSTGRES_PASSWORD: devassist_secure_password
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U devassist"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - devassist-network
+
+  # ===== CACHE =====
+  redis:
+    image: redis:7-alpine
+    container_name: devassist_redis_full
+    ports:
+      - "6378:6379"
+    command: redis-server --requirepass redis_password
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "redis_password", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - devassist-network
+
+  # ===== BACKEND SERVICES =====
+  api-gateway:
+    build:
+      context: ./backend
+      dockerfile: api_gateway/Dockerfile
+    container_name: devassist_api_gateway_full
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://devassist:devassist_secure_password@postgres:5432/devassist_pro
+      - REDIS_URL=redis://:redis_password@redis:6379/0
+      - JWT_SECRET=your-super-secret-jwt-key-change-in-production
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ENVIRONMENT=production
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - devassist-network
+    volumes:
+      - ./backend/shared:/app/shared:ro
+
+  auth-service:
+    build:
+      context: ./backend
+      dockerfile: services/auth/Dockerfile
+    container_name: devassist_auth_service_full
+    environment:
+      - DATABASE_URL=postgresql://devassist:devassist_secure_password@postgres:5432/devassist_pro
+      - REDIS_URL=redis://:redis_password@redis:6379/0
+      - JWT_SECRET=your-super-secret-jwt-key-change-in-production
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - YANDEX_CLIENT_ID=${YANDEX_CLIENT_ID}
+      - YANDEX_CLIENT_SECRET=${YANDEX_CLIENT_SECRET}
+      - MICROSOFT_CLIENT_ID=${MICROSOFT_CLIENT_ID}
+      - MICROSOFT_CLIENT_SECRET=${MICROSOFT_CLIENT_SECRET}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - devassist-network
+    volumes:
+      - ./backend/shared:/app/shared:ro
+
+  llm-service:
+    build:
+      context: ./backend
+      dockerfile: services/llm/Dockerfile
+    container_name: devassist_llm_service_full
+    environment:
+      - DATABASE_URL=postgresql://devassist:devassist_secure_password@postgres:5432/devassist_pro
+      - REDIS_URL=redis://:redis_password@redis:6379/0
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - devassist-network
+    volumes:
+      - ./backend/shared:/app/shared:ro
+
+  documents-service:
+    build:
+      context: ./backend
+      dockerfile: services/documents/Dockerfile
+    container_name: devassist_documents_service_full
+    environment:
+      - DATABASE_URL=postgresql://devassist:devassist_secure_password@postgres:5432/devassist_pro
+      - REDIS_URL=redis://:redis_password@redis:6379/0
+      - UPLOAD_PATH=/app/uploads
+      - MAX_FILE_SIZE=100MB
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - devassist-network
+    volumes:
+      - ./backend/shared:/app/shared:ro
+      - document_uploads:/app/uploads
+
+  dashboard-service:
+    build:
+      context: ./backend
+      dockerfile: services/dashboard/Dockerfile
+    container_name: devassist_dashboard_service_full
+    environment:
+      - DATABASE_URL=postgresql://devassist:devassist_secure_password@postgres:5432/devassist_pro
+      - REDIS_URL=redis://:redis_password@redis:6379/0
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - devassist-network
+    volumes:
+      - ./backend/shared:/app/shared:ro
+
+  # ===== FRONTEND =====
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - REACT_APP_API_URL=http://localhost:8000
+        - REACT_APP_WS_URL=ws://localhost:8000
+        - REACT_APP_GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+        - REACT_APP_YANDEX_CLIENT_ID=${YANDEX_CLIENT_ID}
+        - REACT_APP_MICROSOFT_CLIENT_ID=${MICROSOFT_CLIENT_ID}
+    container_name: devassist_frontend_full
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=http://localhost:8000
+      - REACT_APP_WS_URL=ws://localhost:8000
+      - REACT_APP_GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - REACT_APP_YANDEX_CLIENT_ID=${YANDEX_CLIENT_ID}
+      - REACT_APP_MICROSOFT_CLIENT_ID=${MICROSOFT_CLIENT_ID}
+    depends_on:
+      - api-gateway
+    networks:
+      - devassist-network
+
+  # ===== STREAMLIT LEGACY (Optional) =====
+  streamlit-legacy:
+    build:
+      context: .
+      dockerfile: Dockerfile.streamlit
+    container_name: devassist_streamlit_legacy
+    ports:
+      - "8501:8501"
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - DATABASE_URL=postgresql://devassist:devassist_secure_password@postgres:5432/devassist_pro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - devassist-network
+    volumes:
+      - ./src:/app/src:ro
+      - streamlit_data:/app/src/data
+
+  # ===== NGINX REVERSE PROXY =====
+  nginx:
+    image: nginx:alpine
+    container_name: devassist_nginx_full
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - frontend
+      - api-gateway
+      - streamlit-legacy
+    networks:
+      - devassist-network
+
+volumes:
+  postgres_data:
+  redis_data:
+  document_uploads:
+  streamlit_data:
+
+networks:
+  devassist-network:
+    driver: bridge

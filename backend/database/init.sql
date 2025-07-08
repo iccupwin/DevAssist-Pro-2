@@ -1,63 +1,54 @@
--- Инициализация базы данных DevAssist Pro
--- Создание расширений
+-- DevAssist Pro Database Initialization
+-- This script creates the basic database structure
+
+-- Database is already created by Docker
+-- \c devassist_pro;
+
+-- Create extensions
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "pg_trgm";
 
--- Создание индексов для полнотекстового поиска
-CREATE EXTENSION IF NOT EXISTS "unaccent";
+-- Create basic tables
+CREATE TABLE IF NOT EXISTS users (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    role VARCHAR(50) DEFAULT 'user',
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
--- Создание схем
-CREATE SCHEMA IF NOT EXISTS public;
+CREATE TABLE IF NOT EXISTS projects (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    user_id UUID REFERENCES users(id),
+    status VARCHAR(50) DEFAULT 'active',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
--- Функция для обновления updated_at
-CREATE OR REPLACE FUNCTION update_updated_at_column()
-RETURNS TRIGGER AS $$
-BEGIN
-    NEW.updated_at = CURRENT_TIMESTAMP;
-    RETURN NEW;
-END;
-$$ language 'plpgsql';
+CREATE TABLE IF NOT EXISTS documents (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    project_id UUID REFERENCES projects(id),
+    filename VARCHAR(255) NOT NULL,
+    file_path VARCHAR(500) NOT NULL,
+    file_size INTEGER,
+    mime_type VARCHAR(100),
+    status VARCHAR(50) DEFAULT 'uploaded',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
--- Предварительные настройки для оптимизации
-ALTER SYSTEM SET shared_preload_libraries = 'pg_stat_statements';
-ALTER SYSTEM SET max_connections = 200;
-ALTER SYSTEM SET shared_buffers = '256MB';
-ALTER SYSTEM SET effective_cache_size = '1GB';
-ALTER SYSTEM SET work_mem = '4MB';
-ALTER SYSTEM SET maintenance_work_mem = '64MB';
+-- Create indexes
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+CREATE INDEX IF NOT EXISTS idx_projects_user_id ON projects(user_id);
+CREATE INDEX IF NOT EXISTS idx_documents_project_id ON documents(project_id);
 
--- Создание пользователей и ролей
-DO $$
-BEGIN
-    -- Создание роли для чтения
-    IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'devassist_readonly') THEN
-        CREATE ROLE devassist_readonly;
-    END IF;
-    
-    -- Создание роли для записи
-    IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'devassist_readwrite') THEN
-        CREATE ROLE devassist_readwrite;
-    END IF;
-    
-    -- Предоставление прав
-    GRANT CONNECT ON DATABASE devassist_pro TO devassist_readonly;
-    GRANT USAGE ON SCHEMA public TO devassist_readonly;
-    GRANT SELECT ON ALL TABLES IN SCHEMA public TO devassist_readonly;
-    GRANT SELECT ON ALL SEQUENCES IN SCHEMA public TO devassist_readonly;
-    
-    GRANT CONNECT ON DATABASE devassist_pro TO devassist_readwrite;
-    GRANT USAGE ON SCHEMA public TO devassist_readwrite;
-    GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO devassist_readwrite;
-    GRANT USAGE ON ALL SEQUENCES IN SCHEMA public TO devassist_readwrite;
-    
-    -- Предоставление прав на будущие таблицы
-    ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO devassist_readonly;
-    ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON SEQUENCES TO devassist_readonly;
-    ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO devassist_readwrite;
-    ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT USAGE ON SEQUENCES TO devassist_readwrite;
-    
-EXCEPTION
-    WHEN duplicate_object THEN
-        RAISE NOTICE 'Roles already exist, skipping creation.';
-END
-$$;
+-- Insert sample data
+INSERT INTO users (email, password_hash, first_name, last_name, role) 
+VALUES ('admin@devassist.ru', '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj6e2lqGJpCy', 'Admin', 'User', 'admin')
+ON CONFLICT (email) DO NOTHING;

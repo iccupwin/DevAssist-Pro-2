@@ -1,28 +1,6 @@
-export interface User {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  role: 'user' | 'admin' | 'moderator';
-  avatar?: string;
-  isEmailVerified: boolean;
-  is2FAEnabled: boolean;
-  subscription: {
-    plan: string;
-    status: 'active' | 'inactive' | 'cancelled';
-    expiresAt: string;
-  };
-  preferences: {
-    language: string;
-    theme: 'light' | 'dark' | 'system';
-    notifications: {
-      email: boolean;
-      push: boolean;
-    };
-  };
-  createdAt: string;
-  lastLoginAt: string;
-}
+// Re-export User from shared types to maintain compatibility
+import type { User } from './shared';
+export type { User };
 
 export interface LoginFormData {
   email: string;

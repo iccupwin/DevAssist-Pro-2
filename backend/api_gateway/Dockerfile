@@ -10,11 +10,14 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /app
 
 # Копирование и установка зависимостей
-COPY requirements.txt .
+COPY api_gateway/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Копирование shared библиотеки
+COPY shared /app/shared
+
 # Копирование исходного кода
-COPY . .
+COPY api_gateway .
 
 # Создание непривилегированного пользователя
 RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
