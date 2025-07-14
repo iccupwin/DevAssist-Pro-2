@@ -30,6 +30,12 @@ class AnalysisStatus(str, Enum):
     COMPLETED = "completed"
     FAILED = "failed"
 
+class ReportType(str, Enum):
+    PDF = "pdf"
+    EXCEL = "excel"
+    WORD = "word"
+    HTML = "html"
+
 # Base schemas
 class BaseSchema(BaseModel):
     class Config:
@@ -355,6 +361,89 @@ class HealthResponse(BaseSchema):
     version: str
     uptime: float
     timestamp: datetime
+
+# Reports Service schemas
+class ReportGenerationRequest(BaseSchema):
+    analysis_id: int
+    report_type: ReportType = ReportType.PDF
+    template_name: Optional[str] = "default"
+    include_charts: bool = True
+    include_raw_data: bool = False
+    custom_sections: Optional[List[str]] = None
+
+class ReportGenerationResponse(BaseSchema):
+    report_id: str
+    report_type: ReportType
+    file_path: str
+    download_url: str
+    status: str
+    generated_at: datetime
+    file_size: Optional[int] = None
+
+class ReportTemplateRequest(BaseSchema):
+    name: str
+    description: Optional[str] = None
+    report_type: ReportType
+    template_data: Dict[str, Any]
+    is_default: bool = False
+
+class ReportTemplateResponse(BaseSchema):
+    template_id: str
+    name: str
+    status: str
+    created_at: datetime
+
+class ExportRequest(BaseSchema):
+    data_type: str  # "analysis", "documents", "projects"
+    format: str  # "csv", "excel", "json"
+    filters: Optional[Dict[str, Any]] = None
+    date_range: Optional[Dict[str, datetime]] = None
+
+class ExportResponse(BaseSchema):
+    export_id: str
+    format: str
+    file_path: str
+    download_url: str
+    status: str
+    exported_at: datetime
+    record_count: int
+
+# Analytics Service schemas
+class AnalyticsRequest(BaseSchema):
+    data_type: str  # "analyses", "documents", "users", "projects"
+    filters: Optional[Dict[str, Any]] = None
+    date_range: Optional[Dict[str, datetime]] = None
+    aggregation_type: str = "count"  # "count", "sum", "avg", "max", "min"
+
+class AnalyticsResponse(BaseSchema):
+    data_type: str
+    result: Dict[str, Any]
+    processed_at: datetime
+    cache_key: Optional[str] = None
+
+class MetricsRequest(BaseSchema):
+    metric_types: List[str]  # ["success_rate", "avg_processing_time", "cost_per_analysis"]
+    entity_id: Optional[int] = None
+    entity_type: str = "global"  # "global", "user", "organization", "project"
+    period: str = "30d"  # "1d", "7d", "30d", "90d"
+
+class MetricsResponse(BaseSchema):
+    metric_types: List[str]
+    entity_id: Optional[int]
+    entity_type: str
+    result: Dict[str, Any]
+    calculated_at: datetime
+
+class StatisticsRequest(BaseSchema):
+    period: str = "30d"
+    user_id: Optional[int] = None
+    organization_id: Optional[int] = None
+    include_charts: bool = True
+
+class StatisticsResponse(BaseSchema):
+    period: str
+    statistics: Dict[str, Any]
+    generated_at: datetime
 
 # Forward references update
 UserWithOrganizations.model_rebuild()

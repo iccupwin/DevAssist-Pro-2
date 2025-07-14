@@ -43,6 +43,9 @@ services:
       - AUTH_SERVICE_URL=http://auth_service_dev:8001
       - DASHBOARD_SERVICE_URL=http://dashboard_service_dev:8006
       - LLM_SERVICE_URL=http://llm_service_dev:8002
+      - DOCUMENTS_SERVICE_URL=http://documents_service_dev:8003
+      - ANALYTICS_SERVICE_URL=http://analytics_service_dev:8004
+      - REPORTS_SERVICE_URL=http://reports_service_dev:8005
       - DEBUG=True
       - RELOAD=True
     volumes:
@@ -120,6 +123,72 @@ services:
       - RELOAD=True
     volumes:
       - ./services/llm:/app
+      - ./shared:/app/shared
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - devassist_dev_network
+
+  # Development Documents Service
+  documents_service_dev:
+    build:
+      context: ./services/documents
+      dockerfile: Dockerfile
+    container_name: devassist_documents_dev
+    ports:
+      - "8003:8003"
+    environment:
+      - POSTGRES_URL=postgresql://devassist:devassist_password@postgres:5432/devassist_pro_dev
+      - REDIS_URL=redis://:redis_password@redis:6379/4
+      - DEBUG=True
+      - RELOAD=True
+    volumes:
+      - ./services/documents:/app
+      - ./shared:/app/shared
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - devassist_dev_network
+
+  # Development Analytics Service
+  analytics_service_dev:
+    build:
+      context: ./services/analytics
+      dockerfile: Dockerfile
+    container_name: devassist_analytics_dev
+    ports:
+      - "8004:8004"
+    environment:
+      - POSTGRES_URL=postgresql://devassist:devassist_password@postgres:5432/devassist_pro_dev
+      - REDIS_URL=redis://:redis_password@redis:6379/5
+      - DEBUG=True
+      - RELOAD=True
+    volumes:
+      - ./services/analytics:/app
+      - ./shared:/app/shared
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - devassist_dev_network
+
+  # Development Reports Service
+  reports_service_dev:
+    build:
+      context: ./services/reports
+      dockerfile: Dockerfile
+    container_name: devassist_reports_dev
+    ports:
+      - "8005:8005"
+    environment:
+      - POSTGRES_URL=postgresql://devassist:devassist_password@postgres:5432/devassist_pro_dev
+      - REDIS_URL=redis://:redis_password@redis:6379/6
+      - DEBUG=True
+      - RELOAD=True
+    volumes:
+      - ./services/reports:/app
       - ./shared:/app/shared
     depends_on:
       - postgres

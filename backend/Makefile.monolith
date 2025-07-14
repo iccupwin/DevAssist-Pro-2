@@ -1,0 +1,78 @@
+# DevAssist Pro - Монолитная версия
+.PHONY: help install start stop restart logs status test clean
+
+# Цвета для вывода
+GREEN=\033[0;32m
+YELLOW=\033[1;33m
+RED=\033[0;31m
+NC=\033[0m # No Color
+
+help: ## Показать справку
+	@echo "$(GREEN)DevAssist Pro - Монолитная версия$(NC)"
+	@echo "=================================="
+	@echo "Доступные команды:"
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-15s\033[0m %s\n", $$1, $$2}'
+
+install: ## Установка зависимостей
+	@echo "$(GREEN)Установка зависимостей...$(NC)"
+	pip install -r requirements-monolith.txt
+
+start: ## Запуск приложения в Docker
+	@echo "$(GREEN)Запуск DevAssist Pro (монолитная версия)...$(NC)"
+	docker-compose -f docker-compose.monolith.yml up -d
+
+start-dev: ## Запуск в режиме разработки (без Docker)
+	@echo "$(GREEN)Запуск в режиме разработки...$(NC)"
+	@echo "Проверка зависимостей..."
+	@python3 -c "import fastapi, uvicorn; print('✅ FastAPI доступен')" || (echo "❌ Установите: pip install fastapi uvicorn" && exit 1)
+	@echo "Создание директорий..."
+	@mkdir -p data/reports data/uploads data/cache
+	@echo "$(GREEN)Запуск приложения на http://localhost:8000$(NC)"
+	python3 app.py
+
+stop: ## Остановка всех сервисов
+	@echo "$(YELLOW)Остановка сервисов...$(NC)"
+	docker-compose -f docker-compose.monolith.yml down
+
+restart: ## Перезапуск сервисов
+	@echo "$(YELLOW)Перезапуск сервисов...$(NC)"
+	docker-compose -f docker-compose.monolith.yml restart
+
+logs: ## Просмотр логов
+	@echo "$(GREEN)Логи приложения:$(NC)"
+	docker-compose -f docker-compose.monolith.yml logs -f app
+
+status: ## Статус сервисов
+	@echo "$(GREEN)Статус сервисов:$(NC)"
+	docker-compose -f docker-compose.monolith.yml ps
+
+health: ## Проверка здоровья
+	@echo "$(GREEN)Проверка здоровья сервисов...$(NC)"
+	@curl -s http://localhost:8000/health | jq '.' || echo "❌ Приложение недоступно"
+	@curl -s http://localhost:8000/api/admin/status | jq '.' || echo "❌ Admin API недоступен"
+
+test: ## Запуск тестов
+	@echo "$(GREEN)Запуск тестов...$(NC)"
+	python3 test_monolith.py
+
+build: ## Сборка Docker образа
+	@echo "$(GREEN)Сборка Docker образа...$(NC)"
+	docker-compose -f docker-compose.monolith.yml build
+
+clean: ## Очистка данных
+	@echo "$(RED)Очистка данных Docker...$(NC)"
+	docker-compose -f docker-compose.monolith.yml down -v
+	docker system prune -f
+
+clean-data: ## Очистка файлов данных
+	@echo "$(RED)Очистка локальных данных...$(NC)"
+	rm -rf data/reports/* data/uploads/* data/cache/*
+
+demo: ## Демонстрация API
+	@echo "$(GREEN)Демонстрация DevAssist Pro API...$(NC)"
+	python3 demo_monolith.py
+
+# Быстрые команды
+up: start ## Алиас для start
+down: stop ## Алиас для stop
+ps: status ## Алиас для status
