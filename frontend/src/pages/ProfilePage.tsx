@@ -1,646 +1,330 @@
-import React, { useState } from 'react';
+import React from "react";
+import { motion } from "framer-motion";
+import { User, Mail, Shield, Key, LogOut, Settings, CheckCircle, Clock, XCircle, Edit2, Save, X, Bell, Lock, Palette, Globe } from "lucide-react";
+import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { 
-  User, 
-  ArrowLeft,
-  Settings,
-  Shield,
-  CreditCard,
-  Zap,
-  Users,
-  Clock,
-  CheckCircle,
-  AlertCircle
-} from 'lucide-react';
-import {
-  UserAvatar,
-  ProfileFormField,
-  SettingsToggle,
-  ProfileSection,
-  ProfileStats,
-  SecuritySection,
-  BillingSection,
-  UserProfile as IUserProfile,
-  UserSettings as IUserSettings
-} from '../components/profile';
+import { useTheme } from '../contexts/ThemeContext';
 
-// Типы теперь импортируются из компонентов профиля
-// UserProfile и UserSettings определены в src/components/profile/index.ts
+function cn(...classes: (string | undefined | null | false)[]): string {
+  return classes.filter(Boolean).join(' ');
+}
+
+// TypeScript interfaces for components
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  className?: string;
+  variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost';
+  size?: 'default' | 'sm' | 'lg' | 'icon';
+}
+
+interface AvatarProps extends React.HTMLAttributes<HTMLDivElement> {
+  className?: string;
+  size?: 'sm' | 'md' | 'lg' | 'xl';
+}
+
+interface AvatarImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
+  className?: string;
+}
+
+interface AvatarFallbackProps extends React.HTMLAttributes<HTMLDivElement> {
+  className?: string;
+  children?: React.ReactNode;
+}
+
+interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
+  className?: string;
+  variant?: 'default' | 'secondary' | 'destructive' | 'outline' | 'success' | 'warning';
+}
+
+interface StatusIndicatorProps {
+  status: 'online' | 'offline' | 'busy' | 'away';
+  className?: string;
+}
+
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  className?: string;
+}
+
+interface SwitchProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  className?: string;
+  checked?: boolean;
+  onCheckedChange?: (checked: boolean) => void;
+}
+
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(function Button({ className = '', variant = 'default', size = 'default', ...props }, ref) {
+  const baseClasses = "inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-medium transition-colors outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring/70 disabled:pointer-events-none disabled:opacity-50";
+  const variantClasses = {
+    default: "bg-primary text-primary-foreground shadow-sm shadow-black/5 hover:bg-primary/90",
+    destructive: "bg-destructive text-destructive-foreground shadow-sm shadow-black/5 hover:bg-destructive/90",
+    outline: "border border-input bg-background shadow-sm shadow-black/5 hover:bg-accent hover:text-accent-foreground",
+    secondary: "bg-secondary text-secondary-foreground shadow-sm shadow-black/5 hover:bg-secondary/80",
+    ghost: "hover:bg-accent hover:text-accent-foreground",
+  };
+  const sizeClasses = {
+    default: "h-9 px-4 py-2",
+    sm: "h-8 rounded-lg px-3 text-xs",
+    lg: "h-10 rounded-lg px-8",
+    icon: "h-9 w-9",
+  };
+  return (
+    <button ref={ref} className={cn(baseClasses, variantClasses[variant], sizeClasses[size], className)} {...props} />
+  );
+});
+
+const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(function Avatar({ className = '', size = 'md', ...props }, ref) {
+  const sizeClasses = {
+    sm: "h-8 w-8",
+    md: "h-10 w-10",
+    lg: "h-12 w-12",
+    xl: "h-16 w-16",
+  };
+  return (
+    <div ref={ref} className={cn("relative flex shrink-0 overflow-hidden rounded-full", sizeClasses[size], className)} {...props} />
+  );
+});
+const AvatarImage = React.forwardRef<HTMLImageElement, AvatarImageProps>(function AvatarImage({ className = '', ...props }, ref) {
+  return <img ref={ref} className={cn("aspect-square h-full w-full object-cover", className)} {...props} />;
+});
+const AvatarFallback = React.forwardRef<HTMLDivElement, AvatarFallbackProps>(function AvatarFallback({ className = '', children, ...props }, ref) {
+  return <div ref={ref} className={cn("flex h-full w-full items-center justify-center rounded-full bg-muted text-muted-foreground font-medium", className)} {...props}>{children}</div>;
+});
+const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(function Badge({ className = '', variant = 'default', ...props }, ref) {
+  const variantClasses = {
+    default: "border-transparent bg-primary text-primary-foreground shadow hover:bg-primary/80",
+    secondary: "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
+    destructive: "border-transparent bg-destructive text-destructive-foreground shadow hover:bg-destructive/80",
+    outline: "text-foreground",
+    success: "border-transparent bg-green-500 text-white shadow hover:bg-green-500/80",
+    warning: "border-transparent bg-yellow-500 text-white shadow hover:bg-yellow-500/80",
+  };
+  return (
+    <div ref={ref} className={cn("inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2", variantClasses[variant], className)} {...props} />
+  );
+});
+const StatusIndicator: React.FC<StatusIndicatorProps> = ({ status, className }) => {
+  const statusConfig = {
+    online: { color: "bg-green-500", icon: CheckCircle, label: "В сети" },
+    offline: { color: "bg-gray-400", icon: XCircle, label: "Не в сети" },
+    busy: { color: "bg-red-500", icon: XCircle, label: "Занят" },
+    away: { color: "bg-yellow-500", icon: Clock, label: "Отошел" },
+  };
+  const config = statusConfig[status] || statusConfig['offline'];
+  const Icon = config.icon;
+  return (
+    <div className={cn("flex items-center gap-2", className)}>
+      <div className={cn("h-2 w-2 rounded-full", config.color)} />
+      <span className="text-sm text-muted-foreground">{config.label}</span>
+    </div>
+  );
+};
+const Input = React.forwardRef<HTMLInputElement, InputProps>(function Input({ className = '', type, ...props }, ref) {
+  return <input type={type} className={cn("flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50", className)} ref={ref} {...props} />;
+});
+const Switch = React.forwardRef<HTMLButtonElement, SwitchProps>(function Switch({ className = '', checked = false, onCheckedChange, ...props }, ref) {
+  return (
+    <button
+      role="switch"
+      aria-checked={checked}
+      data-state={checked ? "checked" : "unchecked"}
+      className={cn(
+        "peer inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50",
+        checked ? "bg-primary" : "bg-input",
+        className
+      )}
+      onClick={() => onCheckedChange?.(!checked)}
+      ref={ref}
+      {...props}
+    >
+      <span
+        className={cn(
+          "pointer-events-none block h-4 w-4 rounded-full bg-background shadow-lg ring-0 transition-transform",
+          checked ? "translate-x-4" : "translate-x-0"
+        )}
+      />
+    </button>
+  );
+});
 
 const ProfilePage: React.FC = () => {
+  const { user, logout, updateProfile } = useAuth();
+  const { isDarkMode } = useTheme();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<'profile' | 'settings' | 'security' | 'billing'>('profile');
-  const [isEditing, setIsEditing] = useState(false);
-  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
-
-  const [profile, setProfile] = useState<IUserProfile>({
-    name: 'Александр Петров',
-    email: 'aleksandr.petrov@devcompany.ru',
-    company: 'DevCompany',
-    position: 'Руководитель проектов',
-    phone: '+7 (495) 123-45-67',
-    location: 'Москва, Россия',
-    avatar: '',
-    plan: 'Professional',
-    joinDate: '2024-01-15',
-    id: 'user-123',
-    lastActive: new Date().toISOString(),
-    isEmailVerified: true,
-    isPhoneVerified: false
-  });
-
-  const [settings, setSettings] = useState<IUserSettings>({
-    notifications: {
-      email: true,
-      push: true,
-      sms: false,
-      marketing: false,
-      analysisComplete: true,
-      reportGenerated: true,
-      systemMaintenance: false
-    },
-    privacy: {
-      profileVisible: true,
-      activityVisible: false,
-      dataSharing: true,
-      analyticsTracking: true
-    },
-    preferences: {
-      language: 'ru',
-      timezone: 'Europe/Moscow',
-      theme: 'system',
-      defaultModel: 'claude-3-5-sonnet-20240620',
-      autoSave: true,
-      compactMode: false
-    }
-  });
-
-  const handleProfileUpdate = (field: keyof IUserProfile, value: string) => {
-    setProfile(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
-
-  const handleSettingsUpdate = (category: keyof IUserSettings, field: string, value: any) => {
-    setSettings(prev => ({
-      ...prev,
-      [category]: {
-        ...prev[category],
-        [field]: value
-      }
-    }));
-  };
-
+  const [isEditing, setIsEditing] = React.useState(false);
+  const [editedUser, setEditedUser] = React.useState<any>(user);
+  const [saving, setSaving] = React.useState(false);
+  if (!user) return null;
+  React.useEffect(() => {
+    setEditedUser(user);
+  }, [user]);
+  const status = user.is_active ? 'online' : 'offline';
   const handleSave = async () => {
-    setSaveStatus('saving');
+    setSaving(true);
     try {
-      // Имитируем сохранение
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setSaveStatus('saved');
+      await updateProfile({
+        full_name: editedUser.full_name,
+        email: editedUser.email,
+        role: editedUser.role,
+        // Добавьте другие поля, если нужно
+      });
       setIsEditing(false);
-      setTimeout(() => setSaveStatus('idle'), 2000);
-    } catch (error) {
-      setSaveStatus('error');
-      setTimeout(() => setSaveStatus('idle'), 3000);
+    } finally {
+      setSaving(false);
     }
   };
-
-  const handleAvatarUpload = (file: File) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      setProfile(prev => ({
-        ...prev,
-        avatar: e.target?.result as string
-      }));
-    };
-    reader.readAsDataURL(file);
+  const handleCancel = () => {
+    setEditedUser(user);
+    setIsEditing(false);
   };
-
-  // Обработчики для новых компонентов безопасности
-  const handlePasswordChange = async (oldPassword: string, newPassword: string, confirmPassword: string) => {
-    // Имитация API вызова
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    console.log('Password changed:', { oldPassword, newPassword, confirmPassword });
-  };
-
-  const handle2FAToggle = async (enabled: boolean) => {
-    // Имитация API вызова
-    await new Promise(resolve => setTimeout(resolve, 500));
-    console.log('2FA toggled:', enabled);
-  };
-
-  const handleSessionTerminate = async (sessionId: string) => {
-    // Имитация API вызова
-    await new Promise(resolve => setTimeout(resolve, 500));
-    console.log('Session terminated:', sessionId);
-    // Удаляем сессию из мокового массива
-    setMockSessions(prev => prev.filter(s => s.id !== sessionId));
-  };
-
-  // Обработчики для биллинга
-  const handlePlanChange = () => {
-    console.log('Plan change requested');
-    // Здесь будет логика смены плана
-  };
-
-  const handleDownloadInvoice = (paymentId: string) => {
-    console.log('Download invoice:', paymentId);
-    // Здесь будет логика скачивания счета
-  };
-
-  const handleExportData = () => {
-    console.log('Export data requested');
-    // Здесь будет логика экспорта данных
-  };
-
-  const handleImportData = () => {
-    console.log('Import data requested');
-    // Здесь будет логика импорта данных
-  };
-
-  // Моковые данные для активных сессий
-  const [mockSessions, setMockSessions] = useState([
-    {
-      id: 'session-1',
-      device: 'Windows Desktop',
-      browser: 'Chrome 122',
-      location: 'Москва, Россия',
-      lastActive: new Date().toISOString(),
-      isCurrent: true,
-      ipAddress: '192.168.1.1'
-    },
-    {
-      id: 'session-2',
-      device: 'iPhone 15',
-      browser: 'Safari',
-      location: 'Москва, Россия',
-      lastActive: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-      isCurrent: false,
-      ipAddress: '10.0.1.15'
-    }
-  ]);
-
-  // Моковые данные для подписки
-  const mockSubscription = {
-    name: 'Professional',
-    price: 2999,
-    currency: 'rub',
-    interval: 'month' as const,
-    features: [
-      'Безлимитные анализы КП',
-      'Доступ ко всем AI моделям',
-      'Приоритетная поддержка',
-      'Экспорт в разных форматах',
-      'API доступ',
-      'Командная работа'
-    ],
-    limits: {
-      analysisPerMonth: 100,
-      modelsAccess: ['Claude', 'GPT-4', 'Gemini'],
-      supportLevel: 'Приоритетная',
-      storageGB: 50
-    },
-    usage: {
-      analysisUsed: 23,
-      storageUsed: 12
-    }
-  };
-
-  // Моковые данные для истории платежей
-  const mockPaymentHistory = [
-    {
-      id: 'payment-1',
-      date: '2024-07-01',
-      amount: 2999,
-      currency: 'rub',
-      description: 'Подписка Professional - Июль 2024',
-      status: 'paid' as const,
-      invoiceUrl: '/invoices/payment-1.pdf'
-    },
-    {
-      id: 'payment-2',
-      date: '2024-06-01',
-      amount: 2999,
-      currency: 'rub',
-      description: 'Подписка Professional - Июнь 2024',
-      status: 'paid' as const,
-      invoiceUrl: '/invoices/payment-2.pdf'
-    }
-  ];
-
-  const tabs = [
-    { id: 'profile', label: 'Профиль', icon: <User className="w-4 h-4" /> },
-    { id: 'settings', label: 'Настройки', icon: <Settings className="w-4 h-4" /> },
-    { id: 'security', label: 'Безопасность', icon: <Shield className="w-4 h-4" /> },
-    { id: 'billing', label: 'Тарифы', icon: <CreditCard className="w-4 h-4" /> }
-  ];
-
-  const renderProfileTab = () => {
-    // Статистика пользователя для отображения
-    const userStats = [
-      {
-        title: 'Анализов выполнено',
-        value: 142,
-        subtitle: 'В этом месяце',
-        icon: Zap,
-        color: 'blue' as const,
-        trend: { value: 12, isPositive: true }
-      },
-      {
-        title: 'Успешных проектов',
-        value: 23,
-        subtitle: 'За всё время',
-        icon: CheckCircle,
-        color: 'green' as const,
-        trend: { value: 8, isPositive: true }
-      },
-      {
-        title: 'Команды',
-        value: 5,
-        subtitle: 'Активных участников',
-        icon: Users,
-        color: 'purple' as const
-      }
-    ];
-
-    return (
-      <div className="space-y-8">
-        {/* Статистика пользователя */}
-        <ProfileStats stats={userStats} />
-
-        {/* Аватар и основная информация */}
-        <ProfileSection
-          title="Личная информация"
-          icon={User}
-          iconColor="text-blue-600"
-          actions={
-            !isEditing ? (
-              <button
-                onClick={() => setIsEditing(true)}
-                className="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
-              >
-                Редактировать
-              </button>
-            ) : (
-              <div className="flex space-x-3">
-                <button
-                  onClick={() => setIsEditing(false)}
-                  className="px-4 py-2 bg-gray-600 text-white rounded-xl hover:bg-gray-700 transition-colors"
-                >
-                  Отмена
-                </button>
-                <button
-                  onClick={handleSave}
-                  disabled={saveStatus === 'saving'}
-                  className="px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 disabled:opacity-50 transition-colors flex items-center"
-                >
-                  {saveStatus === 'saving' && (
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                  )}
-                  Сохранить
-                </button>
-              </div>
-            )
-          }
-        >
-          <div className="space-y-6">
-            {/* Аватар */}
-            <div className="flex items-center space-x-6">
-              <UserAvatar
-                name={profile.name}
-                avatar={profile.avatar}
-                size="xl"
-                isEditable={isEditing}
-                onAvatarChange={handleAvatarUpload}
-              />
-              
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900">{profile.name}</h2>
-                <p className="text-gray-600">{profile.position}</p>
-                <p className="text-sm text-gray-500">{profile.company}</p>
-                <div className="flex items-center mt-2">
-                  <span className="px-3 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full">
-                    {profile.plan}
-                  </span>
-                </div>
-              </div>
-            </div>
-            
-            {/* Поля формы */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <ProfileFormField
-                label="Полное имя"
-                value={profile.name}
-                onChange={(value) => handleProfileUpdate('name', value)}
-                icon={User}
-                disabled={!isEditing}
-                required
-              />
-              
-              <ProfileFormField
-                label="Email"
-                value={profile.email}
-                onChange={(value) => handleProfileUpdate('email', value)}
-                type="email"
-                disabled={!isEditing}
-                required
-              />
-              
-              <ProfileFormField
-                label="Компания"
-                value={profile.company}
-                onChange={(value) => handleProfileUpdate('company', value)}
-                disabled={!isEditing}
-              />
-              
-              <ProfileFormField
-                label="Должность"
-                value={profile.position}
-                onChange={(value) => handleProfileUpdate('position', value)}
-                disabled={!isEditing}
-              />
-              
-              <ProfileFormField
-                label="Телефон"
-                value={profile.phone}
-                onChange={(value) => handleProfileUpdate('phone', value)}
-                type="tel"
-                disabled={!isEditing}
-              />
-              
-              <ProfileFormField
-                label="Местоположение"
-                value={profile.location}
-                onChange={(value) => handleProfileUpdate('location', value)}
-                disabled={!isEditing}
-              />
-            </div>
-          </div>
-        </ProfileSection>
-
-        {/* Статус сохранения */}
-        {saveStatus !== 'idle' && (
-          <div className={`p-4 rounded-xl flex items-center ${
-            saveStatus === 'saved' ? 'bg-green-50 text-green-800' :
-            saveStatus === 'error' ? 'bg-red-50 text-red-800' :
-            'bg-blue-50 text-blue-800'
-          }`}>
-            {saveStatus === 'saved' && <CheckCircle className="w-5 h-5 mr-2" />}
-            {saveStatus === 'error' && <AlertCircle className="w-5 h-5 mr-2" />}
-            {saveStatus === 'saving' && <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mr-2" />}
-            {saveStatus === 'saved' && 'Профиль успешно сохранен'}
-            {saveStatus === 'error' && 'Ошибка при сохранении профиля'}
-            {saveStatus === 'saving' && 'Сохранение...'}
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  const renderSettingsTab = () => {
-    const getNotificationTitle = (key: string) => {
-      switch (key) {
-        case 'email': return 'Email уведомления';
-        case 'push': return 'Push уведомления';
-        case 'sms': return 'SMS уведомления';
-        case 'marketing': return 'Маркетинговые рассылки';
-        case 'analysisComplete': return 'Завершение анализа';
-        case 'reportGenerated': return 'Готовность отчета';
-        case 'systemMaintenance': return 'Системные обслуживания';
-        default: return key;
-      }
-    };
-
-    const getNotificationDescription = (key: string) => {
-      switch (key) {
-        case 'email': return 'Получать уведомления на электронную почту';
-        case 'push': return 'Получать push-уведомления в браузере';
-        case 'sms': return 'Получать SMS на мобильный телефон';
-        case 'marketing': return 'Получать информацию о новых функциях';
-        case 'analysisComplete': return 'Уведомления о завершении анализа КП';
-        case 'reportGenerated': return 'Уведомления о готовности отчетов';
-        case 'systemMaintenance': return 'Уведомления о плановых работах';
-        default: return '';
-      }
-    };
-
-    const getPrivacyTitle = (key: string) => {
-      switch (key) {
-        case 'profileVisible': return 'Видимость профиля';
-        case 'activityVisible': return 'Показывать активность';
-        case 'dataSharing': return 'Обмен данными';
-        case 'analyticsTracking': return 'Аналитика использования';
-        default: return key;
-      }
-    };
-
-    const getPrivacyDescription = (key: string) => {
-      switch (key) {
-        case 'profileVisible': return 'Позволить другим пользователям видеть ваш профиль';
-        case 'activityVisible': return 'Показывать вашу активность в системе';
-        case 'dataSharing': return 'Разрешить использование данных для улучшения сервиса';
-        case 'analyticsTracking': return 'Собирать аналитику для улучшения UX';
-        default: return '';
-      }
-    };
-
-    return (
-      <div className="space-y-8">
-        {/* Уведомления */}
-        <ProfileSection title="Уведомления" icon={Settings} iconColor="text-blue-600">
-          <div className="space-y-4">
-            {Object.entries(settings.notifications).map(([key, value]) => (
-              <SettingsToggle
-                key={key}
-                title={getNotificationTitle(key)}
-                description={getNotificationDescription(key)}
-                checked={value}
-                onChange={(checked) => handleSettingsUpdate('notifications', key, checked)}
-                color="blue"
-              />
-            ))}
-          </div>
-        </ProfileSection>
-
-        {/* Приватность */}
-        <ProfileSection title="Приватность" icon={Shield} iconColor="text-green-600">
-          <div className="space-y-4">
-            {Object.entries(settings.privacy).map(([key, value]) => (
-              <SettingsToggle
-                key={key}
-                title={getPrivacyTitle(key)}
-                description={getPrivacyDescription(key)}
-                checked={value}
-                onChange={(checked) => handleSettingsUpdate('privacy', key, checked)}
-                color="green"
-              />
-            ))}
-          </div>
-        </ProfileSection>
-
-        {/* Предпочтения */}
-        <ProfileSection title="Предпочтения" icon={Settings} iconColor="text-purple-600">
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Язык</label>
-                <select
-                  value={settings.preferences.language}
-                  onChange={(e) => handleSettingsUpdate('preferences', 'language', e.target.value)}
-                  className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                >
-                  <option value="ru">Русский</option>
-                  <option value="en">English</option>
-                </select>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Часовой пояс</label>
-                <select
-                  value={settings.preferences.timezone}
-                  onChange={(e) => handleSettingsUpdate('preferences', 'timezone', e.target.value)}
-                  className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                >
-                  <option value="Europe/Moscow">Москва (UTC+3)</option>
-                  <option value="Europe/Kiev">Киев (UTC+2)</option>
-                  <option value="Asia/Almaty">Алматы (UTC+6)</option>
-                </select>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Тема</label>
-                <select
-                  value={settings.preferences.theme}
-                  onChange={(e) => handleSettingsUpdate('preferences', 'theme', e.target.value)}
-                  className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                >
-                  <option value="light">Светлая</option>
-                  <option value="dark">Темная</option>
-                  <option value="system">Системная</option>
-                </select>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">AI модель по умолчанию</label>
-                <select
-                  value={settings.preferences.defaultModel}
-                  onChange={(e) => handleSettingsUpdate('preferences', 'defaultModel', e.target.value)}
-                  className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                >
-                  <option value="claude-3-5-sonnet-20240620">Claude 3.5 Sonnet</option>
-                  <option value="gpt-4o">GPT-4o</option>
-                  <option value="gpt-4">GPT-4</option>
-                </select>
-              </div>
-            </div>
-            
-            {/* Дополнительные настройки */}
-            <div className="space-y-4">
-              <SettingsToggle
-                title="Автосохранение"
-                description="Автоматически сохранять изменения в формах"
-                checked={settings.preferences.autoSave}
-                onChange={(checked) => handleSettingsUpdate('preferences', 'autoSave', checked)}
-                color="purple"
-              />
-              
-              <SettingsToggle
-                title="Компактный режим"
-                description="Уменьшить отступы и размеры элементов интерфейса"
-                checked={settings.preferences.compactMode}
-                onChange={(checked) => handleSettingsUpdate('preferences', 'compactMode', checked)}
-                color="purple"
-              />
-            </div>
-          </div>
-        </ProfileSection>
-      </div>
-    );
-  };
-
-  const renderSecurityTab = () => (
-    <SecuritySection
-      sessions={mockSessions}
-      is2FAEnabled={false}
-      onPasswordChange={handlePasswordChange}
-      on2FAToggle={handle2FAToggle}
-      onSessionTerminate={handleSessionTerminate}
-    />
-  );
-
-  const renderBillingTab = () => (
-    <BillingSection
-      currentPlan={mockSubscription}
-      paymentHistory={mockPaymentHistory}
-      onPlanChange={handlePlanChange}
-      onDownloadInvoice={handleDownloadInvoice}
-      onExportData={handleExportData}
-      onImportData={handleImportData}
-    />
-  );
-
+  const logoLight = '/devent-logo.png';
+  const logoDark = '/devent-logo-white1.png';
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
-      {/* Header */}
-      <header className="bg-white/80 backdrop-blur-md border-b border-white/20 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <button
-              onClick={() => navigate('/')}
-              className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors group"
-            >
-              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-              <span className="text-sm font-medium">Dashboard</span>
-            </button>
-            
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
-                <User className="w-5 h-5 text-white" />
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 p-4 md:p-8">
+      {/* Логотип и возврат на dashboard */}
+      <div className="max-w-2xl mx-auto flex items-center mb-6">
+        <button
+          onClick={() => navigate('/dashboard')}
+          className="flex items-center space-x-2 group focus:outline-none"
+          aria-label="На главную"
+        >
+          <img
+            src={isDarkMode ? logoDark : logoLight}
+            alt="DevAssist Pro"
+            className="w-10 h-10 rounded-lg shadow-md group-hover:scale-105 transition-transform"
+          />
+          <span className="text-lg font-bold text-gray-700 dark:text-white group-hover:text-blue-600 transition-colors">DevAssist Pro</span>
+        </button>
+      </div>
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-400/20 rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-400/20 rounded-full blur-3xl" />
+      </div>
+      <div className="relative z-10 max-w-2xl mx-auto">
+        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="text-center mb-8">
+          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">DevAssist Pro</h1>
+          <p className="text-muted-foreground">Профиль пользователя</p>
+        </motion.div>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }} className="relative">
+          <div className="relative backdrop-blur-xl bg-white/70 dark:bg-slate-900/70 border border-white/20 dark:border-slate-700/50 rounded-2xl shadow-2xl shadow-black/10 dark:shadow-black/30 overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
+            <div className="relative p-8 md:p-10">
+              <div className="flex flex-col md:flex-row items-center md:items-start gap-6 mb-8">
+                <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.5, delay: 0.2 }} className="relative">
+                  <Avatar size="xl" className="ring-4 ring-white/50 dark:ring-slate-700/50">
+                    {user.avatar ? <AvatarImage src={user.avatar} alt={user.full_name || user.email} /> : <AvatarFallback className="text-lg">{user.full_name ? user.full_name.split(' ').map(n => n[0]).join('') : user.email?.charAt(0)?.toUpperCase()}</AvatarFallback>}
+                  </Avatar>
+                  <div className="absolute -bottom-1 -right-1">
+                    <div className={cn("w-5 h-5 rounded-full border-3 border-white dark:border-slate-900", status === "online" && "bg-green-500", status === "offline" && "bg-gray-400")}/>
+                  </div>
+                </motion.div>
+                <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 0.3 }} className="flex-1 text-center md:text-left">
+                  {isEditing ? (
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-foreground mb-1">Имя</label>
+                        <Input
+                          value={editedUser.full_name || ''}
+                          onChange={(e) => setEditedUser((prev: any) => ({ ...prev, full_name: e.target.value }))}
+                          className="backdrop-blur-sm bg-white/50 dark:bg-slate-800/50"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-foreground mb-1">Email</label>
+                        <Input
+                          value={editedUser.email || ''}
+                          onChange={(e) => setEditedUser((prev: any) => ({ ...prev, email: e.target.value }))}
+                          className="backdrop-blur-sm bg-white/50 dark:bg-slate-800/50"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-foreground mb-1">Роль</label>
+                        <Input
+                          value={editedUser.role || ''}
+                          onChange={(e) => setEditedUser((prev: any) => ({ ...prev, role: e.target.value }))}
+                          className="backdrop-blur-sm bg-white/50 dark:bg-slate-800/50"
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">{user.full_name || user.email}</h2>
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-center md:justify-start gap-2 text-muted-foreground">
+                          <Mail className="h-4 w-4" />
+                          <span>{user.email}</span>
+                        </div>
+                        <div className="flex items-center justify-center md:justify-start gap-2 text-muted-foreground">
+                          <Shield className="h-4 w-4" />
+                          <span>{user.role}</span>
+                        </div>
+                        <div className="flex items-center justify-center md:justify-start gap-2">
+                          <StatusIndicator status={status} className="" />
+                        </div>
+                      </div>
+                      <div className="mt-4">
+                        <Badge variant="secondary" className="backdrop-blur-sm">
+                          <User className="h-3 w-3 mr-1" />
+                          Активный пользователь
+                        </Badge>
+                      </div>
+                    </>
+                  )}
+                </motion.div>
               </div>
-              <div>
-                <h1 className="text-lg font-semibold text-gray-900">Профиль и настройки</h1>
-                <div className="text-sm text-gray-500">Управление учетной записью</div>
-              </div>
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.4 }} className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                {isEditing ? (
+                  <>
+                    <Button onClick={handleSave} disabled={saving} className="backdrop-blur-sm transition-all duration-300 hover:scale-105">
+                      <Save className="h-4 w-4 mr-2" />
+                      {saving ? 'Сохранение...' : 'Сохранить'}
+                    </Button>
+                    <Button onClick={handleCancel} variant="outline" className="backdrop-blur-sm bg-white/50 dark:bg-slate-800/50 border-white/30 dark:border-slate-600/30 hover:bg-white/70 dark:hover:bg-slate-700/70 transition-all duration-300">
+                      <X className="h-4 w-4 mr-2" />
+                      Отмена
+                    </Button>
+                    <Button onClick={logout} variant="destructive" className="backdrop-blur-sm transition-all duration-300 hover:scale-105">
+                      <LogOut className="h-4 w-4 mr-2" />
+                      Выйти
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button onClick={() => setIsEditing(true)} variant="outline" className="backdrop-blur-sm bg-white/50 dark:bg-slate-800/50 border-white/30 dark:border-slate-600/30 hover:bg-white/70 dark:hover:bg-slate-700/70 transition-all duration-300">
+                      <Edit2 className="h-4 w-4 mr-2" />
+                      Редактировать
+                    </Button>
+                    <Button onClick={() => navigate('/profile/change-password')} variant="outline" className="backdrop-blur-sm bg-white/50 dark:bg-slate-800/50 border-white/30 dark:border-slate-600/30 hover:bg-white/70 dark:hover:bg-slate-700/70 transition-all duration-300">
+                      <Key className="h-4 w-4 mr-2" />
+                      Сменить пароль
+                    </Button>
+                    <Button onClick={logout} variant="destructive" className="backdrop-blur-sm transition-all duration-300 hover:scale-105">
+                      <LogOut className="h-4 w-4 mr-2" />
+                      Выйти
+                    </Button>
+                  </>
+                )}
+              </motion.div>
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.5 }} className="border-t border-white/20 dark:border-slate-700/50 pt-6">
+                <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2"><Settings className="h-5 w-5" />Настройки</h3>
+                <div className="bg-white/30 dark:bg-slate-800/30 backdrop-blur-sm rounded-xl p-6 border border-white/20 dark:border-slate-700/30 space-y-6">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3"><Bell className="h-5 w-5 text-muted-foreground" /><div><p className="font-medium text-foreground">Уведомления</p><p className="text-sm text-muted-foreground">Получать уведомления о важных событиях</p></div></div><Switch checked={true} onCheckedChange={() => {}} />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3"><Lock className="h-5 w-5 text-muted-foreground" /><div><p className="font-medium text-foreground">Двухфакторная аутентификация</p><p className="text-sm text-muted-foreground">Дополнительная защита аккаунта</p></div></div><Switch checked={false} onCheckedChange={() => {}} />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3"><Palette className="h-5 w-5 text-muted-foreground" /><div><p className="font-medium text-foreground">Темная тема</p><p className="text-sm text-muted-foreground">Переключить на темное оформление</p></div></div><Switch checked={false} onCheckedChange={() => {}} />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3"><Globe className="h-5 w-5 text-muted-foreground" /><div><p className="font-medium text-foreground">Язык интерфейса</p><p className="text-sm text-muted-foreground">Выбрать язык приложения</p></div></div><select value="ru" onChange={() => {}} className="h-8 px-2 bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm border border-white/30 dark:border-slate-600/30 rounded text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"><option value="ru">Русский</option><option value="en">English</option><option value="de">Deutsch</option></select>
+                  </div>
+                  <Button onClick={() => {}} variant="ghost" className="w-full backdrop-blur-sm hover:bg-white/20 dark:hover:bg-slate-700/20 mt-4"><Settings className="h-4 w-4 mr-2" />Дополнительные настройки</Button>
+                </div>
+              </motion.div>
             </div>
           </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Sidebar */}
-          <div className="lg:w-64">
-            <div className="bg-white/60 backdrop-blur-sm rounded-2xl border border-white/20 p-4 sticky top-24">
-              <nav className="space-y-2">
-                {tabs.map((tab) => (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id as any)}
-                    className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-left transition-all duration-200 ${
-                      activeTab === tab.id
-                        ? 'bg-blue-100 text-blue-700 shadow-sm ring-1 ring-blue-200'
-                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                    }`}
-                  >
-                    {tab.icon}
-                    <span className="font-medium">{tab.label}</span>
-                  </button>
-                ))}
-              </nav>
-            </div>
-          </div>
-
-          {/* Content */}
-          <div className="flex-1">
-            {activeTab === 'profile' && renderProfileTab()}
-            {activeTab === 'settings' && renderSettingsTab()}
-            {activeTab === 'security' && renderSecurityTab()}
-            {activeTab === 'billing' && renderBillingTab()}
-          </div>
-        </div>
-      </main>
+        </motion.div>
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, delay: 0.6 }} className="text-center mt-8 text-sm text-muted-foreground">DevAssist Pro © 2024</motion.div>
+      </div>
     </div>
   );
 };

@@ -1,6 +1,9 @@
 /**
  * API Client для работы с backend сервисами
+ * Интегрирован с JWT Token Management
  */
+
+import { httpClient } from './httpInterceptors';
 
 export interface ApiResponse<T> {
   data: T;
@@ -65,31 +68,28 @@ export interface AnalysisResult {
 }
 
 class ApiClient {
-  private baseUrl: string;
-
   constructor() {
-    // В production это будет URL вашего Python backend
-    this.baseUrl = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+    // HTTP client уже настроен с JWT token management
   }
 
   private async makeRequest<T>(
     endpoint: string, 
-    options: RequestInit = {}
+    options: Partial<RequestInit> = {},
+    requiresAuth: boolean = true
   ): Promise<ApiResponse<T>> {
     try {
-      const response = await fetch(`${this.baseUrl}${endpoint}`, {
+      // Используем httpClient с автоматическим управлением токенами
+      const data = await httpClient.request<T>({
+        url: endpoint,
+        method: (options.method as string) || 'GET',
         headers: {
           'Content-Type': 'application/json',
-          ...options.headers,
+          ...options.headers as Record<string, string>,
         },
-        ...options,
+        body: options.body,
+        requiresAuth
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
       return { data, success: true };
     } catch (error) {
       console.error('API request failed:', error);
@@ -126,16 +126,13 @@ class ApiClient {
     }
 
     try {
-      const response = await fetch(`${this.baseUrl}/upload`, {
-        method: 'POST',
-        body: formData,
+      // Используем httpClient для файловых загрузок с JWT авторизацией
+      const data = await httpClient.post<UploadedFiles>('/upload', formData, {
+        headers: {
+          // Не устанавливаем Content-Type для FormData - браузер установит автоматически с boundary
+        }
       });
 
-      if (!response.ok) {
-        throw new Error(`Upload failed: ${response.status}`);
-      }
-
-      const data = await response.json();
       return { data, success: true };
     } catch (error) {
       console.error('File upload failed:', error);
@@ -196,6 +193,28 @@ class ApiClient {
   // Проверка статуса backend
   async checkHealth(): Promise<ApiResponse<{ status: string }>> {
     return this.makeRequest<{ status: string }>('/health');
+  }
+
+  // Generic GET method
+  async get<T>(endpoint: string, params?: Record<string, any>): Promise<{ data: T }> {
+    const queryParams = params ? '?' + new URLSearchParams(params).toString() : '';
+    const response = await this.makeRequest<T>(`${endpoint}${queryParams}`);
+    if (!response.success) {
+      throw new Error(response.error || 'Request failed');
+    }
+    return { data: response.data };
+  }
+
+  // Generic POST method
+  async post<T>(endpoint: string, data: any): Promise<{ data: T }> {
+    const response = await this.makeRequest<T>(endpoint, {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+    if (!response.success) {
+      throw new Error(response.error || 'Request failed');
+    }
+    return { data: response.data };
   }
 }
 

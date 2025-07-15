@@ -25,7 +25,8 @@ class IntegrationService {
   private eventListeners: Map<string, ((event: WebSocketEvent) => void)[]> = new Map();
 
   constructor() {
-    this.setupWebSocket();
+    // Отключаем WebSocket для КП анализатора - используем только прямые API вызовы
+    // this.setupWebSocket();
   }
 
   // ===== AUTHENTICATION BRIDGE =====
@@ -33,10 +34,10 @@ class IntegrationService {
     try {
       const response = await unifiedApiClient.login(credentials);
       
-      // После успешной авторизации инициализируем WebSocket
-      if (response.success) {
-        this.setupWebSocket();
-      }
+      // WebSocket отключен для КП анализатора
+      // if (response.success) {
+      //   this.setupWebSocket();
+      // }
       
       return response;
     } catch (error) {
@@ -51,9 +52,10 @@ class IntegrationService {
     try {
       const response = await unifiedApiClient.register(userData);
       
-      if (response.success) {
-        this.setupWebSocket();
-      }
+      // WebSocket отключен для КП анализатора
+      // if (response.success) {
+      //   this.setupWebSocket();
+      // }
       
       return response;
     } catch (error) {
@@ -82,9 +84,10 @@ class IntegrationService {
     try {
       const response = await unifiedApiClient.loginWithOAuth(provider, code, redirectUri);
       
-      if (response.success) {
-        this.setupWebSocket();
-      }
+      // WebSocket отключен для КП анализатора
+      // if (response.success) {
+      //   this.setupWebSocket();
+      // }
       
       return response;
     } catch (error) {
@@ -312,6 +315,12 @@ class IntegrationService {
     
     try {
       this.wsConnection = unifiedApiClient.connectWebSocket();
+      
+      // Если нет токена, WebSocket не подключится
+      if (!this.wsConnection) {
+        console.log('[IntegrationService] WebSocket not connected - no token available');
+        return;
+      }
       
       this.wsConnection.onmessage = (event) => {
         try {

@@ -4,6 +4,10 @@ import { LoginFormData, RegisterFormData, ResetPasswordFormData, AuthResponse } 
 import { User } from '../types/shared';
 import { authBridge } from '../services/authBridge';
 import { websocketBridge } from '../services/websocketBridge';
+import { TokenService, tokenService, TokenPair } from '../services/tokenService';
+import { useTokenRefresh } from '../hooks/useTokenRefresh';
+import { unifiedApiClient } from '../services/unifiedApiClient';
+import { DEV_TEST_USERS, DEV_CONFIG } from '../config/development';
 
 export interface AuthState {
   user: User | null;
@@ -13,15 +17,21 @@ export interface AuthState {
   isLoading: boolean;
   error: string | null;
   sessionExpiresAt: number | null;
+  tokenExpiresAt: number | null;
+  isRefreshing: boolean;
+  timeUntilExpiration: number | null;
 }
 
 // Типы действий для reducer
 type AuthAction =
   | { type: 'AUTH_START' }
-  | { type: 'AUTH_SUCCESS'; payload: { user: User; token: string; refreshToken: string } }
+  | { type: 'AUTH_SUCCESS'; payload: { user: User; token: string; refreshToken: string; tokenExpiresAt: number } }
   | { type: 'AUTH_FAILURE'; payload: string }
   | { type: 'UPDATE_USER'; payload: Partial<User> }
-  | { type: 'REFRESH_TOKEN_SUCCESS'; payload: { token: string; refreshToken: string } }
+  | { type: 'REFRESH_TOKEN_START' }
+  | { type: 'REFRESH_TOKEN_SUCCESS'; payload: { token: string; refreshToken: string; tokenExpiresAt: number } }
+  | { type: 'REFRESH_TOKEN_FAILURE'; payload: string }
+  | { type: 'UPDATE_TOKEN_EXPIRATION'; payload: number | null }
   | { type: 'LOGOUT' }
   | { type: 'CLEAR_ERROR' }
   | { type: 'SET_LOADING'; payload: boolean };
@@ -35,6 +45,9 @@ const initialState: AuthState = {
   isLoading: false,
   error: null,
   sessionExpiresAt: null,
+  tokenExpiresAt: null,
+  isRefreshing: false,
+  timeUntilExpiration: null,
 };
 
 // Reducer для управления состоянием аутентификации
@@ -48,13 +61,16 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
       };
 
     case 'AUTH_SUCCESS':
-      const { user, token, refreshToken } = action.payload;
+      const { user, token, refreshToken, tokenExpiresAt } = action.payload;
       const sessionExpiresAt = Date.now() + AUTH_CONFIG.SESSION_TIMEOUT;
       
-      // Сохраняем данные в localStorage
+      // Сохраняем данные в localStorage простым способом (всегда перезаписываем)
+      localStorage.setItem(AUTH_CONFIG.USER_STORAGE_KEY, JSON.stringify(user));
       localStorage.setItem(AUTH_CONFIG.TOKEN_STORAGE_KEY, token);
       localStorage.setItem(AUTH_CONFIG.REFRESH_TOKEN_STORAGE_KEY, refreshToken);
-      localStorage.setItem(AUTH_CONFIG.USER_STORAGE_KEY, JSON.stringify(user));
+      localStorage.setItem(AUTH_CONFIG.TOKEN_EXPIRES_AT_KEY, tokenExpiresAt.toString());
+      
+      console.log('[AuthContext] AUTH_SUCCESS dispatch - user authenticated:', user.email, 'role:', user.role);
       
       return {
         ...state,
@@ -65,13 +81,17 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
         isLoading: false,
         error: null,
         sessionExpiresAt,
+        tokenExpiresAt,
+        isRefreshing: false,
+        timeUntilExpiration: tokenExpiresAt - Date.now(),
       };
 
     case 'AUTH_FAILURE':
-      // Очищаем localStorage при ошибке
+      // Очищаем простые localStorage ключи
+      localStorage.removeItem(AUTH_CONFIG.USER_STORAGE_KEY);
       localStorage.removeItem(AUTH_CONFIG.TOKEN_STORAGE_KEY);
       localStorage.removeItem(AUTH_CONFIG.REFRESH_TOKEN_STORAGE_KEY);
-      localStorage.removeItem(AUTH_CONFIG.USER_STORAGE_KEY);
+      localStorage.removeItem(AUTH_CONFIG.TOKEN_EXPIRES_AT_KEY);
       
       return {
         ...state,
@@ -82,6 +102,9 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
         isLoading: false,
         error: action.payload,
         sessionExpiresAt: null,
+        tokenExpiresAt: null,
+        isRefreshing: false,
+        timeUntilExpiration: null,
       };
 
     case 'UPDATE_USER':
@@ -95,25 +118,47 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
         user: updatedUser,
       };
 
+    case 'REFRESH_TOKEN_START':
+      return {
+        ...state,
+        isRefreshing: true,
+        error: null,
+      };
+
     case 'REFRESH_TOKEN_SUCCESS':
-      const { token: newToken, refreshToken: newRefreshToken } = action.payload;
+      const { token: newToken, refreshToken: newRefreshToken, tokenExpiresAt: newTokenExpiresAt } = action.payload;
       const newSessionExpiresAt = Date.now() + AUTH_CONFIG.SESSION_TIMEOUT;
-      
-      localStorage.setItem(AUTH_CONFIG.TOKEN_STORAGE_KEY, newToken);
-      localStorage.setItem(AUTH_CONFIG.REFRESH_TOKEN_STORAGE_KEY, newRefreshToken);
       
       return {
         ...state,
         token: newToken,
         refreshToken: newRefreshToken,
         sessionExpiresAt: newSessionExpiresAt,
+        tokenExpiresAt: newTokenExpiresAt,
+        isRefreshing: false,
+        timeUntilExpiration: newTokenExpiresAt - Date.now(),
+        error: null,
+      };
+
+    case 'REFRESH_TOKEN_FAILURE':
+      return {
+        ...state,
+        isRefreshing: false,
+        error: action.payload,
+      };
+
+    case 'UPDATE_TOKEN_EXPIRATION':
+      return {
+        ...state,
+        timeUntilExpiration: action.payload,
       };
 
     case 'LOGOUT':
-      // Полная очистка данных
+      // Полная очистка данных из localStorage
+      localStorage.removeItem(AUTH_CONFIG.USER_STORAGE_KEY);
       localStorage.removeItem(AUTH_CONFIG.TOKEN_STORAGE_KEY);
       localStorage.removeItem(AUTH_CONFIG.REFRESH_TOKEN_STORAGE_KEY);
-      localStorage.removeItem(AUTH_CONFIG.USER_STORAGE_KEY);
+      localStorage.removeItem(AUTH_CONFIG.TOKEN_EXPIRES_AT_KEY);
       
       return {
         ...initialState,
@@ -141,10 +186,12 @@ interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  isRefreshing: boolean;
   error: string | null;
+  timeUntilExpiration: number | null;
   login: (credentials: LoginFormData) => Promise<AuthResponse>;
   register: (userData: RegisterFormData) => Promise<AuthResponse>;
-  logout: () => void;
+  logout: () => Promise<void>;
   forgotPassword: (email: string) => Promise<AuthResponse>;
   resetPassword: (data: ResetPasswordFormData) => Promise<AuthResponse>;
   clearError: () => void;
@@ -152,6 +199,10 @@ interface AuthContextType {
   updateProfile: (data: Partial<User>) => Promise<void>;
   checkSessionExpiry: () => boolean;
   getSessionExpiresAt: () => number | null;
+  getTokenExpiresAt: () => number | null;
+  getTimeUntilTokenExpiration: () => number | null;
+  hasPermission: (permission: string) => boolean;
+  getSessionInfo: () => any;
 }
 
 export interface RegisterData {
@@ -173,28 +224,91 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
+  // JWT Token management теперь включен
+  // Интеграция с JWT Token management
+  const tokenRefresh = useTokenRefresh({
+    autoRefresh: true,
+    checkInterval: 60000, // Проверяем каждую минуту
+    onTokenRefreshed: () => {
+      console.log('[AuthProvider] Token refreshed successfully');
+      const sessionInfo = TokenService.getSessionInfo();
+      if (sessionInfo.isAuthenticated) {
+        const timeLeft = TokenService.getTimeUntilExpiration();
+        dispatch({ type: 'UPDATE_TOKEN_EXPIRATION', payload: timeLeft });
+      }
+    },
+    onTokenExpired: () => {
+      console.log('[AuthProvider] Token expired, logging out');
+      dispatch({ type: 'LOGOUT' });
+    },
+    onRefreshFailed: (error) => {
+      console.error('[AuthProvider] Token refresh failed:', error);
+      dispatch({ type: 'REFRESH_TOKEN_FAILURE', payload: error.message });
+    }
+  });
+
   // Восстановление состояния при загрузке приложения
   useEffect(() => {
     const initializeAuth = () => {
+      console.log('[AuthContext] Initializing authentication...');
+      dispatch({ type: 'SET_LOADING', payload: true });
+      
       try {
-        const token = localStorage.getItem(AUTH_CONFIG.TOKEN_STORAGE_KEY);
-        const refreshToken = localStorage.getItem(AUTH_CONFIG.REFRESH_TOKEN_STORAGE_KEY);
+        // Используем простую проверку localStorage для development
         const userStr = localStorage.getItem(AUTH_CONFIG.USER_STORAGE_KEY);
+        const tokenStr = localStorage.getItem(AUTH_CONFIG.TOKEN_STORAGE_KEY);
+        const refreshTokenStr = localStorage.getItem(AUTH_CONFIG.REFRESH_TOKEN_STORAGE_KEY);
+        const tokenExpiresAtStr = localStorage.getItem(AUTH_CONFIG.TOKEN_EXPIRES_AT_KEY);
 
-        if (token && refreshToken && userStr) {
+        // Checking localStorage for saved session
+
+        // Raw localStorage data retrieved
+
+        if (userStr && tokenStr && refreshTokenStr && tokenExpiresAtStr) {
           const user = JSON.parse(userStr);
+          const tokenExpiresAt = parseInt(tokenExpiresAtStr);
           
-          // Проверяем, не истекла ли сессия
-          const sessionExpiresAt = Date.now() + AUTH_CONFIG.SESSION_TIMEOUT;
-          if (Date.now() < sessionExpiresAt) {
+          console.log('[AuthContext] Parsed user object:', user);
+          console.log('[AuthContext] User role specifically:', user.role);
+          console.log('[AuthContext] User role type:', typeof user.role);
+          console.log('[AuthContext] Found saved session for user:', user.email, 'Role:', user.role);
+          console.log('[AuthContext] Token expires at:', new Date(tokenExpiresAt));
+          console.log('[AuthContext] Current time:', new Date());
+          console.log('[AuthContext] Token valid:', tokenExpiresAt > Date.now());
+          
+          // Проверяем, не истек ли токен
+          if (tokenExpiresAt > Date.now()) {
+            console.log('[AuthContext] Restoring session for user:', user.email);
+            
+            // Обновляем токены в API клиентах при восстановлении сессии
+            unifiedApiClient.updateTokens();
+            console.log('[AuthContext] Updated tokens in API clients during session restore');
+            
             dispatch({
               type: 'AUTH_SUCCESS',
-              payload: { user, token, refreshToken }
+              payload: { 
+                user, 
+                token: tokenStr, 
+                refreshToken: refreshTokenStr, 
+                tokenExpiresAt 
+              }
             });
+            
+            console.log('[AuthContext] Session restored successfully for user:', user.email);
+            
+            // Подключаем WebSocket после восстановления сессии (только в production)
+            if (process.env.NODE_ENV === 'production') {
+              websocketBridge.connect().catch(error => {
+                console.error('WebSocket connection failed after session restore:', error);
+              });
+            }
           } else {
-            // Сессия истекла, очищаем данные
+            console.log('[AuthContext] Token expired, clearing session');
             dispatch({ type: 'LOGOUT' });
           }
+        } else {
+          console.log('[AuthContext] No saved session found or incomplete data');
+          dispatch({ type: 'SET_LOADING', payload: false });
         }
       } catch (error) {
         console.error('Ошибка при восстановлении состояния аутентификации:', error);
@@ -205,55 +319,94 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     initializeAuth();
   }, []);
 
-  // Автоматическое обновление токена
+  // Обновление времени до истечения токена
   useEffect(() => {
-    if (!state.isAuthenticated || !state.sessionExpiresAt) return;
+    if (!state.isAuthenticated || !state.tokenExpiresAt) return;
 
-    const checkTokenExpiry = () => {
-      const timeUntilExpiry = state.sessionExpiresAt! - Date.now();
-      const refreshThreshold = 5 * 60 * 1000; // Обновляем за 5 минут до истечения
-
-      if (timeUntilExpiry <= refreshThreshold && timeUntilExpiry > 0) {
-        refreshToken();
-      } else if (timeUntilExpiry <= 0) {
-        logout();
-      }
+    const updateExpirationTime = () => {
+      const timeLeft = state.tokenExpiresAt! - Date.now();
+      dispatch({ type: 'UPDATE_TOKEN_EXPIRATION', payload: timeLeft > 0 ? timeLeft : null });
     };
 
-    const interval = setInterval(checkTokenExpiry, 60 * 1000); // Проверяем каждую минуту
+    updateExpirationTime(); // Обновляем сразу
+    const interval = setInterval(updateExpirationTime, 10000); // Обновляем каждые 10 секунд
+
     return () => clearInterval(interval);
-  }, [state.isAuthenticated, state.sessionExpiresAt]);
+  }, [state.isAuthenticated, state.tokenExpiresAt]);
+
+  // JWT token management происходит через useTokenRefresh hook
 
   // Функция входа
   const login = async (credentials: LoginFormData): Promise<AuthResponse> => {
+    console.log('[AuthContext] Starting login process for:', credentials.email);
     dispatch({ type: 'AUTH_START' });
 
     try {
+      // Используем real backend API
       const response = await authBridge.login(credentials);
       
+      console.log('[AuthContext] Real API response:', response);
+      
       if (response.success && response.user && response.token && response.refreshToken) {
+        // Вычисляем время истечения токена
+        const tokenExpiresAt = Date.now() + (response.expiresIn || 3600) * 1000;
+        
+        console.log('[AuthContext] Saving user data to localStorage:', {
+          userEmail: response.user.email,
+          userRole: response.user.role,
+          tokenExpiresAt: new Date(tokenExpiresAt),
+          keys: {
+            userKey: AUTH_CONFIG.USER_STORAGE_KEY,
+            tokenKey: AUTH_CONFIG.TOKEN_STORAGE_KEY,
+            refreshTokenKey: AUTH_CONFIG.REFRESH_TOKEN_STORAGE_KEY,
+            expirationKey: AUTH_CONFIG.TOKEN_EXPIRES_AT_KEY
+          }
+        });
+        
+        // Сохраняем данные в localStorage
+        console.log('[AuthContext] Saving user object to localStorage:', response.user);
+        console.log('[AuthContext] User role before saving:', response.user.role);
+        
+        localStorage.setItem(AUTH_CONFIG.USER_STORAGE_KEY, JSON.stringify(response.user));
+        localStorage.setItem(AUTH_CONFIG.TOKEN_STORAGE_KEY, response.token);
+        localStorage.setItem(AUTH_CONFIG.REFRESH_TOKEN_STORAGE_KEY, response.refreshToken);
+        localStorage.setItem(AUTH_CONFIG.TOKEN_EXPIRES_AT_KEY, tokenExpiresAt.toString());
+        
+        // Обновляем токены в API клиентах
+        unifiedApiClient.updateTokens();
+        console.log('[AuthContext] Updated tokens in API clients');
+        
         dispatch({
           type: 'AUTH_SUCCESS',
           payload: {
             user: response.user,
             token: response.token,
             refreshToken: response.refreshToken,
+            tokenExpiresAt
           }
         });
         
-        // Подключаем WebSocket после успешной авторизации
-        websocketBridge.connect().catch(error => {
-          console.error('WebSocket connection failed:', error);
-        });
+        console.log('[AuthContext] Login successful for user:', response.user.email, 'Role:', response.user.role);
+        
+        // Подключаем WebSocket после успешной авторизации (только в production)
+        if (process.env.NODE_ENV === 'production') {
+          try {
+            websocketBridge.connect();
+          } catch (error) {
+            console.warn('WebSocket connection failed:', error);
+          }
+        }
         
         return response;
       } else {
         const errorMessage = response.error || 'Ошибка входа';
+        console.log('[AuthContext] Login failed:', errorMessage);
         dispatch({ type: 'AUTH_FAILURE', payload: errorMessage });
         return { success: false, error: errorMessage };
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Неизвестная ошибка';
+      console.error('[AuthContext] Login error:', error);
       dispatch({ type: 'AUTH_FAILURE', payload: errorMessage });
       return { success: false, error: errorMessage };
     }
@@ -266,20 +419,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       const response = await authBridge.register(userData);
       
-      if (response.success && response.user && response.token && response.refreshToken) {
-        dispatch({
-          type: 'AUTH_SUCCESS',
-          payload: {
-            user: response.user,
-            token: response.token,
-            refreshToken: response.refreshToken,
-          }
-        });
+      if (response.success && response.user) {
+        // При регистрации не устанавливаем токены, так как их нет
+        // Пользователь должен будет войти отдельно
+        console.log('[AuthContext] Registration successful for user:', response.user.email);
         
-        // Подключаем WebSocket после успешной регистрации
-        websocketBridge.connect().catch(error => {
-          console.error('WebSocket connection failed:', error);
-        });
+        // Очищаем состояние и возвращаем успешный ответ
+        dispatch({ type: 'CLEAR_ERROR' }); // Очищаем ошибки
+        dispatch({ type: 'SET_LOADING', payload: false });
         
         return response;
       } else {
@@ -295,13 +442,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   // Функция выхода
-  const logout = (): void => {
+  const logout = async (): Promise<void> => {
     try {
-      // Отключаем WebSocket
-      websocketBridge.disconnect();
+      // Отключаем WebSocket (только в production)
+      if (process.env.NODE_ENV === 'production') {
+        websocketBridge.disconnect();
+      }
       
-      // Выходим через authBridge
-      authBridge.logout();
+      // Очищаем простые localStorage ключи
+      localStorage.removeItem(AUTH_CONFIG.USER_STORAGE_KEY);
+      localStorage.removeItem(AUTH_CONFIG.TOKEN_STORAGE_KEY);
+      localStorage.removeItem(AUTH_CONFIG.REFRESH_TOKEN_STORAGE_KEY);
+      localStorage.removeItem(AUTH_CONFIG.TOKEN_EXPIRES_AT_KEY);
+      
+      console.log('[AuthContext] Logout successful, session cleared');
     } catch (error) {
       console.error('Ошибка при выходе:', error);
     } finally {
@@ -322,31 +476,44 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  // Обновление токена
+  // Обновление токена (упрощенная версия для development)
   const refreshToken = async (): Promise<boolean> => {
-    if (!state.refreshToken) {
+    const storedRefreshToken = localStorage.getItem(AUTH_CONFIG.REFRESH_TOKEN_STORAGE_KEY);
+    
+    if (!storedRefreshToken) {
+      console.log('[AuthContext] No refresh token found, logging out');
       dispatch({ type: 'LOGOUT' });
       return false;
     }
 
+    dispatch({ type: 'REFRESH_TOKEN_START' });
+
     try {
-      // TODO: Заменить на реальный API вызов
-      const response = await mockRefreshTokenAPI(state.refreshToken);
+      // В development режиме просто обновляем время истечения
+      const newTokenExpiresAt = Date.now() + 3600 * 1000; // Еще час
+      const newToken = 'mock_jwt_token_refreshed_' + Date.now();
+      const newRefreshToken = 'mock_refresh_token_refreshed_' + Date.now();
       
-      if (response.success) {
-        dispatch({
-          type: 'REFRESH_TOKEN_SUCCESS',
-          payload: {
-            token: response.token,
-            refreshToken: response.refreshToken,
-          }
-        });
-        return true;
-      } else {
-        dispatch({ type: 'LOGOUT' });
-        return false;
-      }
+      // Обновляем localStorage
+      localStorage.setItem(AUTH_CONFIG.TOKEN_STORAGE_KEY, newToken);
+      localStorage.setItem(AUTH_CONFIG.REFRESH_TOKEN_STORAGE_KEY, newRefreshToken);
+      localStorage.setItem(AUTH_CONFIG.TOKEN_EXPIRES_AT_KEY, newTokenExpiresAt.toString());
+      
+      dispatch({
+        type: 'REFRESH_TOKEN_SUCCESS',
+        payload: {
+          token: newToken,
+          refreshToken: newRefreshToken,
+          tokenExpiresAt: newTokenExpiresAt
+        }
+      });
+      
+      console.log('[AuthContext] Token refreshed successfully in development mode');
+      return true;
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Token refresh failed';
+      console.error('[AuthContext] Token refresh failed:', errorMessage);
+      dispatch({ type: 'REFRESH_TOKEN_FAILURE', payload: errorMessage });
       dispatch({ type: 'LOGOUT' });
       return false;
     }
@@ -392,11 +559,45 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     return state.sessionExpiresAt;
   };
 
+  // Получение времени истечения JWT токена
+  const getTokenExpiresAt = (): number | null => {
+    return state.tokenExpiresAt;
+  };
+
+  // Получение времени до истечения токена
+  const getTimeUntilTokenExpiration = (): number | null => {
+    return state.timeUntilExpiration;
+  };
+
+  // Проверка прав доступа (упрощенная версия для development)
+  const hasPermission = (permission: string): boolean => {
+    if (!state.user) return false;
+    
+    // В development режиме админы имеют все права
+    if (state.user.role === 'admin') return true;
+    
+    // Базовые права для обычных пользователей
+    const basicPermissions = ['read_profile', 'update_profile', 'use_kp_analyzer'];
+    return basicPermissions.includes(permission);
+  };
+
+  // Получение информации о сессии (упрощенная версия для development)
+  const getSessionInfo = () => {
+    return {
+      isAuthenticated: state.isAuthenticated,
+      user: state.user,
+      tokenExpiresAt: state.tokenExpiresAt,
+      sessionExpiresAt: state.sessionExpiresAt
+    };
+  };
+
   const contextValue: AuthContextType = {
     user: state.user,
     isAuthenticated: state.isAuthenticated,
     isLoading: state.isLoading,
+    isRefreshing: state.isRefreshing,
     error: state.error,
+    timeUntilExpiration: state.timeUntilExpiration,
     login,
     register,
     logout,
@@ -407,6 +608,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     updateProfile,
     checkSessionExpiry,
     getSessionExpiresAt,
+    getTokenExpiresAt,
+    getTimeUntilTokenExpiration,
+    hasPermission,
+    getSessionInfo,
   };
 
   return (
@@ -425,7 +630,7 @@ export const useAuth = (): AuthContextType => {
   return context;
 };
 
-// Mock API функции (заменить на реальные вызовы API)
+// Mock API функции (используются только в development режиме)
 const mockLoginAPI = async (email: string, password: string): Promise<{
   success: boolean;
   user?: User;
@@ -435,39 +640,23 @@ const mockLoginAPI = async (email: string, password: string): Promise<{
 }> => {
   await new Promise(resolve => setTimeout(resolve, 1000)); // Имитация задержки
 
-  if (email === 'admin@devassist.ru' && password === 'Admin123!') {
+  // SECURITY: Только в development режиме
+  if (!DEV_CONFIG.USE_MOCK_AUTH) {
+    return {
+      success: false,
+      error: 'Mock authentication is disabled in production',
+    };
+  }
+
+  // Поиск пользователя в тестовых данных
+  const testUser = DEV_TEST_USERS.find(
+    user => user.email === email && user.password === password
+  );
+
+  if (testUser) {
     return {
       success: true,
-      user: {
-        id: 1,
-        email: 'admin@devassist.ru',
-        full_name: 'Александр Петров',
-        firstName: 'Александр',
-        lastName: 'Петров',
-        role: 'admin' as const,
-        avatar: '',
-        isEmailVerified: true,
-        is2FAEnabled: false,
-        is_active: true,
-        is_verified: true,
-        is_superuser: true,
-        subscription: {
-          plan: 'Professional',
-          status: 'active' as const,
-          expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-        },
-        preferences: {
-          language: 'ru',
-          theme: 'system' as const,
-          notifications: {
-            email: true,
-            push: true,
-          },
-        },
-        created_at: '2024-01-15T00:00:00Z',
-        updated_at: new Date().toISOString(),
-        lastLoginAt: new Date().toISOString(),
-      },
+      user: testUser.profile,
       token: 'mock_jwt_token_' + Date.now(),
       refreshToken: 'mock_refresh_token_' + Date.now(),
     };

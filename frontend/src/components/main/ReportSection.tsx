@@ -3,6 +3,7 @@ import { FileText, Download, Share2, Trophy, ArrowLeft, RefreshCw, AlertCircle, 
 import { AnalysisResult } from '../../services/apiClient';
 import { apiService } from '../../services/apiClient';
 import { getModelById } from '../../config/models';
+// PDF export moved to kpAnalyzer components
 
 interface ReportSectionProps {
   onStepChange: (step: string) => void;
@@ -196,9 +197,18 @@ const ReportSection: React.FC<ReportSectionProps> = ({
               <Share2 className="w-4 h-4 mr-2" />
               Поделиться
             </button>
+            {/* PDF Export functionality moved to КП Анализатор */}
+            <button
+              className="bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 transition-all duration-200 shadow-md hover:shadow-lg px-4 py-2 rounded-lg font-medium"
+              disabled
+              title="PDF экспорт доступен в КП Анализаторе"
+            >
+              <FileText className="w-4 h-4 mr-2" />
+              PDF Отчет
+            </button>
             <button
               onClick={handleDownloadReport}
-              className="inline-flex items-center px-4 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 transition-all duration-200 shadow-md hover:shadow-lg"
+              className="inline-flex items-center px-4 py-3 bg-white/60 backdrop-blur-sm border border-white/20 rounded-xl text-gray-700 hover:bg-white/80 transition-all duration-200 shadow-md hover:shadow-lg"
               disabled={!reportHtml || isGeneratingReport}
             >
               <Download className="w-4 h-4 mr-2" />

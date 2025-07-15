@@ -1,0 +1,22 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Копирование требований
+COPY requirements-monolith.txt .
+
+# Установка Python зависимостей
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements-monolith.txt
+
+# Копирование кода приложения
+COPY app.py .
+
+# Создание директорий для данных
+RUN mkdir -p data/reports data/uploads data/cache
+
+# Expose port
+EXPOSE 8000
+
+# Команда запуска
+CMD ["python", "app.py"]

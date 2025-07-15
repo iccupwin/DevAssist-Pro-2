@@ -1,4 +1,5 @@
 // Сервис для работы с файлами
+import FileUploadApi from './fileUploadApi';
 export interface FileUploadResponse {
   success: boolean;
   fileId?: string;
@@ -6,6 +7,33 @@ export interface FileUploadResponse {
   size?: number;
   message?: string;
   error?: string;
+  url?: string;
+  uploadedAt?: Date;
+  processingStatus?: 'pending' | 'processing' | 'completed' | 'failed';
+}
+
+export interface FileUploadProgress {
+  fileId: string;
+  fileName: string;
+  loaded: number;
+  total: number;
+  percentage: number;
+  status: 'uploading' | 'processing' | 'completed' | 'failed';
+  error?: string;
+}
+
+export interface FileMetadata {
+  id: string;
+  fileName: string;
+  originalName: string;
+  size: number;
+  type: string;
+  url: string;
+  uploadedAt: Date;
+  processingStatus: 'pending' | 'processing' | 'completed' | 'failed';
+  extractedText?: string;
+  pageCount?: number;
+  metadata?: Record<string, any>;
 }
 
 export interface FileValidationResult {
@@ -46,7 +74,10 @@ export class FileService {
     return { isValid: true };
   }
 
-  static async uploadFile(file: File): Promise<FileUploadResponse> {
+  static async uploadFile(
+    file: File,
+    onProgress?: (progress: FileUploadProgress) => void
+  ): Promise<FileUploadResponse> {
     try {
       // Валидация файла
       const validation = this.validateFile(file);
@@ -57,34 +88,24 @@ export class FileService {
         };
       }
 
-      // Создание FormData для отправки
-      const formData = new FormData();
-      formData.append('file', file);
-
-      // Отправка файла на сервер
-      const response = await fetch('/api/files/upload', {
-        method: 'POST',
-        body: formData,
-        headers: {
-          // Не устанавливаем Content-Type, браузер сам установит для FormData
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const result = await response.json();
-
-      return {
-        success: true,
-        fileId: result.id,
-        fileName: file.name,
-        size: file.size,
-        message: 'Файл успешно загружен',
-      };
+      // Используем API клиент для загрузки
+      return await FileUploadApi.uploadFile(file, onProgress);
     } catch (error) {
       console.error('Ошибка загрузки файла:', error);
+      
+      // Уведомление об ошибке
+      if (onProgress) {
+        onProgress({
+          fileId: `temp_${Date.now()}`,
+          fileName: file.name,
+          loaded: 0,
+          total: file.size,
+          percentage: 0,
+          status: 'failed',
+          error: error instanceof Error ? error.message : 'Неизвестная ошибка'
+        });
+      }
+
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Неизвестная ошибка при загрузке файла',
@@ -93,23 +114,19 @@ export class FileService {
   }
 
   static async deleteFile(fileId: string): Promise<{ success: boolean; error?: string }> {
-    try {
-      const response = await fetch(`/api/files/${fileId}`, {
-        method: 'DELETE',
-      });
+    return await FileUploadApi.deleteFile(fileId);
+  }
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+  static async getFileMetadata(fileId: string): Promise<FileMetadata | null> {
+    return await FileUploadApi.getFileMetadata(fileId);
+  }
 
-      return { success: true };
-    } catch (error) {
-      console.error('Ошибка удаления файла:', error);
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : 'Неизвестная ошибка при удалении файла',
-      };
-    }
+  static async getFileContent(fileId: string): Promise<string | null> {
+    return await FileUploadApi.getFileContent(fileId);
+  }
+
+  static async downloadFile(fileId: string, fileName: string): Promise<void> {
+    return await FileUploadApi.downloadFile(fileId, fileName);
   }
 
   static formatFileSize(bytes: number): string {
@@ -138,14 +155,84 @@ export class FileService {
     }
   }
 
-  static validateFiles(files: File[], fileType: string): FileValidationResult {
+  static validateFiles(files: File[], fileType?: string): FileValidationResult {
+    if (files.length === 0) {
+      return {
+        isValid: false,
+        error: 'Не выбраны файлы для загрузки'
+      };
+    }
+
+    // Проверка максимального количества файлов
+    const MAX_FILES = 10;
+    if (files.length > MAX_FILES) {
+      return {
+        isValid: false,
+        error: `Превышено максимальное количество файлов. Максимум: ${MAX_FILES}`
+      };
+    }
+
+    // Проверка общего размера файлов
+    const totalSize = files.reduce((sum, file) => sum + file.size, 0);
+    const MAX_TOTAL_SIZE = 100 * 1024 * 1024; // 100MB
+    if (totalSize > MAX_TOTAL_SIZE) {
+      return {
+        isValid: false,
+        error: `Общий размер файлов превышает лимит. Максимум: ${MAX_TOTAL_SIZE / 1024 / 1024}MB`
+      };
+    }
+
+    // Проверка каждого файла
     for (const file of files) {
       const validation = this.validateFile(file);
       if (!validation.isValid) {
-        return validation;
+        return {
+          isValid: false,
+          error: `Файл "${file.name}": ${validation.error}`
+        };
       }
     }
+
     return { isValid: true };
+  }
+
+  static async uploadMultipleFiles(
+    files: File[],
+    onProgress?: (fileId: string, progress: FileUploadProgress) => void,
+    onComplete?: (results: FileUploadResponse[]) => void
+  ): Promise<FileUploadResponse[]> {
+    const validation = this.validateFiles(files);
+    if (!validation.isValid) {
+      throw new Error(validation.error);
+    }
+
+    try {
+      const results = await FileUploadApi.uploadMultipleFiles(files, onProgress, 3);
+
+      if (onComplete) {
+        onComplete(results);
+      }
+
+      return results;
+    } catch (error) {
+      console.error('Ошибка массовой загрузки:', error);
+      throw error;
+    }
+  }
+
+  static async getFileStatus(fileId: string) {
+    return await FileUploadApi.getFileStatus(fileId);
+  }
+
+  static async batchUpload(
+    fileGroups: {
+      tz_files: File[];
+      kp_files: File[];
+      additional_files: File[];
+    },
+    onProgress?: (groupType: string, fileId: string, progress: FileUploadProgress) => void
+  ) {
+    return await FileUploadApi.batchUpload(fileGroups, onProgress);
   }
 
   static createFileFromData(data: string, fileName: string): File {
@@ -159,8 +246,17 @@ export const fileService = {
   validateFile: FileService.validateFile,
   validateFiles: FileService.validateFiles,
   uploadFile: FileService.uploadFile,
+  uploadMultipleFiles: FileService.uploadMultipleFiles,
   deleteFile: FileService.deleteFile,
+  getFileMetadata: FileService.getFileMetadata,
+  getFileContent: FileService.getFileContent,
+  downloadFile: FileService.downloadFile,
+  getFileStatus: FileService.getFileStatus,
+  batchUpload: FileService.batchUpload,
   formatFileSize: FileService.formatFileSize,
   getFileIcon: FileService.getFileIcon,
   createFileFromData: FileService.createFileFromData,
 };
+
+// Экспорт для совместимости с существующим кодом
+export default fileService;

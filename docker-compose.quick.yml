@@ -1,0 +1,90 @@
+version: '3.8'
+
+services:
+  # ===== DATABASE =====
+  postgres:
+    image: postgres:15
+    container_name: devassist_postgres_quick
+    environment:
+      POSTGRES_DB: devassist_pro
+      POSTGRES_USER: devassist
+      POSTGRES_PASSWORD: devassist_secure_password
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U devassist"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - devassist-network
+
+  # ===== CACHE =====
+  redis:
+    image: redis:7-alpine
+    container_name: devassist_redis_quick
+    ports:
+      - "6378:6379"
+    command: redis-server --requirepass redis_password
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "redis_password", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - devassist-network
+
+  # ===== API GATEWAY =====
+  api-gateway:
+    build:
+      context: ./backend/api_gateway
+      dockerfile: Dockerfile
+    container_name: devassist_api_gateway_quick
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://devassist:devassist_secure_password@postgres:5432/devassist_pro
+      - REDIS_URL=redis://:redis_password@redis:6379/0
+      - JWT_SECRET=your-super-secret-jwt-key-change-in-production
+      - ALLOWED_ORIGINS=http://localhost:3000,http://localhost:3001
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - devassist-network
+    volumes:
+      - ./backend/shared:/app/shared:ro
+
+  # ===== AUTH SERVICE =====
+  auth-service:
+    build:
+      context: ./backend/services/auth
+      dockerfile: Dockerfile
+    container_name: devassist_auth_service_quick
+    environment:
+      - DATABASE_URL=postgresql://devassist:devassist_secure_password@postgres:5432/devassist_pro
+      - REDIS_URL=redis://:redis_password@redis:6379/0
+      - JWT_SECRET=your-super-secret-jwt-key-change-in-production
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - devassist-network
+    volumes:
+      - ./backend/shared:/app/shared:ro
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  devassist-network:
+    driver: bridge 

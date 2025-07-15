@@ -6,28 +6,38 @@ export const API_CONFIG = {
   // Использовать реальное API или mock
   USE_REAL_API: process.env.REACT_APP_USE_REAL_API === 'true',
   
-  // Эндпоинты API
+  // Эндпоинты API для Monolith Backend
   ENDPOINTS: {
-    // Загрузка файлов
-    UPLOAD: '/api/upload',
+    // КП Анализатор - загрузка файлов
+    UPLOAD: '/api/documents/upload',
     
-    // Анализ КП
-    ANALYZE: '/api/analyze',
+    // КП Анализатор - анализ документа
+    ANALYZE: '/api/documents',
     
-    // Сравнение всех КП
-    COMPARE_ALL: '/api/compare-all',
+    // КП Анализатор - полный анализ (загрузка + анализ + отчет)
+    FULL_ANALYSIS: '/api/kp-analyzer/full-analysis',
     
-    // Генерация отчета
-    GENERATE_REPORT: '/api/generate-report',
+    // Генерация отчетов
+    GENERATE_PDF_REPORT: '/api/reports/generate/pdf',
+    GENERATE_EXCEL_REPORT: '/api/reports/generate/excel',
+    
+    // Аналитика
+    ANALYTICS_PROCESS: '/api/analytics/process',
+    ANALYTICS_DASHBOARD: '/api/analytics/dashboard',
+    ANALYTICS_METRICS: '/api/analytics/metrics',
     
     // Проверка здоровья сервиса
-    HEALTH: '/api/health',
+    HEALTH: '/health',
     
-    // Модели AI
-    MODELS: '/api/models',
+    // Административные endpoints
+    ADMIN_STATUS: '/api/admin/status',
+    ADMIN_STATS: '/api/admin/stats',
     
     // Статистика использования
-    USAGE_STATS: '/api/usage/stats',
+    USAGE_STATS: '/api/admin/stats',
+    
+    // Dashboard данные
+    DASHBOARD_STATS: '/api/analytics/dashboard',
   },
   
   // Конфигурация запросов

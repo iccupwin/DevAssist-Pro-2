@@ -17,7 +17,7 @@ export { default as SessionTimeoutModal } from '../components/auth/SessionTimeou
 export { default as SocialLoginButton } from '../components/auth/SocialLoginButton';
 export { default as SocialLoginPanel } from '../components/auth/SocialLoginPanel';
 export { default as SocialAuthCallback } from '../components/auth/SocialAuthCallback';
-export { default as LoginForm } from '../components/auth/LoginForm';
+export { default as LightLoginForm } from '../components/auth/LightLoginForm';
 
 // Authentication Service
 export { authService } from '../services/authService';

@@ -31,6 +31,16 @@ export enum AnalysisStatus {
   FAILED = 'failed',
 }
 
+export enum ActivityType {
+  DOCUMENT_UPLOADED = 'document_uploaded',
+  ANALYSIS_STARTED = 'analysis_started',
+  ANALYSIS_COMPLETED = 'analysis_completed',
+  REPORT_GENERATED = 'report_generated',
+  USER_REGISTERED = 'user_registered',
+  PROJECT_CREATED = 'project_created',
+  SETTINGS_UPDATED = 'settings_updated',
+}
+
 export enum OAuthProvider {
   GOOGLE = 'google',
   MICROSOFT = 'microsoft',
@@ -287,6 +297,41 @@ export interface Report extends BaseEntity {
   generated_by?: User;
 }
 
+// ===== ACTIVITY TYPES =====
+export interface Activity extends BaseEntity {
+  type: ActivityType;
+  title: string;
+  description: string;
+  user_id: number;
+  organization_id?: number;
+  project_id?: number;
+  document_id?: number;
+  analysis_id?: number;
+  project_metadata?: Record<string, any>;
+  user?: User;
+  organization?: Organization;
+  project?: Project;
+  document?: Document;
+  analysis?: Analysis;
+}
+
+export interface ActivityFeedRequest {
+  limit?: number;
+  offset?: number;
+  user_id?: number;
+  organization_id?: number;
+  project_id?: number;
+  activity_type?: ActivityType;
+  date_from?: string;
+  date_to?: string;
+}
+
+export interface ActivityFeedResponse {
+  activities: Activity[];
+  total: number;
+  has_more: boolean;
+}
+
 // ===== AUTHENTICATION TYPES =====
 export interface LoginRequest {
   email: string;
@@ -425,15 +470,6 @@ export interface DashboardStats {
   recent_activities: Activity[];
 }
 
-export interface Activity {
-  id: number;
-  type: string;
-  description: string;
-  created_at: string;
-  user_id?: number;
-  project_id?: number;
-  document_id?: number;
-}
 
 // ===== KP ANALYZER SPECIFIC TYPES =====
 export interface KPAnalysisRequest {

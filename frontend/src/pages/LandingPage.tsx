@@ -1,11 +1,40 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FileText, ArrowRight, Menu, X, Sun, Moon } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+import { 
+  FileText, 
+  ArrowRight, 
+  Menu, 
+  X, 
+  Sun, 
+  Moon, 
+  SunDim,
+  Check,
+  ChevronRight,
+  ChevronDown,
+  Blocks,
+  Zap,
+  Shield,
+  Crown,
+  Vegan,
+  Ghost,
+  Puzzle,
+  Squirrel,
+  Cookie,
+  Drama,
+  Star,
+  Mail,
+  Phone,
+  MapPin,
+  User,
+  LogOut
+} from 'lucide-react';
 import DisplayCards from '../components/ui/DisplayCards';
 import Pricing from '../components/ui/PricingCard';
 
 const LandingPage: React.FC = () => {
   const navigate = useNavigate();
+  const { isAuthenticated, user, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [animatedWords, setAnimatedWords] = useState<boolean[]>([]);
   const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -17,8 +46,17 @@ const LandingPage: React.FC = () => {
     return window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
 
-  const heroText = "DevAssist Pro предназначен для анализа и управления проектами";
+  const heroText = "Оптимизируйте свой веб-сайт с поддержкой ИИ";
   const words = heroText.split(' ');
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/', { replace: true });
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  };
 
   useEffect(() => {
     // Animate words one by one
@@ -56,10 +94,10 @@ const LandingPage: React.FC = () => {
 
   return (
     <div 
-      className={`min-h-screen transition-colors duration-300 ${
+      className={`min-h-screen transition-colors duration-300 scroll-smooth ${
         isDarkMode 
-          ? 'bg-black text-white' 
-          : 'bg-white text-gray-900'
+          ? 'bg-gradient-to-tl from-gray-900 to-primary/5 text-white' 
+          : 'bg-gradient-to-tl from-gray-50 to-primary/5 text-gray-900'
       }`} 
       style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
     >
@@ -147,244 +185,215 @@ const LandingPage: React.FC = () => {
       }} />
       
       {/* Navigation */}
-      <header className={`border-b transition-colors duration-300 ${
-        isDarkMode ? 'border-gray-800' : 'border-gray-200'
-      }`}>
-        <nav className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-          {/* Logo */}
-          <div className="flex items-center space-x-8">
-            <div className="flex items-center space-x-2">
-              <div className={`w-5 h-5 rounded flex items-center justify-center transition-colors duration-300 ${
-                isDarkMode ? 'bg-white' : 'bg-gray-900'
+      <header className="sticky top-2 z-40 lg:top-5">
+        <div className="container mx-auto px-4">
+          <div className={`flex items-center justify-between rounded-2xl border p-3 backdrop-blur-sm transition-colors duration-300 ${
+            isDarkMode 
+              ? 'bg-gray-900/70 border-gray-700' 
+              : 'bg-white/70 border-gray-200'
+          }`}>
+            {/* Logo */}
+            <a href="#" className="flex font-bold items-center">
+              <span className={`flex items-center justify-center size-7 lg:size-8 mr-2 rounded-lg border border-secondary transition-colors duration-300 ${
+                isDarkMode 
+                  ? 'bg-gradient-to-tr from-primary via-primary/70 to-primary' 
+                  : 'bg-gradient-to-tr from-primary via-primary/70 to-primary'
               }`}>
-                <FileText className={`w-3 h-3 ${isDarkMode ? 'text-black' : 'text-white'}`} />
-              </div>
-              <span className={`font-medium transition-colors duration-300 ${
-                isDarkMode ? 'text-white' : 'text-gray-900'
-              }`}>DevAssist Pro</span>
+                <SunDim className="size-5 lg:size-6 text-white" />
+              </span>
+              <h5 className="text-lg lg:text-xl">DevAssist Pro</h5>
+            </a>
+
+            {/* Mobile menu button */}
+            <div className="flex items-center lg:hidden">
+              <button
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className="cursor-pointer lg:hidden"
+                type="button"
+              >
+                <Menu className="w-6 h-6" />
+              </button>
             </div>
             
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-6">
-              <button className={`text-sm transition-colors ${
-                isDarkMode 
-                  ? 'text-gray-400 hover:text-white' 
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}>
-                Модули
+            <nav className="group/navigation-menu relative max-w-max flex-1 items-center justify-center mx-auto hidden lg:block">
+              <div className="relative">
+                <ul className="group flex flex-1 list-none items-center justify-center gap-1 space-x-0">
+                  <li className="relative">
+                    <button className={`group inline-flex h-9 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+                      isDarkMode 
+                        ? 'hover:bg-gray-700 hover:text-white focus:bg-gray-700 focus:text-white' 
+                        : 'hover:bg-gray-100 hover:text-gray-900 focus:bg-gray-100 focus:text-gray-900'
+                    }`}>
+                      Продукты
+                      <ChevronDown className="relative top-[1px] ml-1 size-3 transition duration-300 group-data-[state=open]:rotate-180" />
+                    </button>
+                  </li>
+                  <li className="relative">
+                    <a href="#solutions" className={`inline-flex h-9 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+                      isDarkMode 
+                        ? 'hover:bg-gray-700 hover:text-white focus:bg-gray-700 focus:text-white' 
+                        : 'hover:bg-gray-100 hover:text-gray-900 focus:bg-gray-100 focus:text-gray-900'
+                    }`}>
+                      Решения
+                    </a>
+                  </li>
+                  <li className="relative">
+                    <a href="#pricing" className={`inline-flex h-9 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+                      isDarkMode 
+                        ? 'hover:bg-gray-700 hover:text-white focus:bg-gray-700 focus:text-white' 
+                        : 'hover:bg-gray-100 hover:text-gray-900 focus:bg-gray-100 focus:text-gray-900'
+                    }`}>
+                      Цены
+                    </a>
+                  </li>
+                  <li className="relative">
+                    <a href="#team" className={`inline-flex h-9 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+                      isDarkMode 
+                        ? 'hover:bg-gray-700 hover:text-white focus:bg-gray-700 focus:text-white' 
+                        : 'hover:bg-gray-100 hover:text-gray-900 focus:bg-gray-100 focus:text-gray-900'
+                    }`}>
+                      Команда
+                    </a>
+                  </li>
+                  <li className="relative">
+                    <a href="#contact" className={`inline-flex h-9 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+                      isDarkMode 
+                        ? 'hover:bg-gray-700 hover:text-white focus:bg-gray-700 focus:text-white' 
+                        : 'hover:bg-gray-100 hover:text-gray-900 focus:bg-gray-100 focus:text-gray-900'
+                    }`}>
+                      Контакты
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </nav>
+
+            {/* Desktop Buttons */}
+            <div className="hidden items-center lg:flex">
+              <button
+                onClick={toggleTheme}
+                className={`inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 size-9 ${
+                  isDarkMode 
+                    ? 'hover:bg-gray-700 hover:text-white' 
+                    : 'hover:bg-gray-100 hover:text-gray-900'
+                }`}
+              >
+                <div className={`flex items-center gap-2 ${isDarkMode ? 'hidden' : ''}`}>
+                  <Moon className="w-5 h-5" />
+                  <span className="block lg:hidden">Тёмная</span>
+                </div>
+                <div className={`flex items-center gap-2 ${isDarkMode ? '' : 'hidden'}`}>
+                  <Sun className="w-5 h-5" />
+                  <span className="block lg:hidden">Светлая</span>
+                </div>
+                <span className="sr-only">Изменить тему</span>
               </button>
-              <button className={`text-sm transition-colors ${
-                isDarkMode 
-                  ? 'text-gray-400 hover:text-white' 
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}>
-                Ресурсы
-              </button>
-              <a href="#pricing" className={`text-sm transition-colors ${
-                isDarkMode 
-                  ? 'text-gray-400 hover:text-white' 
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}>
-                Цены
-              </a>
-              <a href="#customers" className={`text-sm transition-colors ${
-                isDarkMode 
-                  ? 'text-gray-400 hover:text-white' 
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}>
-                Клиенты
-              </a>
-              <a href="#contact" className={`text-sm transition-colors ${
-                isDarkMode 
-                  ? 'text-gray-400 hover:text-white' 
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}>
-                Контакты
-              </a>
-            </div>
-          </div>
-
-          {/* Desktop Buttons */}
-          <div className="hidden md:flex items-center space-x-3">
-            {/* Theme Toggle Button */}
-            <button
-              onClick={toggleTheme}
-              className="theme-toggle"
-              title={isDarkMode ? 'Переключить на светлую тему' : 'Переключить на тёмную тему'}
-            >
-              {isDarkMode ? (
-                <Sun className="w-5 h-5 text-yellow-400" />
-              ) : (
-                <Moon className="w-5 h-5 text-gray-600" />
-              )}
-            </button>
-            
-            <button 
-              onClick={() => navigate('/auth/login')}
-              className={`text-sm transition-colors ${
-                isDarkMode 
-                  ? 'text-gray-400 hover:text-white' 
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              Войти
-            </button>
-            <button 
-              onClick={() => navigate('/auth/register')}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                isDarkMode
-                  ? 'bg-white text-black hover:bg-gray-100'
-                  : 'bg-gray-900 text-white hover:bg-gray-800'
-              }`}
-            >
-              Зарегистрироваться
-            </button>
-          </div>
-
-          {/* Mobile Menu Button and Theme Toggle */}
-          <div className="md:hidden flex items-center space-x-3">
-            {/* Mobile Theme Toggle */}
-            <button
-              onClick={toggleTheme}
-              className="theme-toggle"
-              title={isDarkMode ? 'Переключить на светлую тему' : 'Переключить на тёмную тему'}
-            >
-              {isDarkMode ? (
-                <Sun className="w-5 h-5 text-yellow-400" />
-              ) : (
-                <Moon className="w-5 h-5 text-gray-600" />
-              )}
-            </button>
-            
-            <button 
-              className={`transition-colors ${
-                isDarkMode ? 'text-white' : 'text-gray-900'
-              }`}
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-            >
-              {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
-          </div>
-        </nav>
-
-        {/* Mobile Menu */}
-        {isMenuOpen && (
-          <div className={`md:hidden border-t transition-colors duration-300 ${
-            isDarkMode 
-              ? 'border-gray-800 bg-black' 
-              : 'border-gray-200 bg-white'
-          }`}>
-            <div className="px-4 py-4 space-y-4">
-              <a href="#features" className={`block text-sm transition-colors ${
-                isDarkMode 
-                  ? 'text-gray-400 hover:text-white' 
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}>Модули</a>
-              <a href="#about" className={`block text-sm transition-colors ${
-                isDarkMode 
-                  ? 'text-gray-400 hover:text-white' 
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}>Ресурсы</a>
-              <a href="#pricing" className={`block text-sm transition-colors ${
-                isDarkMode 
-                  ? 'text-gray-400 hover:text-white' 
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}>Цены</a>
-              <a href="#customers" className={`block text-sm transition-colors ${
-                isDarkMode 
-                  ? 'text-gray-400 hover:text-white' 
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}>Клиенты</a>
-              <a href="#contact" className={`block text-sm transition-colors ${
-                isDarkMode 
-                  ? 'text-gray-400 hover:text-white' 
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}>Контакты</a>
-              <div className={`pt-4 border-t transition-colors duration-300 ${
-                isDarkMode ? 'border-gray-800' : 'border-gray-200'
-              }`}>
-                <button 
-                  onClick={() => navigate('/auth/login')}
-                  className={`block w-full text-left text-sm mb-3 transition-colors ${
-                    isDarkMode 
-                      ? 'text-gray-400 hover:text-white' 
-                      : 'text-gray-600 hover:text-gray-900'
-                  }`}
-                >
-                  Войти
-                </button>
-                <button 
-                  onClick={() => navigate('/auth/register')}
-                  className={`px-4 py-2 rounded-md text-sm font-medium w-full transition-colors ${
-                    isDarkMode
-                      ? 'bg-white text-black'
-                      : 'bg-gray-900 text-white'
-                  }`}
-                >
-                  Зарегистрироваться
-                </button>
+              <div className="flex gap-2">
+                {isAuthenticated && user ? (
+                  <div className="flex items-center gap-3">
+                    <div className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                      Добро пожаловать, {user.firstName || user.email}
+                    </div>
+                    <button 
+                      onClick={() => navigate('/dashboard')}
+                      className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all h-10 rounded-md px-6 ${
+                        isDarkMode
+                          ? 'bg-white text-black hover:bg-gray-100 shadow-sm'
+                          : 'bg-gray-900 text-white hover:bg-gray-800 shadow-sm'
+                      }`}
+                    >
+                      <User className="w-4 h-4" />
+                      Панель управления
+                    </button>
+                    <button 
+                      onClick={handleLogout}
+                      className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all h-10 rounded-md px-4 border ${
+                        isDarkMode 
+                          ? 'border-gray-600 hover:bg-gray-700 hover:text-white' 
+                          : 'border-gray-300 hover:bg-gray-100 hover:text-gray-900'
+                      }`}
+                    >
+                      <LogOut className="w-4 h-4" />
+                      Выйти
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <button 
+                      onClick={() => navigate('/auth/login')}
+                      className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 h-10 rounded-md px-6 ${
+                        isDarkMode 
+                          ? 'hover:bg-gray-700 hover:text-white' 
+                          : 'hover:bg-gray-100 hover:text-gray-900'
+                      }`}
+                    >
+                      Войти
+                    </button>
+                    <button 
+                      onClick={() => navigate('/auth/register')}
+                      className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 h-10 rounded-md px-6 ${
+                        isDarkMode
+                          ? 'bg-white text-black hover:bg-gray-100 shadow-sm'
+                          : 'bg-gray-900 text-white hover:bg-gray-800 shadow-sm'
+                      }`}
+                    >
+                      Начать
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </>
+                )}
               </div>
             </div>
-          </div>
-        )}
-      </header>
 
-      {/* Hero Section */}
-      <section className="overflow-hidden relative">
-        {/* Background gradient and decorative elements */}
-        <div aria-hidden className="z-[2] absolute inset-0 pointer-events-none isolate opacity-50 hidden lg:block">
-          <div className={`absolute inset-x-0 top-0 -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[-20rem] ${
-            isDarkMode ? '' : 'opacity-70'
-          }`}>
-            <div className={`relative left-1/2 -z-10 aspect-[1155/678] w-[36.125rem] max-w-none -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr ${
-              isDarkMode 
-                ? 'from-blue-800 to-purple-900' 
-                : 'from-blue-200 to-purple-300'
-            } opacity-30 sm:left-[calc(50%-40rem)] sm:w-[72.1875rem]`} 
-            style={{
-              clipPath: 'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)'
-            }}></div>
           </div>
         </div>
 
-        <div className="relative pt-0 pb-16 page-section">
-          <div className="mx-auto max-w-7xl px-6">
-            <div className="text-center sm:mx-auto lg:mr-auto lg:mt-0">
-              {/* Animated introduction link */}
-              
-              {/* Main headline */}
-              <h1 className="mt-8 max-w-4xl mx-auto text-balance text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight lg:mt-16">
-                <span className="block md:hidden">
-                  {words.slice(0, 5).map((word, index) => (
-                    <span 
-                      key={index} 
-                      className={`inline-block transition-all duration-700 ${
-                        animatedWords[index] 
-                          ? 'opacity-100 blur-0 translate-y-0' 
-                          : 'opacity-0 blur-sm translate-y-[20%]'
-                      }`}
-                      style={{ transitionDelay: `${index * 120 + 600}ms` }}
-                    >
-                      {word}{' '}
-                    </span>
-                  ))}
-                  <br />
-                  {words.slice(5).map((word, index) => (
-                    <span 
-                      key={index + 5} 
-                      className={`inline-block transition-all duration-700 ${
-                        animatedWords[index + 5] 
-                          ? 'opacity-100 blur-0 translate-y-0' 
-                          : 'opacity-0 blur-sm translate-y-[20%]'
-                      }`}
-                      style={{ transitionDelay: `${(index + 5) * 120 + 600}ms` }}
-                    >
-                      {word}{' '}
-                    </span>
-                  ))}
+      </header>
+
+      {/* Hero Section */}
+      <section className="container w-full">
+        <div className="mx-auto grid place-items-center py-16 pb-8 md:py-32 md:pb-14 lg:max-w-5xl">
+          <div className="relative flex w-full items-center justify-center overflow-hidden">
+            {/* Animated background lines */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              {[30, 100, 400, 600, 800, 1000, 1200].map((x, i) => (
+                <div 
+                  key={i}
+                  className={`absolute top-20 left-0 w-px rounded-full bg-gradient-to-t from-primary via-secondary to-transparent ${
+                    [14, 6, 14, 14, 20, 12, 6][i] === 14 ? 'h-14' : 
+                    [14, 6, 14, 14, 20, 12, 6][i] === 20 ? 'h-20' : 
+                    [14, 6, 14, 14, 20, 12, 6][i] === 12 ? 'h-12' : 'h-6'
+                  }`} 
+                  style={{
+                    transform: `translateX(${x}px) translateY(-200px)`
+                  }}
+                />
+              ))}
+            </div>
+
+            <div className="space-y-8 pb-8 text-center lg:pb-20">
+              {/* Badge */}
+              <span className={`inline-flex items-center justify-center rounded-md border px-2 font-medium w-fit whitespace-nowrap py-2 text-sm transition-colors ${
+                isDarkMode 
+                  ? 'bg-gray-800 border-gray-700 text-gray-200' 
+                  : 'bg-gray-100 border-gray-200 text-gray-700'
+              }`}>
+                <span className="text-primary mr-2">
+                  <span className={`inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium border-transparent ${
+                    isDarkMode 
+                      ? 'bg-gray-700 text-gray-200' 
+                      : 'bg-white text-gray-700'
+                  }`}>
+                    Новое
+                  </span>
                 </span>
-                
-                <span className="hidden md:block">
+                <span>AI-Powered Оптимизация</span>
+              </span>
+
+              {/* Main headline */}
+              <div className="mx-auto max-w-4xl text-center text-4xl font-bold md:text-6xl">
+                <h1>
                   {words.map((word, index) => (
                     <span 
                       key={index} 
@@ -398,506 +407,585 @@ const LandingPage: React.FC = () => {
                       {word}{' '}
                     </span>
                   ))}
-                </span>
-              </h1>
+                </h1>
+              </div>
 
               {/* Subtitle */}
-              <p className={`mt-6 max-w-2xl mx-auto text-lg leading-8 transition-all duration-700 delay-1000 ${
+              <p className={`mx-auto max-w-2xl text-xl transition-all duration-700 delay-1000 ${
                 isDarkMode ? 'text-gray-400' : 'text-gray-600'
               } ${
                 animatedWords.length > 5 
                   ? 'opacity-100 blur-0 translate-y-0' 
                   : 'opacity-0 blur-sm translate-y-[20%]'
               }`}>
-                Встречайте систему для современной разработки проектов в сфере недвижимости. 
-                Оптимизируйте задачи, проекты и дорожные карты продуктов.
+                Встречайте наше AI-решение для SaaS, которое упростит вашу работу, 
+                повысит эффективность и поможет принимать более точные решения.
               </p>
 
               {/* CTA Buttons */}
-              <div className={`mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 transition-all duration-700 delay-1200 ${
+              <div className={`mt-8 flex flex-col justify-center gap-4 md:flex-row transition-all duration-700 delay-1200 ${
                 animatedWords.length > 7 
                   ? 'opacity-100 blur-0 translate-y-0' 
                   : 'opacity-0 blur-sm translate-y-[20%]'
               }`}>
                 <button 
                   onClick={() => navigate('/kp-analyzer')}
-                  className={`px-8 py-3 rounded-lg font-semibold text-sm transition-colors shadow-lg hover:shadow-xl ${
+                  className={`inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-all rounded-lg shadow-sm py-2 h-12 px-10 text-base ${
                     isDarkMode 
                       ? 'bg-white text-black hover:bg-gray-100' 
                       : 'bg-gray-900 text-white hover:bg-gray-800'
                   }`}
                 >
-                  Начать работу
+                  Начать бесплатно
+                  <ChevronRight className="w-4 h-4" />
                 </button>
-                <button className={`flex items-center gap-2 px-6 py-3 text-sm font-semibold transition-colors ${
+                <button className={`inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all border shadow-sm py-2 h-12 px-10 text-base ${
                   isDarkMode 
-                    ? 'text-gray-300 hover:text-white' 
-                    : 'text-gray-700 hover:text-gray-900'
+                    ? 'bg-gray-800 border-gray-700 hover:bg-gray-700 hover:text-white' 
+                    : 'bg-white border-gray-200 hover:bg-gray-50 hover:text-gray-900'
                 }`}>
-                  <span>Смотреть демо</span>
-                  <ArrowRight className="w-4 h-4" />
+                  Запросить демо
                 </button>
               </div>
 
-              {/* Product Image/Demo */}
-              <div className={`mt-16 relative transition-all duration-1000 delay-1600 ${
+              {/* Features list */}
+              <div className={`mt-6 flex flex-col items-center justify-center gap-4 text-sm md:flex-row transition-all duration-700 delay-1400 ${
+                isDarkMode ? 'text-gray-400' : 'text-gray-600'
+              } ${
                 animatedWords.length > 8 
                   ? 'opacity-100 blur-0 translate-y-0' 
                   : 'opacity-0 blur-sm translate-y-[20%]'
               }`}>
-                <div className="relative rounded-xl overflow-hidden shadow-2xl">
-                  
+                <div className="flex items-center gap-1">
+                  <Check className="text-primary size-4" />
+                  <span>Без карты</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Check className="text-primary size-4" />
+                  <span>14-дневная пробная версия</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Check className="text-primary size-4" />
+                  <span>Отмена в любое время</span>
                 </div>
               </div>
+            </div>
+          </div>
+
+          {/* Hero Image */}
+          <div className={`group relative transition-all duration-1000 delay-1600 ${
+            animatedWords.length > 8 
+              ? 'opacity-100 blur-0 translate-y-0' 
+              : 'opacity-0 blur-sm translate-y-[20%]'
+          }`}>
+            <div className={`absolute top-2 left-1/2 mx-auto h-24 w-[90%] -translate-x-1/2 transform rounded-full blur-3xl lg:-top-8 lg:h-80 ${
+              isDarkMode ? 'bg-primary/60' : 'bg-primary/60'
+            }`} />
+            <img 
+              alt="DevAssist Pro landing page" 
+              loading="lazy" 
+              width={1240} 
+              height={1200} 
+              className="rounded-lg relative mx-auto flex w-full items-center rounded-lg leading-none"
+              style={{
+                maskImage: 'linear-gradient(to bottom, black 20%, transparent 90%)',
+                WebkitMaskImage: 'linear-gradient(to bottom, black 20%, transparent 90%)'
+              }}
+              src="/hero.png" 
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Company Logos Section */}
+      <section className="pb-12 lg:pb-24">
+        <div className="container">
+          <div className="overflow-hidden">
+            <div className="flex w-max" style={{ gap: '50px', flexDirection: 'row' }}>
+              {[
+                { icon: Crown, name: 'Amazon' },
+                { icon: Vegan, name: 'Linkedin' },
+                { icon: Ghost, name: 'Google' },
+                { icon: Puzzle, name: 'Apple' },
+                { icon: Squirrel, name: 'Android' },
+                { icon: Cookie, name: 'Acmee' },
+                { icon: Drama, name: 'Shadcn' },
+                { icon: Crown, name: 'Amazon' },
+                { icon: Vegan, name: 'Linkedin' },
+                { icon: Ghost, name: 'Google' },
+                { icon: Puzzle, name: 'Apple' },
+                { icon: Squirrel, name: 'Android' },
+                { icon: Cookie, name: 'Acmee' },
+                { icon: Drama, name: 'Shadcn' },
+              ].map((company, index) => {
+                const IconComponent = company.icon;
+                return (
+                  <div key={index} className="flex items-center text-xl font-medium md:text-2xl">
+                    <IconComponent className={`mr-3 size-6 ${
+                      isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                    }`} />
+                    {company.name}
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
       </section>
 
-      {/* Features Preview */}
-      <section className={`py-16 border-t page-section transition-colors duration-300 ${
+      {/* Benefits Section */}
+      <section id="benefits" className="pb-20 sm:pb-32">
+        <div className="container">
+          <div className="grid lg:grid-cols-2 lg:gap-24">
+            <div>
+              <header className="mx-auto mb-6 lg:mb-12 sticky max-w-full text-center lg:top-96 lg:text-start">
+                <div className={`mb-4 bg-gradient-to-b from-primary/60 to-primary bg-clip-text font-semibold tracking-wider text-transparent uppercase`}>
+                  Преимущества
+                </div>
+                <h2 className="mb-4 text-3xl font-bold md:text-4xl">
+                  Что мы вам даём?
+                </h2>
+                <p className={`mb-8 text-lg ${
+                  isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                }`}>
+                  Все инновационные решения, необходимые для роста вашего бизнеса, здесь! 
+                  Мы добавляем ценность вашему бизнесу с помощью наших функций, которые упрощают рабочий процесс, 
+                  повышают эффективность и укрепляют ваши решения.
+                </p>
+              </header>
+            </div>
+
+            <div className="flex w-full flex-col gap-6 lg:gap-56">
+              {[
+                {
+                  icon: Blocks,
+                  title: "Автоматизация процессов",
+                  description: "Система автоматически обрабатывает и анализирует коммерческие предложения, экономя до 80% времени на рутинных задачах.",
+                  number: "01"
+                },
+                {
+                  icon: Zap,
+                  title: "Высокая точность анализа",
+                  description: "Благодаря продвинутым алгоритмам ИИ, точность анализа достигает 97.8%, что превышает показатели экспертов на 12%.",
+                  number: "02"
+                },
+                {
+                  icon: Shield,
+                  title: "Безопасность данных",
+                  description: "Полное соблюдение требований 152-ФЗ, SOC 2 и ISO 27001. Ваши данные защищены на высшем уровне.",
+                  number: "03"
+                }
+              ].map((benefit, index) => {
+                const IconComponent = benefit.icon;
+                return (
+                  <div key={index} className={`flex flex-col gap-6 rounded-xl border py-6 group/number transition-colors ${
+                    isDarkMode 
+                      ? 'bg-gray-900 border-gray-800' 
+                      : 'bg-white border-gray-200'
+                  } lg:sticky`} style={{ top: `${22 + index * 4}rem` }}>
+                    <div className="px-6">
+                      <div className="flex justify-between">
+                        <IconComponent className={`mb-6 size-10 rounded-full p-2 ring-8 ${
+                          isDarkMode 
+                            ? 'text-primary bg-primary/20 ring-primary/10' 
+                            : 'text-primary bg-primary/20 ring-primary/10'
+                        }`} />
+                        <span className={`text-5xl font-bold transition-all delay-75 ${
+                          isDarkMode 
+                            ? 'text-gray-800 group-hover/number:text-gray-600' 
+                            : 'text-gray-200 group-hover/number:text-gray-400'
+                        }`}>
+                          {benefit.number}
+                        </span>
+                      </div>
+                      <h3 className="text-xl font-semibold mb-2">{benefit.title}</h3>
+                      <p className={`text-sm leading-relaxed ${
+                        isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                      }`}>
+                        {benefit.description}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Solutions/Features Section */}
+      <section id="solutions" className={`py-20 border-t transition-colors duration-300 ${
         isDarkMode ? 'border-gray-800' : 'border-gray-200'
       }`}>
-        <div className="max-w-7xl mx-auto px-4 layout-content-root">
+        <div className="container">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-normal mb-4 tracking-tight">
-              Создан для современных{' '}
-              <span className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>команд разработчиков</span>
+            <div className={`mb-4 bg-gradient-to-b from-primary/60 to-primary bg-clip-text font-semibold tracking-wider text-transparent uppercase`}>
+              Решения
+            </div>
+            <h2 className="mb-4 text-3xl font-bold md:text-4xl">
+              Мощные инструменты для вашего бизнеса
             </h2>
-            <p className={`text-lg font-medium ${
+            <p className={`text-lg max-w-2xl mx-auto ${
               isDarkMode ? 'text-gray-400' : 'text-gray-600'
             }`}>
-              Каждый инструмент DevAssist Pro разработан для решения реальных задач в сфере недвижимости
+              Комплексная система для автоматизации процессов в сфере недвижимости
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="w-12 h-12 bg-purple-500/10 border border-purple-500/20 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <FileText className="w-6 h-6 text-purple-400" />
-              </div>
-              <h3 className="text-lg font-medium mb-2">КП Анализатор</h3>
-              <p className={`text-sm ${
-                isDarkMode ? 'text-gray-400' : 'text-gray-600'
-              }`}>
-                Автоматический анализ коммерческих предложений с помощью ИИ
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-12 h-12 bg-blue-500/10 border border-blue-500/20 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <FileText className="w-6 h-6 text-blue-400" />
-              </div>
-              <h3 className="text-lg font-medium mb-2">ТЗ Генератор</h3>
-              <p className={`text-sm ${
-                isDarkMode ? 'text-gray-400' : 'text-gray-600'
-              }`}>
-                Генерация технических заданий на основе требований
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-12 h-12 bg-green-500/10 border border-green-500/20 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <FileText className="w-6 h-6 text-green-400" />
-              </div>
-              <h3 className="text-lg font-medium mb-2">Аналитика</h3>
-              <p className={`text-sm ${
-                isDarkMode ? 'text-gray-400' : 'text-gray-600'
-              }`}>
-                Подробная аналитика по проектам и поставщикам
-              </p>
-            </div>
+            {[
+              {
+                icon: FileText,
+                title: "КП Анализатор",
+                description: "Автоматический анализ коммерческих предложений с помощью ИИ. Сравнение, оценка и ранжирование поставщиков.",
+                color: "blue"
+              },
+              {
+                icon: Zap,
+                title: "ТЗ Генератор",
+                description: "Автоматическая генерация технических заданий на основе требований проекта и лучших практик.",
+                color: "purple"
+              },
+              {
+                icon: Shield,
+                title: "Аналитика",
+                description: "Подробная аналитика по проектам, поставщикам и эффективности процессов принятия решений.",
+                color: "green"
+              }
+            ].map((feature, index) => {
+              const IconComponent = feature.icon;
+              return (
+                <div key={index} className={`text-center p-6 rounded-xl border transition-all duration-300 hover:scale-105 ${
+                  isDarkMode 
+                    ? 'bg-gray-900 border-gray-800 hover:bg-gray-800' 
+                    : 'bg-white border-gray-200 hover:bg-gray-50'
+                }`}>
+                  <div className={`w-12 h-12 mx-auto mb-4 rounded-lg flex items-center justify-center ${
+                    feature.color === 'blue' 
+                      ? 'bg-blue-500/10 border border-blue-500/20' 
+                      : feature.color === 'purple' 
+                      ? 'bg-purple-500/10 border border-purple-500/20' 
+                      : 'bg-green-500/10 border border-green-500/20'
+                  }`}>
+                    <IconComponent className={`w-6 h-6 ${
+                      feature.color === 'blue' 
+                        ? 'text-blue-400' 
+                        : feature.color === 'purple' 
+                        ? 'text-purple-400' 
+                        : 'text-green-400'
+                    }`} />
+                  </div>
+                  <h3 className="text-lg font-medium mb-2">{feature.title}</h3>
+                  <p className={`text-sm leading-relaxed ${
+                    isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                  }`}>
+                    {feature.description}
+                  </p>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
 
-      {/* Display Cards Section - Performance Stats */}
-      <section className={`py-20 border-t page-section transition-colors duration-300 ${
+      {/* Team Section */}
+      <section id="team" className={`py-20 border-t transition-colors duration-300 ${
         isDarkMode ? 'border-gray-800' : 'border-gray-200'
       }`}>
-        <div className="max-w-7xl mx-auto px-4 layout-content-root">
+        <div className="container">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-normal mb-6 tracking-tight">
-              Впечатляющие{' '}
-              <span className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>результаты</span>
+            <div className={`mb-4 bg-gradient-to-b from-primary/60 to-primary bg-clip-text font-semibold tracking-wider text-transparent uppercase`}>
+              Команда
+            </div>
+            <h2 className="mb-4 text-3xl font-bold md:text-4xl">
+              Эксперты в своем деле
             </h2>
-            <p className={`text-lg font-medium mb-12 ${
+            <p className={`text-lg max-w-2xl mx-auto ${
               isDarkMode ? 'text-gray-400' : 'text-gray-600'
             }`}>
-              Реальные метрики эффективности от наших клиентов
+              Профессиональная команда разработчиков и экспертов в сфере недвижимости
             </p>
-            
           </div>
 
-          {/* Main content layout with Stats Grid on the left and Display Cards on the right */}
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            {/* Left side - Stats Grid */}
-            <div>
-              <h3 className="text-2xl font-semibold mb-8 text-center">
-                Ключевые показатели
-              </h3>
-              <div className="grid grid-cols-2 md:grid-cols-2 gap-6">
-                <div className={`text-center p-6 rounded-xl backdrop-blur-md border transition-all duration-300 hover:scale-105 ${
-                  isDarkMode 
-                    ? 'bg-white/[0.02] border-white/10 hover:bg-white/[0.05]' 
-                    : 'bg-black/[0.02] border-black/10 hover:bg-black/[0.05]'
-                }`}>
-                  <div className="text-3xl font-bold mb-2">156</div>
-                  <div className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                    Компаний используют
-                  </div>
-                </div>
-                
-                <div className={`text-center p-6 rounded-xl backdrop-blur-md border transition-all duration-300 hover:scale-105 ${
-                  isDarkMode 
-                    ? 'bg-white/[0.02] border-white/10 hover:bg-white/[0.05]' 
-                    : 'bg-black/[0.02] border-black/10 hover:bg-black/[0.05]'
-                }`}>
-                  <div className="text-3xl font-bold mb-2">2.4М</div>
-                  <div className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                    Документов обработано
-                  </div>
-                </div>
-                
-                <div className={`text-center p-6 rounded-xl backdrop-blur-md border transition-all duration-300 hover:scale-105 ${
-                  isDarkMode 
-                    ? 'bg-white/[0.02] border-white/10 hover:bg-white/[0.05]' 
-                    : 'bg-black/[0.02] border-black/10 hover:bg-black/[0.05]'
-                }`}>
-                  <div className="text-3xl font-bold mb-2">99.9%</div>
-                  <div className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                    Uptime системы
-                  </div>
-                </div>
-                
-                <div className={`text-center p-6 rounded-xl backdrop-blur-md border transition-all duration-300 hover:scale-105 ${
-                  isDarkMode 
-                    ? 'bg-white/[0.02] border-white/10 hover:bg-white/[0.05]' 
-                    : 'bg-black/[0.02] border-black/10 hover:bg-black/[0.05]'
-                }`}>
-                  <div className="text-3xl font-bold mb-2">24/7</div>
-                  <div className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                    Техподдержка
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Right side - Display Cards */}
-            <div className="flex justify-center">
-              <DisplayCards cards={[
-                {
-                  icon: <FileText className="w-4 h-4 text-green-300" />,
-                  title: "Обработано КП",
-                  description: "1,200+ документов за месяц",
-                  date: "↑ 340% рост эффективности",
-                  titleClassName: "text-green-500 dark:text-green-400",
-                  className: "[grid-area:stack] hover:-translate-y-10 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-green-400 dark:before:outline-green-700 before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-white/40 dark:before:bg-green-900/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration-700 hover:grayscale-0 before:left-0 before:top-0",
-                },
-                {
-                  icon: <ArrowRight className="w-4 h-4 text-blue-300 transform rotate-45" />,
-                  title: "Точность анализа",
-                  description: "97.8% средняя точность",
-                  date: "Превосходит экспертов на 12%",
-                  titleClassName: "text-blue-500 dark:text-blue-400",
-                  className: "[grid-area:stack] translate-x-16 translate-y-10 hover:-translate-y-1 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-blue-400 dark:before:outline-blue-700 before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-white/40 dark:before:bg-blue-900/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration-700 hover:grayscale-0 before:left-0 before:top-0",
-                },
-                {
-                  icon: <Sun className="w-4 h-4 text-yellow-300" />,
-                  title: "Экономия времени",
-                  description: "480 часов в месяц",
-                  date: "₽2.8M экономии на зарплате",
-                  titleClassName: "text-yellow-500 dark:text-yellow-400",
-                  className: "[grid-area:stack] translate-x-32 translate-y-20 hover:translate-y-10 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-yellow-400 dark:before:outline-yellow-700 before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-white/40 dark:before:bg-yellow-900/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration-700 hover:grayscale-0 before:left-0 before:top-0",
-                },
-              ]} />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* What makes DevAssist Pro different */}
-      <section className={`py-20 border-t page-section transition-colors duration-300 ${
-        isDarkMode ? 'border-gray-800' : 'border-gray-200'
-      }`}>
-        <div className="max-w-7xl mx-auto px-4 layout-content-root">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div>
-              <h2 className="text-3xl md:text-4xl font-normal mb-8 tracking-tight">
-                Что делает DevAssist Pro{' '}
-                <span className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>особенным</span>
-              </h2>
-              
-              <div className="space-y-8">
-                <div className="flex items-start space-x-4">
-                  <div className="w-8 h-8 bg-blue-500/10 border border-blue-500/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-medium mb-2">Искусственный интеллект</h3>
-                    <p className={`text-sm leading-relaxed ${
-                      isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                    }`}>
-                      Интеграция с Claude 3.5 Sonnet и GPT-4o для максимальной точности анализа документов и генерации отчетов
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-4">
-                  <div className="w-8 h-8 bg-purple-500/10 border border-purple-500/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
-                    <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-medium mb-2">Специализация для недвижимости</h3>
-                    <p className={`text-sm leading-relaxed ${
-                      isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                    }`}>
-                      Создан специально для застройщиков и девелоперов с учетом особенностей российского рынка недвижимости
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-4">
-                  <div className="w-8 h-8 bg-green-500/10 border border-green-500/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
-                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-medium mb-2">Модульная архитектура</h3>
-                    <p className={`text-sm leading-relaxed ${
-                      isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                    }`}>
-                      Каждый модуль работает независимо, но интегрируется в единую экосистему для комплексного управления проектами
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="lg:pl-8">
-              <div className={`rounded-xl p-6 transition-colors duration-300 ${
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              {
+                name: "Алексей Петров",
+                role: "Главный архитектор",
+                description: "15+ лет опыта в разработке AI-решений для недвижимости",
+                avatar: "AP"
+              },
+              {
+                name: "Мария Смирнова",
+                role: "Ведущий Data Scientist",
+                description: "Эксперт по машинному обучению и анализу документов",
+                avatar: "МС"
+              },
+              {
+                name: "Дмитрий Козлов",
+                role: "Продуктовый директор",
+                description: "Специалист по недвижимости с 12-летним опытом",
+                avatar: "ДК"
+              }
+            ].map((member, index) => (
+              <div key={index} className={`text-center p-6 rounded-xl border transition-all duration-300 hover:scale-105 ${
                 isDarkMode 
-                  ? 'bg-gray-900 border border-gray-800' 
-                  : 'bg-gray-100 border border-gray-200'
+                  ? 'bg-gray-900 border-gray-800 hover:bg-gray-800' 
+                  : 'bg-white border-gray-200 hover:bg-gray-50'
               }`}>
-                <div className="grid grid-cols-2 gap-4 mb-6">
-                  <div className={`rounded-lg p-4 text-center transition-colors duration-300 ${
-                    isDarkMode ? 'bg-gray-800' : 'bg-gray-200'
-                  }`}>
-                    <div className={`text-2xl font-bold mb-1 ${
-                      isDarkMode ? 'text-white' : 'text-gray-900'
-                    }`}>99.9%</div>
-                    <div className={`text-xs ${
-                      isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                    }`}>Точность анализа</div>
-                  </div>
-                  <div className={`rounded-lg p-4 text-center transition-colors duration-300 ${
-                    isDarkMode ? 'bg-gray-800' : 'bg-gray-200'
-                  }`}>
-                    <div className={`text-2xl font-bold mb-1 ${
-                      isDarkMode ? 'text-white' : 'text-gray-900'
-                    }`}>5x</div>
-                    <div className={`text-xs ${
-                      isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                    }`}>Быстрее обработки</div>
-                  </div>
-                </div>
-                
-                <div className="space-y-3">
-                  <div className={`flex items-center justify-between py-2 border-b transition-colors duration-300 ${
-                    isDarkMode ? 'border-gray-800' : 'border-gray-200'
-                  }`}>
-                    <span className={`text-sm ${
-                      isDarkMode ? 'text-gray-300' : 'text-gray-700'
-                    }`}>Соответствие ГОСТ</span>
-                    <div className="w-12 h-6 bg-green-500/20 border border-green-500/30 rounded-full flex items-center justify-end pr-1">
-                      <div className="w-4 h-4 bg-green-500 rounded-full"></div>
-                    </div>
-                  </div>
-                  
-                  <div className={`flex items-center justify-between py-2 border-b transition-colors duration-300 ${
-                    isDarkMode ? 'border-gray-800' : 'border-gray-200'
-                  }`}>
-                    <span className={`text-sm ${
-                      isDarkMode ? 'text-gray-300' : 'text-gray-700'
-                    }`}>Защита данных</span>
-                    <div className="w-12 h-6 bg-blue-500/20 border border-blue-500/30 rounded-full flex items-center justify-end pr-1">
-                      <div className="w-4 h-4 bg-blue-500 rounded-full"></div>
-                    </div>
-                  </div>
-                  
-                  <div className={`flex items-center justify-between py-2 border-b transition-colors duration-300 ${
-                    isDarkMode ? 'border-gray-800' : 'border-gray-200'
-                  }`}>
-                    <span className={`text-sm ${
-                      isDarkMode ? 'text-gray-300' : 'text-gray-700'
-                    }`}>Интеграция с 1С</span>
-                    <div className="w-12 h-6 bg-purple-500/20 border border-purple-500/30 rounded-full flex items-center justify-end pr-1">
-                      <div className="w-4 h-4 bg-purple-500 rounded-full"></div>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center justify-between py-2">
-                    <span className={`text-sm ${
-                      isDarkMode ? 'text-gray-300' : 'text-gray-700'
-                    }`}>API для разработчиков</span>
-                    <div className="w-12 h-6 bg-yellow-500/20 border border-yellow-500/30 rounded-full flex items-center justify-end pr-1">
-                      <div className="w-4 h-4 bg-yellow-500 rounded-full"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="mt-6 grid grid-cols-3 gap-4">
-                <div className={`rounded-lg p-3 text-center transition-colors duration-300 ${
-                  isDarkMode 
-                    ? 'bg-gray-900 border border-gray-800' 
-                    : 'bg-gray-100 border border-gray-200'
+                <div className={`w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center text-white font-bold text-lg ${
+                  index === 0 ? 'bg-blue-500' : index === 1 ? 'bg-purple-500' : 'bg-green-500'
                 }`}>
-                  <div className={`text-sm font-medium ${
-                    isDarkMode ? 'text-white' : 'text-gray-900'
-                  }`}>SOC 2</div>
-                  <div className={`text-xs mt-1 ${
-                    isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                  }`}>Сертификат</div>
+                  {member.avatar}
                 </div>
-                <div className={`rounded-lg p-3 text-center transition-colors duration-300 ${
-                  isDarkMode 
-                    ? 'bg-gray-900 border border-gray-800' 
-                    : 'bg-gray-100 border border-gray-200'
+                <h3 className="text-lg font-medium mb-1">{member.name}</h3>
+                <p className={`text-sm font-medium mb-2 ${
+                  isDarkMode ? 'text-gray-300' : 'text-gray-700'
                 }`}>
-                  <div className={`text-sm font-medium ${
-                    isDarkMode ? 'text-white' : 'text-gray-900'
-                  }`}>ISO 27001</div>
-                  <div className={`text-xs mt-1 ${
-                    isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                  }`}>Стандарт</div>
-                </div>
-                <div className={`rounded-lg p-3 text-center transition-colors duration-300 ${
-                  isDarkMode 
-                    ? 'bg-gray-900 border border-gray-800' 
-                    : 'bg-gray-100 border border-gray-200'
+                  {member.role}
+                </p>
+                <p className={`text-sm leading-relaxed ${
+                  isDarkMode ? 'text-gray-400' : 'text-gray-600'
                 }`}>
-                  <div className={`text-sm font-medium ${
-                    isDarkMode ? 'text-white' : 'text-gray-900'
-                  }`}>152-ФЗ</div>
-                  <div className={`text-xs mt-1 ${
-                    isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                  }`}>Соответствие</div>
-                </div>
+                  {member.description}
+                </p>
               </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* User Experience Section with Display Cards */}
-      <section className={`py-20 border-t page-section transition-colors duration-300 ${
-        isDarkMode ? 'border-gray-800' : 'border-gray-200'
-      }`}>
-        <div className="max-w-7xl mx-auto px-4 layout-content-root">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            {/* Left side - Content */}
-            <div>
-              <h2 className="text-3xl md:text-4xl font-normal mb-8 tracking-tight">
-                Опыт работы{' '}
-                <span className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>наших клиентов</span>
-              </h2>
-              
-              <div className="space-y-6 mb-8">
-                <div className="flex items-start space-x-4">
-                  <div className="w-8 h-8 bg-green-500/10 border border-green-500/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
-                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-medium mb-2">Мгновенные результаты</h3>
-                    <p className={`text-sm leading-relaxed ${
-                      isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                    }`}>
-                      Получайте детальный анализ КП за 2-3 минуты вместо нескольких часов ручной работы экспертов
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-4">
-                  <div className="w-8 h-8 bg-blue-500/10 border border-blue-500/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-medium mb-2">Объективность решений</h3>
-                    <p className={`text-sm leading-relaxed ${
-                      isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                    }`}>
-                      ИИ исключает человеческий фактор и субъективность при оценке коммерческих предложений
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-4">
-                  <div className="w-8 h-8 bg-yellow-500/10 border border-yellow-500/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
-                    <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-medium mb-2">Масштабируемость</h3>
-                    <p className={`text-sm leading-relaxed ${
-                      isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                    }`}>
-                      Обрабатывайте неограниченное количество тендеров параллельно без потери качества анализа
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <button 
-                onClick={() => navigate('/kp-analyzer')}
-                className={`px-6 py-3 rounded-md font-medium transition-colors ${
-                  isDarkMode
-                    ? 'bg-white text-black hover:bg-gray-100'
-                    : 'bg-gray-900 text-white hover:bg-gray-800'
-                }`}
-              >
-                Попробовать бесплатно
-              </button>
-            </div>
-
-            {/* Right side - Display Cards */}
-            <div className="flex justify-center">
-              <DisplayCards cards={[
-                {
-                  icon: <FileText className="w-4 h-4 text-purple-300" />,
-                  title: "ООО \"СтройИнвест\"",
-                  description: "Анализ 50+ КП в день",
-                  date: "Экономия: 120 часов/месяц",
-                  titleClassName: "text-purple-500 dark:text-purple-400",
-                  className: "[grid-area:stack] hover:-translate-y-10 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-purple-400 dark:before:outline-purple-700 before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-white/40 dark:before:bg-purple-900/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration-700 hover:grayscale-0 before:left-0 before:top-0",
-                },
-                {
-                  icon: <Menu className="w-4 h-4 text-cyan-300" />,
-                  title: "\"МегаДевелопмент\"",
-                  description: "Точность выбора поставщиков: 98%",
-                  date: "Снижение рисков на 45%",
-                  titleClassName: "text-cyan-500 dark:text-cyan-400",
-                  className: "[grid-area:stack] translate-x-16 translate-y-10 hover:-translate-y-1 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-cyan-400 dark:before:outline-cyan-700 before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-white/40 dark:before:bg-cyan-900/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration-700 hover:grayscale-0 before:left-0 before:top-0",
-                },
-                {
-                  icon: <Sun className="w-4 h-4 text-orange-300" />,
-                  title: "\"Премиум Девелопмент\"",
-                  description: "ROI увеличен на 280%",
-                  date: "Оптимизация бюджета: ₽15M",
-                  titleClassName: "text-orange-500 dark:text-orange-400",
-                  className: "[grid-area:stack] translate-x-32 translate-y-20 hover:translate-y-10 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-orange-400 dark:before:outline-orange-700 before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-white/40 dark:before:bg-orange-900/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration-700 hover:grayscale-0 before:left-0 before:top-0",
-                },
-              ]} />
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* Pricing Section */}
-      <section className={`py-20 border-t page-section transition-colors duration-300 ${
+      <section id="pricing" className={`py-20 border-t transition-colors duration-300 ${
         isDarkMode ? 'border-gray-800' : 'border-gray-200'
       }`}>
-        <div className="layout-content-root">
-          <Pricing isDarkMode={isDarkMode} />
+        <div className="container">
+          <div className="text-center mb-16">
+            <div className={`mb-4 bg-gradient-to-b from-primary/60 to-primary bg-clip-text font-semibold tracking-wider text-transparent uppercase`}>
+              Цены
+            </div>
+            <h2 className="mb-4 text-3xl font-bold md:text-4xl">
+              Выберите подходящий план
+            </h2>
+            <p className={`text-lg max-w-2xl mx-auto ${
+              isDarkMode ? 'text-gray-400' : 'text-gray-600'
+            }`}>
+              Гибкие тарифы для компаний любого размера
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              {
+                name: "Базовый",
+                price: "₽29,900",
+                period: "месяц",
+                description: "Идеально для малого бизнеса",
+                features: [
+                  "До 50 КП в месяц",
+                  "Базовая аналитика",
+                  "Email поддержка",
+                  "Стандартные отчеты"
+                ],
+                highlighted: false
+              },
+              {
+                name: "Профессиональный",
+                price: "₽79,900",
+                period: "месяц",
+                description: "Для растущих компаний",
+                features: [
+                  "До 500 КП в месяц",
+                  "Расширенная аналитика",
+                  "Приоритетная поддержка",
+                  "Кастомные отчеты",
+                  "Интеграция с 1С"
+                ],
+                highlighted: true
+              },
+              {
+                name: "Корпоративный",
+                price: "₽199,900",
+                period: "месяц",
+                description: "Для крупных организаций",
+                features: [
+                  "Неограниченное количество КП",
+                  "Полная аналитика",
+                  "Персональный менеджер",
+                  "Белые списки",
+                  "API доступ",
+                  "Обучение команды"
+                ],
+                highlighted: false
+              }
+            ].map((plan, index) => (
+              <div key={index} className={`p-8 rounded-xl border transition-all duration-300 hover:scale-105 ${
+                plan.highlighted 
+                  ? isDarkMode 
+                    ? 'bg-gray-900 border-primary shadow-lg ring-1 ring-primary' 
+                    : 'bg-white border-primary shadow-lg ring-1 ring-primary'
+                  : isDarkMode 
+                    ? 'bg-gray-900 border-gray-800 hover:bg-gray-800' 
+                    : 'bg-white border-gray-200 hover:bg-gray-50'
+              }`}>
+                {plan.highlighted && (
+                  <div className="text-center mb-4">
+                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
+                      isDarkMode ? 'bg-primary/20 text-primary' : 'bg-primary/20 text-primary'
+                    }`}>
+                      Популярный
+                    </span>
+                  </div>
+                )}
+                <div className="text-center mb-6">
+                  <h3 className="text-xl font-semibold mb-2">{plan.name}</h3>
+                  <div className="mb-2">
+                    <span className="text-3xl font-bold">{plan.price}</span>
+                    <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>/{plan.period}</span>
+                  </div>
+                  <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                    {plan.description}
+                  </p>
+                </div>
+                <ul className="space-y-3 mb-8">
+                  {plan.features.map((feature, fIndex) => (
+                    <li key={fIndex} className="flex items-start">
+                      <Check className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
+                      <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                        {feature}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+                <button className={`w-full py-3 px-4 rounded-lg font-medium transition-colors ${
+                  plan.highlighted 
+                    ? isDarkMode
+                      ? 'bg-white text-black hover:bg-gray-100'
+                      : 'bg-gray-900 text-white hover:bg-gray-800'
+                    : isDarkMode
+                      ? 'bg-gray-800 text-white hover:bg-gray-700 border border-gray-700'
+                      : 'bg-gray-100 text-gray-900 hover:bg-gray-200 border border-gray-200'
+                }`}>
+                  Выбрать план
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Section */}
+      <section id="contact" className={`py-20 border-t transition-colors duration-300 ${
+        isDarkMode ? 'border-gray-800' : 'border-gray-200'
+      }`}>
+        <div className="container">
+          <div className="text-center mb-16">
+            <div className={`mb-4 bg-gradient-to-b from-primary/60 to-primary bg-clip-text font-semibold tracking-wider text-transparent uppercase`}>
+              Контакты
+            </div>
+            <h2 className="mb-4 text-3xl font-bold md:text-4xl">
+              Свяжитесь с нами
+            </h2>
+            <p className={`text-lg max-w-2xl mx-auto ${
+              isDarkMode ? 'text-gray-400' : 'text-gray-600'
+            }`}>
+              Готовы обсудить ваш проект? Мы поможем выбрать лучшее решение
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-12">
+            <div className="space-y-8">
+              <div className="flex items-start space-x-4">
+                <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
+                  isDarkMode ? 'bg-gray-800' : 'bg-gray-100'
+                }`}>
+                  <Mail className="w-6 h-6 text-primary" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-medium mb-2">Email</h3>
+                  <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                    info@devassist.pro
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start space-x-4">
+                <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
+                  isDarkMode ? 'bg-gray-800' : 'bg-gray-100'
+                }`}>
+                  <Phone className="w-6 h-6 text-primary" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-medium mb-2">Телефон</h3>
+                  <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                    +7 (495) 123-45-67
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start space-x-4">
+                <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
+                  isDarkMode ? 'bg-gray-800' : 'bg-gray-100'
+                }`}>
+                  <MapPin className="w-6 h-6 text-primary" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-medium mb-2">Адрес</h3>
+                  <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                    Москва, ул. Тверская, д. 123
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className={`p-8 rounded-xl border ${
+              isDarkMode 
+                ? 'bg-gray-900 border-gray-800' 
+                : 'bg-white border-gray-200'
+            }`}>
+              <h3 className="text-xl font-semibold mb-6">Отправьте сообщение</h3>
+              <form className="space-y-4">
+                <div>
+                  <input 
+                    type="text" 
+                    placeholder="Ваше имя"
+                    className={`w-full px-4 py-3 rounded-lg border transition-colors ${
+                      isDarkMode 
+                        ? 'bg-gray-800 border-gray-700 text-white placeholder-gray-400' 
+                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
+                    }`}
+                  />
+                </div>
+                <div>
+                  <input 
+                    type="email" 
+                    placeholder="Email"
+                    className={`w-full px-4 py-3 rounded-lg border transition-colors ${
+                      isDarkMode 
+                        ? 'bg-gray-800 border-gray-700 text-white placeholder-gray-400' 
+                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
+                    }`}
+                  />
+                </div>
+                <div>
+                  <textarea 
+                    placeholder="Ваше сообщение"
+                    rows={4}
+                    className={`w-full px-4 py-3 rounded-lg border transition-colors ${
+                      isDarkMode 
+                        ? 'bg-gray-800 border-gray-700 text-white placeholder-gray-400' 
+                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
+                    }`}
+                  />
+                </div>
+                <button className={`w-full py-3 px-4 rounded-lg font-medium transition-colors ${
+                  isDarkMode
+                    ? 'bg-white text-black hover:bg-gray-100'
+                    : 'bg-gray-900 text-white hover:bg-gray-800'
+                }`}>
+                  Отправить сообщение
+                </button>
+              </form>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -905,14 +993,14 @@ const LandingPage: React.FC = () => {
       <footer className={`py-12 border-t transition-colors duration-300 ${
         isDarkMode ? 'border-gray-800' : 'border-gray-200'
       }`}>
-        <div className="max-w-7xl mx-auto px-4 layout-content-root">
+        <div className="container">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
               <div className="flex items-center space-x-2 mb-4">
                 <div className={`w-5 h-5 rounded flex items-center justify-center transition-colors duration-300 ${
                   isDarkMode ? 'bg-white' : 'bg-gray-900'
                 }`}>
-                  <FileText className={`w-3 h-3 ${
+                  <SunDim className={`w-3 h-3 ${
                     isDarkMode ? 'text-black' : 'text-white'
                   }`} />
                 </div>
@@ -923,7 +1011,7 @@ const LandingPage: React.FC = () => {
               <p className={`text-sm transition-colors duration-300 ${
                 isDarkMode ? 'text-gray-400' : 'text-gray-600'
               }`}>
-                Веб-портал для застройщиков нового поколения
+                AI-powered SaaS решение для оптимизации и автоматизации бизнес-процессов
               </p>
             </div>
 

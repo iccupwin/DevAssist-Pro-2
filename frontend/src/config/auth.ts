@@ -71,17 +71,25 @@ export const SOCIAL_PROVIDERS = [
 ] as const;
 
 export const AUTH_ENDPOINTS = {
-  LOGIN: '/api/auth/login',
-  REGISTER: '/api/auth/register',
-  FORGOT_PASSWORD: '/api/auth/forgot-password',
-  RESET_PASSWORD: '/api/auth/reset-password',
-  REFRESH_TOKEN: '/api/auth/refresh',
-  LOGOUT: '/api/auth/logout',
+  LOGIN: '/login',
+  REGISTER: '/register', 
+  FORGOT_PASSWORD: '/forgot-password',
+  RESET_PASSWORD: '/reset-password',
+  REFRESH_TOKEN: '/refresh',
+  LOGOUT: '/logout',
+  PROFILE: '/profile',
+} as const;
+
+// Backend auth service configuration
+export const AUTH_CONFIG_API = {
+  BASE_URL: process.env.REACT_APP_AUTH_API_URL || 'http://localhost:8001',
+  TIMEOUT: 30000,
 } as const;
 
 export const AUTH_CONFIG = {
   TOKEN_STORAGE_KEY: 'devassist_token',
   REFRESH_TOKEN_STORAGE_KEY: 'devassist_refresh_token',
+  TOKEN_EXPIRES_AT_KEY: 'devassist_token_expires_at',
   USER_STORAGE_KEY: 'devassist_user',
   SESSION_TIMEOUT: 24 * 60 * 60 * 1000, // 24 часа
 } as const;

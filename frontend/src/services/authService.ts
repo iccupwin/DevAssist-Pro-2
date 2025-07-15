@@ -1,5 +1,6 @@
 import { AUTH_ENDPOINTS } from '../config/auth';
 import { getAuthHeaders, clearAuthData } from '../utils/authUtils';
+import { DEV_TEST_USERS, DEV_CONFIG } from '../config/development';
 
 export interface LoginCredentials {
   email: string;
@@ -32,7 +33,7 @@ export interface ApiResponse<T = any> {
 
 /**
  * Сервис для работы с API аутентификации
- * TODO: Заменить mock функции на реальные API вызовы
+ * Currently using mock functions for development, will be replaced with real API calls
  */
 class AuthService {
   private baseURL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
@@ -82,7 +83,7 @@ class AuthService {
    * Вход в систему
    */
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
-    // TODO: Заменить на реальный API вызов
+    // Will be replaced with actual API call to backend auth service
     return this.mockLogin(credentials);
 
     /* Реальная реализация:
@@ -115,7 +116,7 @@ class AuthService {
    * Регистрация нового пользователя
    */
   async register(data: RegisterData): Promise<AuthResponse> {
-    // TODO: Заменить на реальный API вызов
+    // Will be replaced with actual API call to backend auth service
     return this.mockRegister(data);
 
     /* Реальная реализация:
@@ -148,7 +149,7 @@ class AuthService {
    * Выход из системы
    */
   async logout(): Promise<ApiResponse> {
-    // TODO: Заменить на реальный API вызов
+    // Will be replaced with actual API call to backend auth service
     await this.mockLogout();
 
     /* Реальная реализация:
@@ -167,7 +168,7 @@ class AuthService {
    * Обновление токена
    */
   async refreshToken(refreshToken: string): Promise<AuthResponse> {
-    // TODO: Заменить на реальный API вызов
+    // Will be replaced with actual API call to backend auth service
     return this.mockRefreshToken(refreshToken);
 
     /* Реальная реализация:
@@ -198,7 +199,7 @@ class AuthService {
    * Запрос на восстановление пароля
    */
   async forgotPassword(email: string): Promise<ApiResponse> {
-    // TODO: Заменить на реальный API вызов
+    // Will be replaced with actual API call to backend auth service
     return this.mockForgotPassword(email);
 
     /* Реальная реализация:
@@ -215,7 +216,7 @@ class AuthService {
    * Сброс пароля
    */
   async resetPassword(token: string, password: string): Promise<ApiResponse> {
-    // TODO: Заменить на реальный API вызов
+    // Will be replaced with actual API call to backend auth service
     return this.mockResetPassword(token, password);
 
     /* Реальная реализация:
@@ -285,65 +286,23 @@ class AuthService {
   private async mockLogin(credentials: LoginCredentials): Promise<AuthResponse> {
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    if (credentials.email === 'admin@devassist.ru' && credentials.password === 'Admin123!') {
+    // SECURITY: Только в development режиме
+    if (!DEV_CONFIG.USE_MOCK_AUTH) {
       return {
-        success: true,
-        user: {
-          id: '1',
-          email: 'admin@devassist.ru',
-          firstName: 'Александр',
-          lastName: 'Петров',
-          role: 'admin',
-          avatar: '',
-          isEmailVerified: true,
-          subscription: {
-            plan: 'Professional',
-            status: 'active',
-            expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-          },
-          preferences: {
-            language: 'ru',
-            theme: 'system',
-            notifications: {
-              email: true,
-              push: true,
-            },
-          },
-          createdAt: '2024-01-15T00:00:00Z',
-          lastLoginAt: new Date().toISOString(),
-        },
-        token: 'mock_jwt_token_' + Date.now(),
-        refreshToken: 'mock_refresh_token_' + Date.now(),
+        success: false,
+        error: 'Mock authentication is disabled in production',
       };
     }
 
-    if (credentials.email === 'user@devassist.ru' && credentials.password === 'User123!') {
+    // Поиск пользователя в тестовых данных
+    const testUser = DEV_TEST_USERS.find(
+      user => user.email === credentials.email && user.password === credentials.password
+    );
+
+    if (testUser) {
       return {
         success: true,
-        user: {
-          id: '2',
-          email: 'user@devassist.ru',
-          firstName: 'Мария',
-          lastName: 'Иванова',
-          role: 'user',
-          avatar: '',
-          isEmailVerified: true,
-          subscription: {
-            plan: 'Free',
-            status: 'active',
-            expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-          },
-          preferences: {
-            language: 'ru',
-            theme: 'light',
-            notifications: {
-              email: true,
-              push: false,
-            },
-          },
-          createdAt: '2024-02-01T00:00:00Z',
-          lastLoginAt: new Date().toISOString(),
-        },
+        user: testUser.profile,
         token: 'mock_jwt_token_' + Date.now(),
         refreshToken: 'mock_refresh_token_' + Date.now(),
       };
@@ -358,8 +317,17 @@ class AuthService {
   private async mockRegister(data: RegisterData): Promise<AuthResponse> {
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    // Проверяем, не существует ли уже такой email
-    if (data.email === 'admin@devassist.ru' || data.email === 'user@devassist.ru') {
+    // SECURITY: Только в development режиме
+    if (!DEV_CONFIG.USE_MOCK_AUTH) {
+      return {
+        success: false,
+        error: 'Mock authentication is disabled in production',
+      };
+    }
+
+    // Проверяем, не существует ли уже такой email в тестовых данных
+    const existingUser = DEV_TEST_USERS.find(user => user.email === data.email);
+    if (existingUser) {
       return {
         success: false,
         error: 'Пользователь с таким email уже существует',

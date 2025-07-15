@@ -1,0 +1,477 @@
+import { Meta } from '@storybook/blocks';
+import { Button } from '../components/ui/Button';
+import { Input } from '../components/ui/Input';
+import LoadingSpinner from '../components/ui/LoadingSpinner';
+
+<Meta title="Design System/Component Patterns" />
+
+# Паттерны компонентов DevAssist Pro
+
+Руководство по использованию компонентов в различных сценариях DevAssist Pro.
+
+## 🎯 Принципы компонентов
+
+### Консистентность
+Все компоненты следуют единым принципам дизайна и поведения, обеспечивая предсказуемый пользовательский опыт.
+
+### Переиспользуемость
+Компоненты спроектированы для использования в разных модулях с минимальными изменениями.
+
+### Доступность
+Каждый компонент соответствует стандартам WCAG 2.1 Level AA.
+
+### Производительность
+Компоненты оптимизированы для быстрой загрузки и плавной работы.
+
+## 📝 Паттерны форм
+
+### Базовая форма
+```jsx
+<form className="space-y-6">
+  <Input
+    label="Название проекта"
+    placeholder="Введите название"
+    required
+  />
+  <Input
+    label="Email"
+    type="email"
+    placeholder="example@company.com"
+    icon={Mail}
+    required
+  />
+  <Button type="submit" fullWidth>
+    Сохранить
+  </Button>
+</form>
+```
+
+### Форма с валидацией
+```jsx
+<form className="space-y-6">
+  <Input
+    label="Email"
+    type="email"
+    value={email}
+    error={emailError}
+    helperText="Мы не передаем ваш email третьим лицам"
+    onChange={handleEmailChange}
+  />
+  <Input
+    label="Пароль"
+    type="password"
+    value={password}
+    error={passwordError}
+    helperText="Минимум 8 символов"
+    onChange={handlePasswordChange}
+  />
+  <Button type="submit" disabled={!isValid} isLoading={isSubmitting}>
+    {isSubmitting ? 'Отправляем...' : 'Отправить'}
+  </Button>
+</form>
+```
+
+### Многошаговая форма
+```jsx
+<div className="space-y-6">
+  <div className="flex justify-between items-center mb-6">
+    <h2 className="text-xl font-semibold">Шаг {currentStep} из {totalSteps}</h2>
+    <div className="text-sm text-gray-500">{Math.round(progress)}% завершено</div>
+  </div>
+  
+  <div className="w-full bg-gray-200 rounded-full h-2">
+    <div 
+      className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+      style={{ width: `${progress}%` }}
+    />
+  </div>
+  
+  {/* Контент шага */}
+  <div className="min-h-[300px]">
+    {renderStepContent()}
+  </div>
+  
+  <div className="flex justify-between">
+    <Button variant="outline" onClick={handlePrevious} disabled={currentStep === 1}>
+      Назад
+    </Button>
+    <Button onClick={handleNext}>
+      {currentStep === totalSteps ? 'Завершить' : 'Далее'}
+    </Button>
+  </div>
+</div>
+```
+
+## 🔄 Паттерны загрузки
+
+### Загрузка контента страницы
+```jsx
+const PageContent = () => {
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner size="lg" text="Загружаем данные..." />
+      </div>
+    );
+  }
+  
+  return <div>{content}</div>;
+};
+```
+
+### Загрузка в карточке
+```jsx
+const Card = ({ isLoading, data }) => (
+  <div className="border rounded-lg p-6">
+    <h3 className="text-lg font-semibold mb-4">Статистика</h3>
+    {isLoading ? (
+      <div className="flex justify-center py-8">
+        <LoadingSpinner size="md" />
+      </div>
+    ) : (
+      <div>{renderData(data)}</div>
+    )}
+  </div>
+);
+```
+
+### Кнопка с загрузкой
+```jsx
+<Button 
+  onClick={handleSubmit} 
+  isLoading={isSubmitting}
+  disabled={!isValid || isSubmitting}
+>
+  {isSubmitting ? 'Обрабатываем...' : 'Анализировать КП'}
+</Button>
+```
+
+## 📊 Паттерны данных
+
+### Таблица с фильтрами
+```jsx
+<div className="space-y-4">
+  <div className="flex space-x-4">
+    <Input
+      placeholder="Поиск по названию..."
+      icon={Search}
+      value={searchTerm}
+      onChange={handleSearch}
+    />
+    <select className="border rounded-lg px-3 py-2">
+      <option>Все статусы</option>
+      <option>Активные</option>
+      <option>Завершенные</option>
+    </select>
+    <Button variant="outline" onClick={handleReset}>
+      Сбросить
+    </Button>
+  </div>
+  
+  <div className="border rounded-lg overflow-hidden">
+    <table className="w-full">
+      <thead className="bg-gray-50">
+        <tr>
+          <th className="text-left p-4">Название</th>
+          <th className="text-left p-4">Статус</th>
+          <th className="text-left p-4">Дата</th>
+          <th className="text-left p-4">Действия</th>
+        </tr>
+      </thead>
+      <tbody>
+        {filteredData.map(item => (
+          <tr key={item.id} className="border-t">
+            <td className="p-4">{item.name}</td>
+            <td className="p-4">{item.status}</td>
+            <td className="p-4">{item.date}</td>
+            <td className="p-4">
+              <Button size="sm" variant="ghost">
+                Подробнее
+              </Button>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</div>
+```
+
+### Карточки со статистикой
+```jsx
+<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+  {stats.map(stat => (
+    <div key={stat.id} className="border rounded-lg p-6">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-sm font-medium text-gray-500">{stat.title}</h3>
+        <stat.icon className="h-5 w-5 text-gray-400" />
+      </div>
+      <div className="text-2xl font-bold">{stat.value}</div>
+      <div className={`text-sm ${stat.change > 0 ? 'text-green-600' : 'text-red-600'}`}>
+        {stat.change > 0 ? '+' : ''}{stat.change}% за месяц
+      </div>
+    </div>
+  ))}
+</div>
+```
+
+## 🔔 Паттерны уведомлений
+
+### Toast уведомления
+```jsx
+const showToast = (type, message) => {
+  const toastConfig = {
+    success: { bg: 'bg-green-50', text: 'text-green-800', icon: CheckCircle },
+    error: { bg: 'bg-red-50', text: 'text-red-800', icon: XCircle },
+    warning: { bg: 'bg-yellow-50', text: 'text-yellow-800', icon: AlertTriangle },
+    info: { bg: 'bg-blue-50', text: 'text-blue-800', icon: Info }
+  };
+  
+  const config = toastConfig[type];
+  
+  return (
+    <div className={`${config.bg} ${config.text} p-4 rounded-lg flex items-center space-x-3`}>
+      <config.icon className="h-5 w-5" />
+      <span>{message}</span>
+    </div>
+  );
+};
+```
+
+### Статусные индикаторы
+```jsx
+const StatusBadge = ({ status }) => {
+  const statusConfig = {
+    success: 'bg-green-100 text-green-800',
+    warning: 'bg-yellow-100 text-yellow-800',
+    error: 'bg-red-100 text-red-800',
+    info: 'bg-blue-100 text-blue-800'
+  };
+  
+  return (
+    <span className={`px-2 py-1 text-xs font-medium rounded-full ${statusConfig[status]}`}>
+      {status}
+    </span>
+  );
+};
+```
+
+## 🎨 Паттерны модулей DevAssist Pro
+
+### КП Анализатор - Файловый интерфейс
+```jsx
+<div className="space-y-6">
+  {/* Загрузка файлов */}
+  <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+    <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+    <h3 className="text-lg font-medium mb-2">Загрузите файлы КП</h3>
+    <p className="text-gray-600 mb-4">Поддерживаются форматы: PDF, DOCX</p>
+    <Button>Выбрать файлы</Button>
+  </div>
+  
+  {/* Список файлов */}
+  <div className="space-y-2">
+    {files.map(file => (
+      <div key={file.id} className="flex items-center justify-between p-4 border rounded-lg">
+        <div className="flex items-center space-x-3">
+          <FileText className="h-5 w-5 text-gray-400" />
+          <div>
+            <div className="font-medium">{file.name}</div>
+            <div className="text-sm text-gray-500">{file.size}</div>
+          </div>
+        </div>
+        <div className="flex items-center space-x-2">
+          {file.status === 'processing' && <LoadingSpinner size="sm" />}
+          {file.status === 'completed' && <CheckCircle className="h-5 w-5 text-green-500" />}
+          <Button size="sm" variant="ghost">
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
+```
+
+### ТЗ Генератор - Форма параметров
+```jsx
+<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+  <Input
+    label="Объект строительства"
+    placeholder="Жилой комплекс"
+    required
+  />
+  <Input
+    label="Площадь (м²)"
+    type="number"
+    placeholder="5000"
+    required
+  />
+  <Input
+    label="Этажность"
+    type="number"
+    placeholder="25"
+  />
+  <Input
+    label="Количество квартир"
+    type="number"
+    placeholder="300"
+  />
+  <div className="md:col-span-2">
+    <label className="block text-sm font-medium mb-2">Описание проекта</label>
+    <textarea 
+      className="w-full border rounded-lg p-3 h-32"
+      placeholder="Подробное описание проекта..."
+    />
+  </div>
+  <div className="md:col-span-2 flex justify-end space-x-3">
+    <Button variant="outline">Сохранить черновик</Button>
+    <Button>Генерировать ТЗ</Button>
+  </div>
+</div>
+```
+
+### Оценка проектов - Финансовые показатели
+```jsx
+<div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+  {/* Входные параметры */}
+  <div className="space-y-6">
+    <h3 className="text-lg font-semibold">Параметры расчета</h3>
+    <Input
+      label="Инвестиции (₽)"
+      type="number"
+      placeholder="100000000"
+      icon={DollarSign}
+    />
+    <Input
+      label="Ставка дисконтирования (%)"
+      type="number"
+      placeholder="12"
+    />
+    <Input
+      label="Период (лет)"
+      type="number"
+      placeholder="5"
+    />
+    <Button fullWidth>Рассчитать NPV</Button>
+  </div>
+  
+  {/* Результаты */}
+  <div className="space-y-6">
+    <h3 className="text-lg font-semibold">Результаты расчета</h3>
+    <div className="space-y-4">
+      <div className="p-4 border rounded-lg">
+        <div className="text-sm text-gray-500">NPV</div>
+        <div className="text-2xl font-bold text-green-600">₽25,430,000</div>
+      </div>
+      <div className="p-4 border rounded-lg">
+        <div className="text-sm text-gray-500">IRR</div>
+        <div className="text-2xl font-bold">18.5%</div>
+      </div>
+      <div className="p-4 border rounded-lg">
+        <div className="text-sm text-gray-500">Payback Period</div>
+        <div className="text-2xl font-bold">3.2 года</div>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+## ♿ Паттерны доступности
+
+### Фокус-менеджмент
+```jsx
+const Modal = ({ isOpen, onClose, children }) => {
+  const modalRef = useRef();
+  
+  useEffect(() => {
+    if (isOpen) {
+      modalRef.current?.focus();
+    }
+  }, [isOpen]);
+  
+  const handleKeyDown = (e) => {
+    if (e.key === 'Escape') {
+      onClose();
+    }
+  };
+  
+  return isOpen ? (
+    <div 
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
+      onClick={onClose}
+    >
+      <div 
+        ref={modalRef}
+        className="bg-white rounded-lg p-6 max-w-md w-full"
+        onClick={e => e.stopPropagation()}
+        onKeyDown={handleKeyDown}
+        tabIndex={-1}
+        role="dialog"
+        aria-modal="true"
+      >
+        {children}
+      </div>
+    </div>
+  ) : null;
+};
+```
+
+### ARIA метки
+```jsx
+<Button
+  aria-label="Удалить файл КП"
+  aria-describedby="delete-help"
+  onClick={handleDelete}
+>
+  <Trash2 className="h-4 w-4" />
+</Button>
+<div id="delete-help" className="sr-only">
+  Это действие нельзя отменить
+</div>
+```
+
+## 📱 Мобильные паттерны
+
+### Адаптивная навигация
+```jsx
+<nav className="flex items-center justify-between p-4 border-b">
+  <div className="flex items-center space-x-4">
+    <Button 
+      size="icon" 
+      variant="ghost" 
+      className="md:hidden"
+      onClick={toggleMobileMenu}
+    >
+      <Menu className="h-5 w-5" />
+    </Button>
+    <h1 className="text-xl font-bold">DevAssist Pro</h1>
+  </div>
+  
+  <div className="hidden md:flex space-x-4">
+    {navigationItems.map(item => (
+      <Button key={item.id} variant="ghost">
+        {item.label}
+      </Button>
+    ))}
+  </div>
+  
+  <Button size="sm">
+    Профиль
+  </Button>
+</nav>
+```
+
+### Touch-friendly элементы
+```jsx
+<Button 
+  className="min-h-[44px] min-w-[44px]" // Минимальный размер для touch
+  onClick={handleTouch}
+>
+  Кнопка
+</Button>
+```
+
+---
+
+*Эти паттерны обеспечивают консистентность и качество пользовательского опыта во всех модулях DevAssist Pro.*

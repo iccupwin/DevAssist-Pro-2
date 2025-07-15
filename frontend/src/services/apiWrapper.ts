@@ -275,7 +275,7 @@ class DevAssistApiWrapper {
         model_id: modelId || API_CONFIG.AI_MODELS.DEFAULT_COMPARISON,
       };
 
-      const response = await httpClient.post<string>('COMPARE_ALL', requestData, {
+      const response = await httpClient.post<string>('ANALYTICS_PROCESS', requestData, {
         timeout: API_CONFIG.REQUEST.TIMEOUT,
       });
 
@@ -307,7 +307,7 @@ class DevAssistApiWrapper {
         model_id: modelId || API_CONFIG.AI_MODELS.DEFAULT_COMPARISON,
       };
 
-      const response = await httpClient.post<string>('GENERATE_REPORT', requestData, {
+      const response = await httpClient.post<string>('GENERATE_PDF_REPORT', requestData, {
         timeout: API_CONFIG.REQUEST.TIMEOUT,
       });
 
@@ -331,7 +331,7 @@ class DevAssistApiWrapper {
     const requestId = apiMonitoring.startRequest('/models', 'GET');
     
     try {
-      const response = await httpClient.get<{ analysis: string[]; comparison: string[] }>('MODELS');
+      const response = await httpClient.get<{ analysis: string[]; comparison: string[] }>('ADMIN_STATS');
       apiMonitoring.endRequest(requestId, response.success, response.error);
       return response;
     } catch (error) {

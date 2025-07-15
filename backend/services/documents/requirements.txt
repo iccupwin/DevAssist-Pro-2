@@ -29,7 +29,7 @@ textract==1.6.5
 pdfplumber==0.10.0
 
 # Кодировки и локализация
-chardet==5.2.0
+chardet>=3.0
 
 # Утилиты
 python-dotenv==1.0.0
@@ -46,6 +46,5 @@ pytest==7.4.3
 pytest-asyncio==0.21.1
 httpx==0.25.2
 
-# Хеширование и криптография
-hashlib2==1.0.0
+# Хеширование
 xxhash==3.4.1

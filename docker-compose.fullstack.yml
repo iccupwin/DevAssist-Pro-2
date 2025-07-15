@@ -154,18 +154,13 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-      args:
-        - REACT_APP_API_URL=http://localhost:8000
-        - REACT_APP_WS_URL=ws://localhost:8000
-        - REACT_APP_GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
-        - REACT_APP_YANDEX_CLIENT_ID=${YANDEX_CLIENT_ID}
-        - REACT_APP_MICROSOFT_CLIENT_ID=${MICROSOFT_CLIENT_ID}
     container_name: devassist_frontend_full
     ports:
-      - "3000:3000"
+      - "3000:80"
     environment:
       - REACT_APP_API_URL=http://localhost:8000
       - REACT_APP_WS_URL=ws://localhost:8000
+      - REACT_APP_USE_REAL_API=true
       - REACT_APP_GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
       - REACT_APP_YANDEX_CLIENT_ID=${YANDEX_CLIENT_ID}
       - REACT_APP_MICROSOFT_CLIENT_ID=${MICROSOFT_CLIENT_ID}
