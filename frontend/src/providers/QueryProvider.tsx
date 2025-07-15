@@ -8,7 +8,7 @@ interface QueryProviderProps {
 
 // Lazy load DevTools only in development
 const ReactQueryDevtools = React.lazy(() =>
-  import('@tanstack/react-query-devtools').then(module => ({
+  import('@tanstack/react-query-devtools').then((module: any) => ({
     default: module.ReactQueryDevtools
   }))
 )
@@ -22,7 +22,7 @@ export const QueryProvider: React.FC<QueryProviderProps> = ({ children }) => {
         <Suspense fallback={null}>
           <ReactQueryDevtools 
             initialIsOpen={false}
-            buttonPosition="bottom-right"
+            buttonPosition={"bottom-right" as any}
           />
         </Suspense>
       )}
