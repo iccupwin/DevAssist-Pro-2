@@ -13,6 +13,10 @@ from pathlib import Path
 import time
 import hashlib
 
+# Загружаем переменные окружения из .env файла
+from dotenv import load_dotenv
+load_dotenv()
+
 # FastAPI и зависимости
 from fastapi import FastAPI, HTTPException, Depends, BackgroundTasks, Query, UploadFile, File, Request
 from fastapi.responses import JSONResponse, FileResponse, HTMLResponse
@@ -826,6 +830,74 @@ async def analyze_document(document_id: int):
         raise HTTPException(status_code=500, detail=str(e))
 
 # ========================================
+# LLM API (AI Providers)
+# ========================================
+
+@app.get("/api/llm/providers")
+async def get_llm_providers():
+    """Получение статуса AI провайдеров"""
+    try:
+        # Проверяем доступность провайдеров через переменные окружения
+        providers = {
+            "openai": {
+                "status": "available" if os.getenv("OPENAI_API_KEY") else "not_configured",
+                "models": ["gpt-4", "gpt-3.5-turbo"] if os.getenv("OPENAI_API_KEY") else [],
+                "health": True if os.getenv("OPENAI_API_KEY") else False
+            },
+            "anthropic": {
+                "status": "available" if os.getenv("ANTHROPIC_API_KEY") else "not_configured", 
+                "models": ["claude-3-sonnet-20240229", "claude-3-haiku-20240307"] if os.getenv("ANTHROPIC_API_KEY") else [],
+                "health": True if os.getenv("ANTHROPIC_API_KEY") else False
+            },
+            "google": {
+                "status": "available" if os.getenv("GOOGLE_API_KEY") else "not_configured",
+                "models": ["gemini-pro", "gemini-pro-vision"] if os.getenv("GOOGLE_API_KEY") else [],
+                "health": True if os.getenv("GOOGLE_API_KEY") else False
+            }
+        }
+        
+        return {
+            "success": True,
+            "providers": providers,
+            "total_providers": len(providers),
+            "healthy_providers": len([p for p in providers.values() if p["health"]])
+        }
+    except Exception as e:
+        logger.error(f"Ошибка получения провайдеров: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/llm/health")
+async def check_llm_health():
+    """Проверка здоровья AI провайдеров"""
+    try:
+        health_status = {
+            "openai": {
+                "configured": bool(os.getenv("OPENAI_API_KEY")),
+                "status": "healthy" if os.getenv("OPENAI_API_KEY") else "not_configured"
+            },
+            "anthropic": {
+                "configured": bool(os.getenv("ANTHROPIC_API_KEY")), 
+                "status": "healthy" if os.getenv("ANTHROPIC_API_KEY") else "not_configured"
+            },
+            "google": {
+                "configured": bool(os.getenv("GOOGLE_API_KEY")),
+                "status": "healthy" if os.getenv("GOOGLE_API_KEY") else "not_configured"
+            }
+        }
+        
+        overall_healthy = any(provider["configured"] for provider in health_status.values())
+        
+        return {
+            "success": True,
+            "overall_status": "healthy" if overall_healthy else "no_providers_configured",
+            "providers": health_status,
+            "timestamp": datetime.now().isoformat()
+        }
+    except Exception as e:
+        logger.error(f"Ошибка проверки здоровья AI: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+# ========================================
 # ANALYTICS API
 # ========================================
 
@@ -946,6 +1018,258 @@ async def download_excel_report(filename: str):
 # ========================================
 # КП АНАЛИЗАТОР API (ОСНОВНОЙ ФУНКЦИОНАЛ)
 # ========================================
+
+@app.post("/api/kp-analyzer/extract-text")
+async def extract_text_from_document(file: UploadFile = File(...)):
+    """Извлечение текста из документа"""
+    try:
+        # Проверяем тип файла
+        if not file.filename.lower().endswith(('.pdf', '.docx', '.doc', '.txt')):
+            raise HTTPException(status_code=400, detail="Неподдерживаемый тип файла")
+        
+        # Читаем содержимое файла
+        content = await file.read()
+        
+        # Простая мок-обработка
+        if file.filename.lower().endswith('.pdf'):
+            extracted_text = f"[Извлеченный текст из PDF: {file.filename}]\n\nЭто демонстрационный текст для разработки.\nВ реальной системе здесь будет использоваться библиотека для извлечения текста из PDF.\n\nОсновное содержимое документа..."
+        elif file.filename.lower().endswith(('.docx', '.doc')):
+            extracted_text = f"[Извлеченный текст из DOCX: {file.filename}]\n\nЭто демонстрационный текст для разработки.\nВ реальной системе здесь будет использоваться библиотека для извлечения текста из DOCX.\n\nОсновное содержимое документа..."
+        else:
+            extracted_text = content.decode('utf-8', errors='ignore')
+        
+        return {
+            "success": True,
+            "text": extracted_text,
+            "filename": file.filename,
+            "fileSize": len(content),
+            "pageCount": 1
+        }
+    except Exception as e:
+        logger.error(f"Ошибка извлечения текста: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/kp-analyzer/extract-summary") 
+async def extract_kp_summary(data: dict):
+    """Извлечение структурированных данных из КП с помощью AI"""
+    try:
+        kp_text = data.get('kpText', '')
+        file_name = data.get('fileName', 'unknown.pdf')
+        
+        # Мок-ответ для разработки (в реальности здесь будет AI анализ)
+        summary = {
+            "company_name": "ООО 'Тестовая Компания'",
+            "tech_stack": "React, Node.js, PostgreSQL, Docker",
+            "pricing": "1,500,000 руб. с НДС",
+            "timeline": "3 месяца (12 недель)",
+            "team_size": "5 разработчиков",
+            "experience": "Более 50 успешных проектов в сфере веб-разработки",
+            "key_features": [
+                "Современный технологический стек",
+                "Agile методология разработки",
+                "Полная документация проекта",
+                "Техническая поддержка 12 месяцев"
+            ],
+            "contact_info": "Email: info@testcompany.ru, Телефон: +7 (495) 123-45-67"
+        }
+        
+        return summary
+    except Exception as e:
+        logger.error(f"Ошибка извлечения данных КП: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/kp-analyzer/compare")
+async def compare_tz_kp(data: dict):
+    """Сравнение ТЗ и КП с помощью AI"""
+    try:
+        tz_text = data.get('tzText', '')
+        kp_text = data.get('kpText', '')
+        
+        # Мок-ответ для разработки (в реальности здесь будет AI сравнение)
+        comparison = {
+            "compliance_score": 85,
+            "sections": [
+                {
+                    "name": "Техническая архитектура",
+                    "compliance": 90,
+                    "details": "КП полностью соответствует требованиям к технологическому стеку"
+                },
+                {
+                    "name": "Функциональные требования", 
+                    "compliance": 88,
+                    "details": "Покрыты все основные требования, есть незначительные замечания"
+                },
+                {
+                    "name": "Сроки выполнения",
+                    "compliance": 75,
+                    "details": "Сроки реалистичны, но могут потребовать уточнения"
+                }
+            ],
+            "missing_requirements": [
+                "Интеграция с внешними API не описана подробно",
+                "Отсутствует план тестирования безопасности"
+            ],
+            "additional_features": [
+                "Дополнительный модуль аналитики",
+                "Мобильная адаптивность сверх требований"
+            ],
+            "risks": [
+                "Сжатые сроки могут повлиять на качество",
+                "Зависимость от внешних сервисов"
+            ],
+            "advantages": [
+                "Современный технологический стек",
+                "Опытная команда разработчиков",
+                "Конкурентоспособная цена"
+            ],
+            "overall_assessment": "КП демонстрирует хорошее понимание требований и предлагает качественное техническое решение",
+            "strengths": [
+                "Современный технологический стек",
+                "Опытная команда разработчиков"
+            ],
+            "weaknesses": [
+                "Сжатые сроки",
+                "Неполное описание интеграций"
+            ],
+            "recommendation": "conditional"
+        }
+        
+        return comparison
+    except Exception as e:
+        logger.error(f"Ошибка сравнения ТЗ и КП: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/llm/analyze")
+async def ai_analyze(data: dict):
+    """AI анализ с использованием LLM провайдеров"""
+    try:
+        prompt = data.get('prompt', '')
+        model = data.get('model', 'claude-3-5-sonnet-20240620')
+        max_tokens = data.get('max_tokens', 1000)
+        temperature = data.get('temperature', 0.1)
+        
+        # РЕАЛЬНЫЙ AI АНАЛИЗ - проверяем, включен ли реальный режим
+        use_real_api = os.getenv('USE_REAL_API', 'true').lower() == 'true'  # По умолчанию включен
+        
+        # Логируем для отладки
+        logger.info(f"USE_REAL_API: {os.getenv('USE_REAL_API')}, use_real_api: {use_real_api}")
+        logger.info(f"ANTHROPIC_API_KEY: {os.getenv('ANTHROPIC_API_KEY', 'НЕ УСТАНОВЛЕН')[:20]}...")
+        
+        if use_real_api:
+            # Реальный вызов AI API
+            if model.startswith('claude'):
+                return await call_anthropic_api(prompt, model, max_tokens, temperature)
+            elif model.startswith('gpt'):
+                return await call_openai_api(prompt, model, max_tokens, temperature)
+            else:
+                # Fallback на Claude
+                return await call_anthropic_api(prompt, 'claude-3-5-sonnet-20240620', max_tokens, temperature)
+        
+        # Мок-ответ для разработки
+        mock_response = {
+            "content": """{
+                "company_name": "ООО 'Инновационные Решения'",
+                "tech_stack": "React, TypeScript, Node.js, PostgreSQL",
+                "pricing": "2,200,000 руб. включая НДС",
+                "timeline": "4 месяца (16 недель)", 
+                "team_size": "6 специалистов",
+                "experience": "Более 100 проектов в области enterprise разработки",
+                "key_features": [
+                    "Микросервисная архитектура",
+                    "CI/CD пипeline",
+                    "Автоматизированное тестирование",
+                    "Мониторинг и логирование"
+                ],
+                "contact_info": "contacts@innovative-solutions.ru, +7 (812) 987-65-43"
+            }""",
+            "model": model,
+            "tokens_used": max_tokens // 2
+        }
+        
+        return mock_response
+    except Exception as e:
+        logger.error(f"Ошибка AI анализа: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+async def call_anthropic_api(prompt: str, model: str, max_tokens: int, temperature: float):
+    """Вызов Anthropic Claude API"""
+    try:
+        import anthropic
+        
+        api_key = os.getenv('ANTHROPIC_API_KEY')
+        if not api_key:
+            raise HTTPException(status_code=500, detail="ANTHROPIC_API_KEY не настроен")
+        
+        client = anthropic.Anthropic(api_key=api_key)
+        
+        # Маппинг моделей
+        model_mapping = {
+            'claude-3-5-sonnet-20240620': 'claude-3-5-sonnet-20240620',
+            'claude-3-5-sonnet': 'claude-3-5-sonnet-20240620',
+            'claude-3-opus': 'claude-3-opus-20240229',
+            'claude-3-haiku': 'claude-3-haiku-20240307'
+        }
+        
+        actual_model = model_mapping.get(model, 'claude-3-5-sonnet-20240620')
+        
+        response = client.messages.create(
+            model=actual_model,
+            max_tokens=max_tokens,
+            temperature=temperature,
+            messages=[
+                {"role": "user", "content": prompt}
+            ]
+        )
+        
+        return {
+            "content": response.content[0].text,
+            "model": actual_model,
+            "tokens_used": response.usage.output_tokens
+        }
+        
+    except Exception as e:
+        logger.error(f"Ошибка вызова Anthropic API: {e}")
+        raise HTTPException(status_code=500, detail=f"Ошибка AI API: {str(e)}")
+
+async def call_openai_api(prompt: str, model: str, max_tokens: int, temperature: float):
+    """Вызов OpenAI GPT API"""
+    try:
+        import openai
+        
+        api_key = os.getenv('OPENAI_API_KEY')
+        if not api_key:
+            raise HTTPException(status_code=500, detail="OPENAI_API_KEY не настроен")
+        
+        client = openai.OpenAI(api_key=api_key)
+        
+        # Маппинг моделей
+        model_mapping = {
+            'gpt-4o': 'gpt-4o',
+            'gpt-4-turbo': 'gpt-4-turbo-preview',
+            'gpt-4': 'gpt-4',
+            'gpt-3.5-turbo': 'gpt-3.5-turbo'
+        }
+        
+        actual_model = model_mapping.get(model, 'gpt-4o')
+        
+        response = client.chat.completions.create(
+            model=actual_model,
+            messages=[
+                {"role": "user", "content": prompt}
+            ],
+            max_tokens=max_tokens,
+            temperature=temperature
+        )
+        
+        return {
+            "content": response.choices[0].message.content,
+            "model": actual_model,
+            "tokens_used": response.usage.completion_tokens
+        }
+        
+    except Exception as e:
+        logger.error(f"Ошибка вызова OpenAI API: {e}")
+        raise HTTPException(status_code=500, detail=f"Ошибка AI API: {str(e)}")
 
 @app.post("/api/kp-analyzer/full-analysis")
 async def full_kp_analysis(file: UploadFile = File(...)):

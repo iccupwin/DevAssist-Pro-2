@@ -195,6 +195,41 @@ async def generate_text_stream(request: AIRequest):
         }
     )
 
+@app.post("/analyze")
+async def analyze_text(request: dict):
+    """Общий анализ текста с помощью AI - поддерживает любые промпты"""
+    if not orchestrator:
+        raise HTTPException(status_code=503, detail="Service not initialized")
+    
+    try:
+        prompt = request.get("prompt", "")
+        model = request.get("model", "claude-3-5-sonnet-20240620")
+        max_tokens = request.get("max_tokens", 1000)
+        temperature = request.get("temperature", 0.1)
+        
+        # Создаем AIRequest для orchestrator
+        ai_request = AIRequest(
+            prompt=prompt,
+            model_id=model,
+            max_tokens=max_tokens,
+            temperature=temperature,
+            task_type=TaskType.ANALYSIS,
+            user_id=None,
+            organization_id=None
+        )
+        
+        response = await orchestrator.generate_text(ai_request)
+        
+        return {
+            "content": response.content,
+            "model": response.model_used,
+            "tokens_used": response.completion_tokens
+        }
+        
+    except Exception as e:
+        logger.error(f"Text analysis failed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.post("/analyze/kp", response_model=KPAnalysisResponse)
 async def analyze_kp_documents(
     request: KPAnalysisRequest,
