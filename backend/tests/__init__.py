@@ -1,0 +1,3 @@
+"""
+Тесты DevAssist Pro
+"""

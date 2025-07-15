@@ -1,0 +1,184 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: devassist_postgres
+    environment:
+      POSTGRES_DB: devassist_pro
+      POSTGRES_USER: devassist
+      POSTGRES_PASSWORD: devassist_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - devassist_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U devassist -d devassist_pro"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: devassist_redis
+    command: redis-server --appendonly yes --requirepass redis_password
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - devassist_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # API Gateway Service
+  api_gateway:
+    build:
+      context: ./api_gateway
+      dockerfile: Dockerfile
+    container_name: devassist_api_gateway
+    ports:
+      - "8000:8000"
+    environment:
+      - POSTGRES_URL=postgresql://devassist:devassist_password@postgres:5432/devassist_pro
+      - REDIS_URL=redis://:redis_password@redis:6379/0
+      - AUTH_SERVICE_URL=http://auth_service:8001
+      - LLM_SERVICE_URL=http://llm_service:8002
+      - DOCUMENTS_SERVICE_URL=http://documents_service:8003
+      - ANALYTICS_SERVICE_URL=http://analytics_service:8004
+      - REPORTS_SERVICE_URL=http://reports_service:8005
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - devassist_network
+
+  # Auth Service
+  auth_service:
+    build:
+      context: ./services/auth
+      dockerfile: Dockerfile
+    container_name: devassist_auth
+    ports:
+      - "8001:8001"
+    environment:
+      - POSTGRES_URL=postgresql://devassist:devassist_password@postgres:5432/devassist_pro
+      - REDIS_URL=redis://:redis_password@redis:6379/1
+      - JWT_SECRET_KEY=your_jwt_secret_key_here
+      - JWT_ALGORITHM=HS256
+      - JWT_EXPIRE_MINUTES=30
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - devassist_network
+
+  # LLM Orchestrator Service
+  llm_service:
+    build:
+      context: ./services/llm
+      dockerfile: Dockerfile
+    container_name: devassist_llm
+    ports:
+      - "8002:8002"
+    environment:
+      - POSTGRES_URL=postgresql://devassist:devassist_password@postgres:5432/devassist_pro
+      - REDIS_URL=redis://:redis_password@redis:6379/2
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - devassist_network
+
+  # Documents Processing Service
+  documents_service:
+    build:
+      context: ./services/documents
+      dockerfile: Dockerfile
+    container_name: devassist_documents
+    ports:
+      - "8003:8003"
+    environment:
+      - LLM_SERVICE_URL=http://llm_service:8002
+      - REDIS_URL=redis://:redis_password@redis:6379/3
+      - MAX_FILE_SIZE=50MB
+      - SUPPORTED_FORMATS=pdf,docx,txt
+    volumes:
+      - documents_data:/app/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - devassist_network
+
+  # Analytics Service
+  analytics_service:
+    build:
+      context: ./services/analytics
+      dockerfile: Dockerfile
+    container_name: devassist_analytics
+    ports:
+      - "8004:8004"
+    environment:
+      - POSTGRES_URL=postgresql://devassist:devassist_password@postgres:5432/devassist_pro
+      - REDIS_URL=redis://:redis_password@redis:6379/4
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - devassist_network
+
+  # Reports Generation Service
+  reports_service:
+    build:
+      context: ./services/reports
+      dockerfile: Dockerfile
+    container_name: devassist_reports
+    ports:
+      - "8005:8005"
+    environment:
+      - POSTGRES_URL=postgresql://devassist:devassist_password@postgres:5432/devassist_pro
+      - REDIS_URL=redis://:redis_password@redis:6379/5
+      - LLM_SERVICE_URL=http://llm_service:8002
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      llm_service:
+        condition: service_started
+    networks:
+      - devassist_network
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  documents_data:
+    driver: local
+
+networks:
+  devassist_network:
+    driver: bridge
