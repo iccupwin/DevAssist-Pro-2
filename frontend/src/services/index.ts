@@ -9,7 +9,7 @@ export { default as fileUploadApi } from './fileUploadApi';
 export { httpClient } from './httpClient';
 export { httpClient as httpInterceptor } from './httpInterceptors';
 export { integrationService } from './integrationService';
-export { mockApiService } from './mockApiService';
+// mockApiService удален - используем только реальные API
 export { realApiService } from './realApiService';
 export { socketService } from './socketService';
 export { unifiedApiClient } from './unifiedApiClient';

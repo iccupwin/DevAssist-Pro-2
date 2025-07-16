@@ -3,6 +3,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Стили для улучшенной доступности */
+@import './styles/accessibility.css';
+
 @layer base {
   :root {
     --background: 0 0% 100%;

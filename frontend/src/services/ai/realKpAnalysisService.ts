@@ -4,6 +4,7 @@
  */
 
 import { unifiedApiClient } from '../unifiedApiClient';
+import { getBackendApiUrl } from '../../config/app';
 import {
   RealKPSummaryData,
   RealComparisonResult, 
@@ -54,7 +55,8 @@ class RealKpAnalysisService {
   }
 
   /**
-   * Извлечение текста из PDF файла (с кэшированием)
+   * Извлечение текста из файлов различных форматов (с кэшированием)
+   * Поддерживает: PDF, DOCX, DOC, TXT
    */
   async extractTextFromPDF(file: File): Promise<PDFProcessingResult> {
     // Проверяем кэш
@@ -64,48 +66,50 @@ class RealKpAnalysisService {
       return this.textCache.get(cacheKey)!;
     }
 
+    console.log(`📄 Начинаем извлечение текста из файла: ${file.name} (тип: ${file.type})`);
+
     try {
-      // Для текстовых файлов читаем содержимое напрямую
+      let extractedText = '';
+      let pageCount = 1;
+
+      // Определяем тип файла и извлекаем текст соответствующим образом
       if (file.type === 'text/plain' || file.name.endsWith('.txt')) {
-        const text = await this.readTextFile(file);
-        return {
-          text,
-          filename: file.name,
-          fileSize: file.size,
-          pageCount: 1,
-        };
+        // Текстовые файлы читаем напрямую
+        extractedText = await this.readTextFile(file);
+        console.log(`📝 Текстовый файл прочитан: ${extractedText.length} символов`);
+      } else if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
+        // PDF файлы обрабатываем через API или fallback
+        extractedText = await this.extractFromPDFFile(file);
+        console.log(`📄 PDF файл обработан: ${extractedText.length} символов`);
+      } else if (
+        file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+        file.type === 'application/msword' ||
+        file.name.endsWith('.docx') ||
+        file.name.endsWith('.doc')
+      ) {
+        // DOCX/DOC файлы обрабатываем через API или fallback
+        extractedText = await this.extractFromWordFile(file);
+        console.log(`📄 Word файл обработан: ${extractedText.length} символов`);
+      } else {
+        // Неизвестный формат - пытаемся прочитать как текст
+        console.log(`⚠️ Неизвестный формат файла: ${file.type}, пытаемся прочитать как текст`);
+        extractedText = await this.readTextFile(file);
       }
 
-      // Для других файлов пытаемся загрузить через API
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('document_type', 'kp');
-
-      const response = await fetch('http://localhost:8000/api/documents/upload', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-
-      const result = await response.json();
-      
-      // Возвращаем содержимое или имя файла как текст
       const processedResult = {
-        text: result.data?.content || file.name,
+        text: extractedText || `Файл: ${file.name}`,
         filename: file.name,
         fileSize: file.size,
-        pageCount: 1,
+        pageCount,
       };
 
       // Сохраняем в кэш
       this.textCache.set(cacheKey, processedResult);
+      console.log(`✅ Текст успешно извлечен из ${file.name}: ${extractedText.length} символов`);
       return processedResult;
 
     } catch (error) {
-      console.error('Error extracting text from file:', error);
+      console.error(`❌ Ошибка извлечения текста из файла ${file.name}:`, error);
       
       // Fallback: читаем как текстовый файл
       try {
@@ -118,6 +122,7 @@ class RealKpAnalysisService {
         };
         // Сохраняем в кэш
         this.textCache.set(cacheKey, fallbackResult);
+        console.log(`⚠️ Используем fallback для ${file.name}`);
         return fallbackResult;
       } catch (fallbackError) {
         throw new Error(`Не удалось извлечь текст из ${file.name}: ${error}`);
@@ -140,6 +145,60 @@ class RealKpAnalysisService {
       };
       reader.readAsText(file, 'utf-8');
     });
+  }
+
+  /**
+   * Извлечение текста из PDF файла через API
+   */
+  private async extractFromPDFFile(file: File): Promise<string> {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('document_type', 'kp');
+
+      const response = await fetch(`${getBackendApiUrl()}/api/documents/upload`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      return result.data?.content || '';
+    } catch (error) {
+      console.error('PDF extraction via API failed:', error);
+      // Fallback: читаем как текстовый файл
+      return await this.readTextFile(file);
+    }
+  }
+
+  /**
+   * Извлечение текста из Word файла через API
+   */
+  private async extractFromWordFile(file: File): Promise<string> {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('document_type', 'kp');
+
+      const response = await fetch(`${getBackendApiUrl()}/api/documents/upload`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      return result.data?.content || '';
+    } catch (error) {
+      console.error('Word extraction via API failed:', error);
+      // Fallback: читаем как текстовый файл
+      return await this.readTextFile(file);
+    }
   }
 
   /**
@@ -169,7 +228,7 @@ ${this.truncateText(kpText)}
 
     try {
       // Отправляем запрос через унифицированный API клиент
-      const response = await fetch('http://localhost:8000/api/llm/analyze', {
+      const response = await fetch(`${getBackendApiUrl()}/api/llm/analyze`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -246,7 +305,7 @@ ${this.truncateText(kpText)}
 }`;
 
     try {
-      const response = await fetch('http://localhost:8000/api/llm/analyze', {
+      const response = await fetch(`${getBackendApiUrl()}/api/llm/analyze`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -333,7 +392,7 @@ ${additionalNotes ? `ДОПОЛНИТЕЛЬНЫЕ ЗАМЕЧАНИЯ: ${addition
 }`;
 
     try {
-      const response = await fetch('http://localhost:8000/api/llm/analyze', {
+      const response = await fetch(`${getBackendApiUrl()}/api/llm/analyze`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -537,6 +596,18 @@ ${parsedData.next_steps}`;
         tech_stack: fullAnalysis.tech_stack,
         pricing: fullAnalysis.pricing,
         timeline: fullAnalysis.timeline,
+        // Добавляем структурированные данные о стоимости для правильного отображения в UI
+        total_cost: fullAnalysis.total_cost,
+        currency: fullAnalysis.currency,
+        cost_breakdown: fullAnalysis.cost_breakdown,
+        // Добавляем новые поля для сравнительного анализа
+        competitive_advantages: fullAnalysis.competitive_advantages,
+        team_expertise: fullAnalysis.team_expertise,
+        methodology: fullAnalysis.methodology,
+        quality_assurance: fullAnalysis.quality_assurance,
+        post_launch_support: fullAnalysis.post_launch_support,
+        document_quality: fullAnalysis.document_quality,
+        file_format: fullAnalysis.file_format,
         summary: {
           company_name: fullAnalysis.company_name,
           tech_stack: fullAnalysis.tech_stack,
@@ -568,47 +639,77 @@ ${parsedData.next_steps}`;
 
   /**
    * Единый AI вызов для полного анализа (заменяет 3 отдельных вызова)
-   * ТОЛЬКО РЕАЛЬНЫЕ AI ВЫЗОВЫ - БЕЗ MOCK ДАННЫХ
+   * Оптимизирован для сравнительного анализа нескольких КП различных форматов
    */
   private async runSinglePassAnalysis(tzText: string, kpText: string, fileName: string): Promise<any> {
     console.log(`🤖 Запуск реального AI анализа для ${fileName}`);
     
-    // Убираем mock-режим - всегда используем реальный AI
+    // Определяем формат файла для лучшего анализа
+    const fileFormat = fileName.split('.').pop()?.toLowerCase() || 'unknown';
+    const formatHint = this.getFileFormatHint(fileFormat);
+    
     const prompt = `
 Ты — эксперт по анализу тендерной документации с опытом более 10 лет. Проведи детальный и объективный анализ коммерческого предложения относительно технического задания.
+
+ВАЖНО: Данное КП может быть в различных форматах (${formatHint}), поэтому внимательно анализируй структуру документа.
 
 ТЕХНИЧЕСКОЕ ЗАДАНИЕ:
 ${this.truncateText(tzText)}
 
-КОММЕРЧЕСКОЕ ПРЕДЛОЖЕНИЕ:
+КОММЕРЧЕСКОЕ ПРЕДЛОЖЕНИЕ (файл: ${fileName}):
 ${this.truncateText(kpText)}
 
-Проведи глубокий анализ по следующим критериям:
-1. Техническое соответствие требованиям ТЗ
-2. Качество предлагаемого решения
-3. Экономическая обоснованность
-4. Реалистичность сроков и ресурсов
-5. Опыт и компетенции исполнителя
+Проведи глубокий сравнительный анализ по следующим критериям:
+1. Техническое соответствие требованиям ТЗ (учитывай все технические требования)
+2. Качество предлагаемого решения (архитектура, технологии, подходы)
+3. Экономическая обоснованность (соотношение цена/качество)
+4. Реалистичность сроков и ресурсов (планы, этапы, команда)
+5. Опыт и компетенции исполнителя (портфолио, кейсы)
+6. Дополнительные услуги и преимущества
+7. Риски и их минимизация
+
+ОСОБЕННОСТИ СРАВНИТЕЛЬНОГО АНАЛИЗА:
+- Анализируй КП в контексте возможного сравнения с другими предложениями
+- Выделяй уникальные особенности и конкурентные преимущества
+- Оценивай не только соответствие ТЗ, но и дополнительную ценность
+- Учитывай формат документа при оценке профессионализма
 
 Верни результат строго в JSON формате (без markdown):
 {
   "company_name": "точное название компании из документа",
-  "tech_stack": "детальное описание технологий и подходов",
+  "tech_stack": "детальное описание технологий, подходов и архитектурных решений",
   "pricing": "полная информация о стоимости и условиях оплаты",
-  "timeline": "сроки выполнения с этапами",
-  "compliance_score": число от 0 до 100 (где 100 = полное соответствие),
+  "total_cost": число - общая стоимость проекта (только число без валюты),
+  "currency": "валюта (руб., USD, EUR)",
+  "cost_breakdown": {
+    "development": число - стоимость разработки,
+    "testing": число - стоимость тестирования,
+    "deployment": число - стоимость внедрения,
+    "support": число - стоимость поддержки,
+    "maintenance": число - стоимость сопровождения,
+    "other": число - прочие расходы
+  },
+  "timeline": "детальные сроки выполнения с этапами и вехами",
+  "compliance_score": число от 0 до 100 (где 100 = полное соответствие ТЗ),
   "advantages": ["конкретное преимущество 1", "конкретное преимущество 2", "конкретное преимущество 3"],
   "risks": ["конкретный риск 1", "конкретный риск 2"],
   "missing_requirements": ["конкретное недостающее требование 1", "конкретное недостающее требование 2"],
-  "additional_features": ["дополнительная функция 1", "дополнительная функция 2"],
-  "overall_assessment": "развернутая объективная оценка в 2-3 предложениях",
-  "recommendation": "конкретная рекомендация: принять/доработать/отклонить с обоснованием"
+  "additional_features": ["дополнительная функция 1", "дополнительная функция 2", "дополнительная функция 3"],
+  "competitive_advantages": ["уникальное конкурентное преимущество 1", "уникальное конкурентное преимущество 2"],
+  "team_expertise": "оценка команды и экспертизы исполнителя",
+  "methodology": "описание методологии и подходов к реализации",
+  "quality_assurance": "подходы к обеспечению качества и тестированию",
+  "post_launch_support": "условия поддержки после запуска",
+  "overall_assessment": "развернутая объективная оценка в 2-3 предложениях с фокусом на конкурентоспособность",
+  "recommendation": "конкретная рекомендация: принять/доработать/отклонить с обоснованием для сравнительного анализа",
+  "document_quality": "оценка качества оформления и структуры документа",
+  "file_format": "${fileFormat}"
 }
 
-Будь объективен и конкретен в оценках. Используй только информацию из предоставленных документов.`;
+Будь объективен и конкретен в оценках. Используй только информацию из предоставленных документов. Фокусируйся на аспектах, важных для сравнения с другими КП.`;
 
     try {
-      const response = await fetch('http://localhost:8000/api/llm/analyze', {
+      const response = await fetch(`${getBackendApiUrl()}/api/llm/analyze`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -713,6 +814,23 @@ ${this.truncateText(kpText)}
     return text.length > this.MAX_TEXT_LENGTH 
       ? text.substring(0, this.MAX_TEXT_LENGTH) + '...'
       : text;
+  }
+
+  /**
+   * Получение подсказки по формату файла для AI анализа
+   */
+  private getFileFormatHint(fileFormat: string): string {
+    switch (fileFormat) {
+      case 'pdf':
+        return 'PDF документ - обычно хорошо структурированный с графическими элементами';
+      case 'docx':
+      case 'doc':
+        return 'Word документ - может содержать таблицы, списки и форматирование';
+      case 'txt':
+        return 'текстовый файл - простой формат без форматирования';
+      default:
+        return 'неизвестный формат - анализируй как обычный текст';
+    }
   }
 
   private generateRecommendation(score: number): 'accept' | 'conditional' | 'reject' {

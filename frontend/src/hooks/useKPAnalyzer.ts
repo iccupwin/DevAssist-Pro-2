@@ -291,53 +291,8 @@ export const useKPAnalyzer = () => {
         return newState;
       });
 
-      // Проверяем, есть ли и ТЗ и КП для автоматического запуска анализа (только если анализ еще не проводился)
-      setTimeout(() => {
-        setState(currentState => {
-          const hasRecentTZ = role === 'tz' || currentState.technicalSpec;
-          const hasRecentKP = role === 'kp' || currentState.commercialProposals.length > 0;
-          const noExistingResults = currentState.analysisResults.length === 0;
-          
-          if (hasRecentTZ && hasRecentKP && noExistingResults && !currentState.isProcessing) {
-            console.log('🚀 Автоматический запуск анализа после загрузки документов');
-            // Запускаем анализ автоматически только если нет существующих результатов
-            // Используем актуальное состояние из setState callback
-            const updatedState = {
-              ...currentState,
-              technicalSpec: role === 'tz' ? {
-                id: fileId,
-                name: file.name,
-                size: file.size,
-                type: file.name.endsWith('.pdf') ? 'pdf' as const : 'docx' as const,
-                uploadedAt: new Date().toISOString(),
-                content: extractedData.text,
-                status: 'ready' as const,
-                role: 'tz' as const,
-                title: file.name,
-              } as TechnicalSpecification : currentState.technicalSpec,
-              commercialProposals: role === 'kp' ? [
-                ...currentState.commercialProposals,
-                {
-                  id: fileId,
-                  name: file.name,
-                  size: file.size,
-                  type: file.name.endsWith('.pdf') ? 'pdf' as const : 'docx' as const,
-                  uploadedAt: new Date().toISOString(),
-                  content: extractedData.text,
-                  status: 'ready' as const,
-                  role: 'kp' as const,
-                  title: file.name,
-                }
-              ] : currentState.commercialProposals
-            };
-            startAnalysisInternal(updatedState);
-          } else if (!noExistingResults) {
-            console.log('ℹ️ Анализ не запущен - уже есть результаты');
-          }
-          
-          return currentState;
-        });
-      }, 1000); // Небольшая задержка чтобы состояние обновилось
+      // Автоматический анализ отключен - пользователь должен нажать кнопку "Анализ"
+      // Раньше здесь был автоматический запуск анализа, но теперь он происходит только по нажатию кнопки
 
       // Убираем прогресс через небольшую задержку
       setTimeout(() => {
@@ -567,8 +522,8 @@ export const useKPAnalyzer = () => {
     availableModels,
     uploadProgress,
     
-    // Проверки готовности
-    canProceedToAnalysis: state.technicalSpec && state.commercialProposals.length > 0 && !state.isProcessing && state.analysisResults.length === 0,
+    // Проверки готовности - убрали требование отсутствия результатов для повторного анализа
+    canProceedToAnalysis: state.technicalSpec && state.commercialProposals.length > 0 && !state.isProcessing,
     hasResults: state.analysisResults.length > 0 && state.comparisonResult,
     
     // Действия

@@ -6,3 +6,6 @@ requests==2.32.4
 anthropic>=0.10.0
 openai>=1.10.0
 python-dotenv>=1.0.0
+sqlalchemy==2.0.34
+psycopg2-binary==2.9.9
+pydantic-settings==2.6.1

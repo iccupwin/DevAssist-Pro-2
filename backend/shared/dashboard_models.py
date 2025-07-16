@@ -42,7 +42,7 @@ class UserActivity(Base, TimestampMixin):
     analysis_id = Column(Integer, ForeignKey("analyses.id"), nullable=True)
     
     # Метаданные
-    metadata = Column(JSON, nullable=True, default=dict)
+    activity_metadata = Column(JSON, nullable=True, default=dict)
     
     # Связи
     user = relationship("User")

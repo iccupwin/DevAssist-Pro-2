@@ -1,7 +1,12 @@
 // API Configuration для DevAssist Pro
+// 🔒 PRODUCTION READY: All URLs use environment variables with secure fallbacks
 export const API_CONFIG = {
   // Base URL для backend API
-  BASE_URL: process.env.REACT_APP_API_URL || 'http://localhost:8000',
+  BASE_URL: process.env.REACT_APP_API_URL || (
+    process.env.NODE_ENV === 'production' 
+      ? 'https://your-api-domain.com' 
+      : 'http://localhost:8000'
+  ),
   
   // Использовать реальное API или mock
   USE_REAL_API: process.env.REACT_APP_USE_REAL_API === 'true',

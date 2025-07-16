@@ -210,7 +210,7 @@ class AuthBridge {
   async forgotPassword(email: string): Promise<AuthResponse> {
     try {
       // Вызываем API для сброса пароля
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/auth/forgot-password`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:8000'}/api/auth/password-reset`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -240,7 +240,7 @@ class AuthBridge {
 
   async resetPassword(token: string, newPassword: string): Promise<AuthResponse> {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/auth/reset-password`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:8000'}/api/auth/password-reset/confirm`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

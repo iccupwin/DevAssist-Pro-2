@@ -56,19 +56,23 @@ export interface BaseEntity {
 
 // ===== USER TYPES =====
 export interface User extends BaseEntity {
+  id: number;
   email: string;
   full_name: string;
-  firstName: string;
-  lastName: string;
-  role: 'user' | 'admin' | 'moderator';
+  role: 'user' | 'superuser' | 'admin' | 'moderator';
   company?: string;
   position?: string;
   phone?: string;
   is_active: boolean;
   is_verified: boolean;
   is_superuser: boolean;
-  isEmailVerified: boolean;
-  is2FAEnabled: boolean;
+  
+  // Deprecated fields for backward compatibility
+  name?: string;
+  firstName?: string;
+  lastName?: string;
+  isEmailVerified?: boolean;
+  is2FAEnabled?: boolean;
   avatar?: string;
   subscription?: {
     plan: string;
@@ -92,14 +96,12 @@ export interface UserCreate {
   password: string;
   full_name: string;
   company?: string;
-  position?: string;
   phone?: string;
 }
 
 export interface UserUpdate {
   full_name?: string;
   company?: string;
-  position?: string;
   phone?: string;
 }
 
@@ -182,7 +184,7 @@ export interface Document extends BaseEntity {
   processed_at?: string;
   processing_status: string;
   extracted_text?: string;
-  metadata?: Record<string, any>;
+  document_metadata?: Record<string, any>;
   uploaded_by_id: number;
   project_id?: number;
   uploaded_by?: User;
@@ -299,20 +301,27 @@ export interface Report extends BaseEntity {
 
 // ===== ACTIVITY TYPES =====
 export interface Activity extends BaseEntity {
-  type: ActivityType;
-  title: string;
-  description: string;
   user_id: number;
+  title: string;
+  description?: string;
   organization_id?: number;
+  module_id?: string;
   project_id?: number;
   document_id?: number;
   analysis_id?: number;
-  project_metadata?: Record<string, any>;
   user?: User;
   organization?: Organization;
   project?: Project;
   document?: Document;
   analysis?: Analysis;
+  
+  // Support both old and new field names for activity type
+  activity_type?: string;
+  type?: ActivityType;
+  
+  // Support both old and new metadata field names
+  activity_metadata?: Record<string, any>;
+  project_metadata?: Record<string, any>;
 }
 
 export interface ActivityFeedRequest {
@@ -336,6 +345,24 @@ export interface ActivityFeedResponse {
 export interface LoginRequest {
   email: string;
   password: string;
+}
+
+export interface RegisterRequest {
+  email: string;
+  password: string;
+  full_name: string;
+  company?: string;
+  phone?: string;
+}
+
+export interface AuthResponse {
+  success: boolean;
+  user?: User;
+  token?: string;
+  refreshToken?: string;
+  expiresIn?: number;
+  message?: string;
+  error?: string;
 }
 
 export interface LoginResponse {
@@ -468,6 +495,97 @@ export interface DashboardStats {
   total_analyses: number;
   ai_cost_this_month: number;
   recent_activities: Activity[];
+}
+
+export interface DashboardModule extends BaseEntity {
+  id: string; // kp-analyzer, tz-generator, etc.
+  title: string;
+  description: string;
+  icon: string;
+  status: 'active' | 'coming_soon' | 'beta';
+  ai_models: string[];
+  is_enabled: boolean;
+  sort_order: number;
+  access_level: 'public' | 'premium' | 'enterprise';
+  settings?: Record<string, any>;
+}
+
+export interface UserActivity extends BaseEntity {
+  user_id: number;
+  organization_id?: number;
+  activity_type: string;
+  title: string;
+  description?: string;
+  module_id?: string;
+  project_id?: number;
+  document_id?: number;
+  analysis_id?: number;
+  activity_metadata?: Record<string, any>;
+  user?: User;
+  organization?: Organization;
+  project?: Project;
+  document?: Document;
+  analysis?: Analysis;
+}
+
+export interface Notification extends BaseEntity {
+  user_id: number;
+  organization_id?: number;
+  type: 'info' | 'success' | 'warning' | 'error';
+  title: string;
+  message: string;
+  is_read: boolean;
+  is_deleted: boolean;
+  expires_at?: string;
+  action_url?: string;
+  action_text?: string;
+  module_id?: string;
+  project_id?: number;
+  user?: User;
+  organization?: Organization;
+  project?: Project;
+}
+
+export interface DashboardPreference extends BaseEntity {
+  user_id: number;
+  theme: 'light' | 'dark' | 'auto';
+  language: 'ru' | 'en';
+  show_welcome_tour: boolean;
+  default_module?: string;
+  notifications_enabled: boolean;
+  email_notifications: boolean;
+  dashboard_layout?: Record<string, any>;
+  favorite_modules?: string[];
+  user?: User;
+}
+
+export interface SystemMetric extends BaseEntity {
+  metric_type: string;
+  metric_name: string;
+  value: number;
+  previous_value?: number;
+  organization_id?: number;
+  module_id?: string;
+  measured_at: string;
+  period: 'hour' | 'day' | 'week' | 'month';
+  organization?: Organization;
+}
+
+export interface SearchIndex extends BaseEntity {
+  object_type: 'project' | 'document' | 'analysis' | 'user';
+  object_id: number;
+  title: string;
+  content: string;
+  description?: string;
+  module_id?: string;
+  project_id?: number;
+  organization_id?: number;
+  user_id?: number;
+  relevance_boost: number;
+  last_accessed?: string;
+  access_count: number;
+  organization?: Organization;
+  user?: User;
 }
 
 

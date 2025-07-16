@@ -33,14 +33,49 @@ export const KPFileUpload: React.FC<KPFileUploadProps> = ({
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
+  // Функция для получения иконки по типу файла
+  const getFileIcon = (fileName: string) => {
+    const extension = fileName.split('.').pop()?.toLowerCase();
+    switch (extension) {
+      case 'pdf':
+        return '📄';
+      case 'docx':
+      case 'doc':
+        return '📝';
+      case 'txt':
+        return '📋';
+      default:
+        return '📄';
+    }
+  };
+
+  // Функция для получения описания типа файла
+  const getFileTypeDescription = (fileName: string) => {
+    const extension = fileName.split('.').pop()?.toLowerCase();
+    switch (extension) {
+      case 'pdf':
+        return 'PDF документ';
+      case 'docx':
+        return 'Word документ';
+      case 'doc':
+        return 'Word документ (старый формат)';
+      case 'txt':
+        return 'Текстовый файл';
+      default:
+        return 'Документ';
+    }
+  };
+
   // Компонент для отображения загруженного файла
   const FileDisplay: React.FC<{ file: FileUploadInfo; onRemove: () => void }> = ({ file, onRemove }) => (
     <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
       <div className="flex items-center space-x-3">
-        <FileText className="w-5 h-5 text-blue-600" />
+        <div className="text-2xl">{getFileIcon(file.name)}</div>
         <div>
           <p className="text-sm font-medium text-gray-900 dark:text-white">{file.name}</p>
-          <p className="text-xs text-gray-500 dark:text-gray-400">{formatFileSize(file.size)}</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            {getFileTypeDescription(file.name)} • {formatFileSize(file.size)}
+          </p>
         </div>
       </div>
       <button
@@ -108,10 +143,13 @@ export const KPFileUpload: React.FC<KPFileUploadProps> = ({
           <AlertCircle className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
           <div>
             <p className="text-sm text-blue-900 dark:text-blue-300 font-medium">
-              Поддерживаемые форматы файлов
+              Поддерживаемые форматы файлов для КП Анализатора
             </p>
             <p className="text-xs text-blue-700 dark:text-blue-400 mt-1">
-              PDF, DOC, DOCX, TXT файлы. Размер файла не должен превышать 50MB.
+              📄 PDF, 📝 DOC/DOCX, 📋 TXT файлы. Размер файла не должен превышать 50MB.
+            </p>
+            <p className="text-xs text-blue-600 dark:text-blue-400 mt-2">
+              ✅ Загрузите 1 ТЗ и несколько КП разных форматов для сравнительного анализа
             </p>
           </div>
         </div>

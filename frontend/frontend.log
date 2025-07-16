@@ -1,0 +1,2280 @@
+npm warn using --force Recommended protections disabled.
+
+> devassist-pro-frontend@1.0.0 start
+> react-scripts start
+
+(node:22393) [DEP_WEBPACK_DEV_SERVER_ON_AFTER_SETUP_MIDDLEWARE] DeprecationWarning: 'onAfterSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:22393) [DEP_WEBPACK_DEV_SERVER_ON_BEFORE_SETUP_MIDDLEWARE] DeprecationWarning: 'onBeforeSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
+Starting the development server...
+
+Compiled with warnings.
+
+[eslint] 
+src/services/httpInterceptors.ts
+  Line 13:10:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 22:9:    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 40:22:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 41:22:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 59:5:    Unexpected console statement              no-console
+  Line 65:21:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 105:5:   Unexpected console statement              no-console
+  Line 122:5:   Unexpected console statement              no-console
+  Line 140:41:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 140:78:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 168:64:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 171:7:   Unexpected console statement              no-console
+  Line 189:7:   Unexpected console statement              no-console
+  Line 216:37:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 231:62:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 235:5:   Unexpected console statement              no-console
+  Line 264:11:  Unexpected console statement              no-console
+  Line 284:11:  Unexpected console statement              no-console
+  Line 348:21:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 363:33:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 375:33:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 379:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 380:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 381:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 382:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 383:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 400:7:   Unexpected console statement              no-console
+  Line 408:17:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 412:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 412:43:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 416:17:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 416:42:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 420:19:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 420:44:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 424:20:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 431:1:   Unexpected console statement              no-console
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in [eslint] 
+src/services/httpInterceptors.ts
+  Line 13:10:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 22:9:    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 40:22:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 41:22:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 59:5:    Unexpected console statement              no-console
+  Line 65:21:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 105:5:   Unexpected console statement              no-console
+  Line 122:5:   Unexpected console statement              no-console
+  Line 140:41:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 140:78:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 168:64:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 171:7:   Unexpected console statement              no-console
+  Line 189:7:   Unexpected console statement              no-console
+  Line 216:37:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 231:62:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 235:5:   Unexpected console statement              no-console
+  Line 264:11:  Unexpected console statement              no-console
+  Line 284:11:  Unexpected console statement              no-console
+  Line 348:21:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 363:33:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 375:33:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 379:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 380:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 381:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 382:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 383:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 400:7:   Unexpected console statement              no-console
+  Line 408:17:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 412:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 412:43:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 416:17:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 416:42:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 420:19:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 420:44:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 424:20:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 431:1:   Unexpected console statement              no-console
+
+webpack compiled with 1 warning
+WARNING in src/auth/index.ts:3:26
+TS2305: Module '"../contexts/AuthContext"' has no exported member 'RegisterData'.
+    1 | // Authentication Context
+    2 | export { AuthProvider, useAuth } from '../contexts/AuthContext';
+  > 3 | export type { AuthState, RegisterData } from '../contexts/AuthContext';
+      |                          ^^^^^^^^^^^^
+    4 | export type { User } from '../types/auth';
+    5 |
+    6 | // Authentication Hooks
+
+WARNING in src/components/ui/index.ts:3:10
+TS2614: Module '"./LoadingSpinner"' has no exported member 'LoadingSpinner'. Did you mean to use 'import LoadingSpinner from "./LoadingSpinner"' instead?
+    1 | export { Button } from './Button';
+    2 | export { Input } from './Input';
+  > 3 | export { LoadingSpinner } from './LoadingSpinner';
+      |          ^^^^^^^^^^^^^^
+    4 | export { BentoGrid } from './BentoGrid';
+    5 | export { DisplayCards } from './DisplayCards';
+    6 | export { HeroSection } from './HeroSection';
+
+WARNING in src/components/ui/index.ts:4:10
+TS2614: Module '"./BentoGrid"' has no exported member 'BentoGrid'. Did you mean to use 'import BentoGrid from "./BentoGrid"' instead?
+    2 | export { Input } from './Input';
+    3 | export { LoadingSpinner } from './LoadingSpinner';
+  > 4 | export { BentoGrid } from './BentoGrid';
+      |          ^^^^^^^^^
+    5 | export { DisplayCards } from './DisplayCards';
+    6 | export { HeroSection } from './HeroSection';
+    7 | export { NavigationBar } from './NavigationBar';
+
+WARNING in src/components/ui/index.ts:5:10
+TS2614: Module '"./DisplayCards"' has no exported member 'DisplayCards'. Did you mean to use 'import DisplayCards from "./DisplayCards"' instead?
+    3 | export { LoadingSpinner } from './LoadingSpinner';
+    4 | export { BentoGrid } from './BentoGrid';
+  > 5 | export { DisplayCards } from './DisplayCards';
+      |          ^^^^^^^^^^^^
+    6 | export { HeroSection } from './HeroSection';
+    7 | export { NavigationBar } from './NavigationBar';
+    8 | export { PricingCard } from './PricingCard';
+
+WARNING in src/components/ui/index.ts:9:10
+TS2724: '"./RegistrationToast"' has no exported member named 'RegistrationToast'. Did you mean 'RegistrationToastProps'?
+     7 | export { NavigationBar } from './NavigationBar';
+     8 | export { PricingCard } from './PricingCard';
+  >  9 | export { RegistrationToast } from './RegistrationToast';
+       |          ^^^^^^^^^^^^^^^^^
+    10 | export { AnimatedGroup } from './AnimatedGroup';
+    11 | export { ModernSidebar } from './ModernSidebar';
+
+WARNING in src/providers/QueryProvider.tsx:24:13
+TS2322: Type '{ initialIsOpen: boolean; buttonPosition: any; }' is not assignable to type 'IntrinsicAttributes'.
+  Property 'initialIsOpen' does not exist on type 'IntrinsicAttributes'.
+    22 |         <Suspense fallback={null}>
+    23 |           <ReactQueryDevtools 
+  > 24 |             initialIsOpen={false}
+       |             ^^^^^^^^^^^^^
+    25 |             buttonPosition={"bottom-right" as any}
+    26 |           />
+    27 |         </Suspense>
+
+WARNING in src/services/ai/realKpAnalysisService.ts:607:9
+TS2322: Type '{ id: string; tz_name: string; kp_name: string; company_name: any; tech_stack: any; pricing: any; timeline: any; total_cost: any; currency: any; cost_breakdown: any; competitive_advantages: any; team_expertise: any; ... 10 more ...; confidence_score: any; }' is not assignable to type 'RealAnalysisResult'.
+  Object literal may only specify known properties, and 'post_launch_support' does not exist in type 'RealAnalysisResult'.
+    605 |         methodology: fullAnalysis.methodology,
+    606 |         quality_assurance: fullAnalysis.quality_assurance,
+  > 607 |         post_launch_support: fullAnalysis.post_launch_support,
+        |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    608 |         document_quality: fullAnalysis.document_quality,
+    609 |         file_format: fullAnalysis.file_format,
+    610 |         summary: {
+
+WARNING in src/services/unifiedApiClient.ts:229:7
+TS2322: Type 'string' is not assignable to type 'number'.
+    227 |
+    228 |     const mockUser: User = {
+  > 229 |       id: Date.now().toString(),
+        |       ^^
+    230 |       email: userData.email,
+    231 |       full_name: `${userData.firstName} ${userData.lastName}`,
+    232 |       firstName: userData.firstName,
+
+WARNING in src/test-types.ts
+TS1208: 'test-types.ts' cannot be compiled under '--isolaCompiling...
+Compiled with warnings.
+
+[eslint] 
+src/services/httpInterceptors.ts
+  Line 13:10:   Unexpected any. Specify a different type  @typescript-Compiled with warnings.
+
+[eslint] 
+src/services/httpInterceptors.ts
+  Line 13:10:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 22:9:    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 40:22:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 41:22:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 59:5:    Unexpected console statement              no-console
+  Line 65:21:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 105:5:   Unexpected console statement              no-console
+  Line 122:5:   Unexpected console statement              no-console
+  Line 140:41:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 140:78:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 168:64:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 171:7:   Unexpected console statement              no-console
+  Line 189:7:   Unexpected console statement              no-console
+  Line 216:37:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 231:62:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 235:5:   Unexpected console statement              no-console
+  Line 264:11:  Unexpected console statement              no-console
+  Line 284:11:  Unexpected console statement              no-console
+  Line 348:21:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 363:33:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 375:33:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 379:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 380:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 381:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 382:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 383:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 400:7:   Unexpected console statement              no-console
+  Line 408:17:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 412:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 412:43:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 416:17:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 416:42:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 420:19:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 420:44:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 424:20:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 431:1:   Unexpected console statement              no-console
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in [eslint] 
+src/services/httpInterceptors.ts
+  Line 13:10:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 22:9:    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 40:22:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 41:22:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 59:5:    Unexpected console statement              no-console
+  Line 65:21:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 105:5:   Unexpected console statement              no-console
+  Line 122:5:   Unexpected console statement              no-console
+  Line 140:41:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 140:78:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 168:64:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 171:7:   Unexpected console statement              no-console
+  Line 189:7:   Unexpected console statement              no-console
+  Line 216:37:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 231:62:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 235:5:   Unexpected console statement              no-console
+  Line 264:11:  Unexpected console statement              no-console
+  Line 284:11:  Unexpected console statement              no-console
+  Line 348:21:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 363:33:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 375:33:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 379:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 380:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 381:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 382:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 383:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 400:7:   Unexpected console statement              no-console
+  Line 408:17:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 412:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 412:43:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 416:17:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 416:42:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 420:19:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 420:4Files successfully emitted, waiting for typecheck results...
+Issues checking in progress...
+WARNING in src/auth/index.ts:3:26
+TS2305: Module '"../contexts/AuthContext"' has no exported member 'RegisterData'.
+    1 | // Authentication Context
+    2 | export { AuthProvider, useAuth } from '../contexts/AuthContext';
+  > 3 | export type { AuthState, RegisterData } from WARNING in src/auth/index.ts:3:26
+TS2305: Module '"../contexts/AuthContext"' has no exported member 'RegisterData'.
+    1 | // Authentication Context
+    2 | export { AuthProvider, useAuth } from '../contexts/AuthContext';
+  > 3 | export type { AuthState, RegisterData } from '../contexts/AuthContext';
+      |                          ^^^^^^^^^^^^
+    4 | export type { User } from '../types/auth';
+    5 |
+    6 | // Authentication Hooks
+
+WARNING in src/components/debug/PerformanceMonitor.tsx:235:13
+TS2322: Type 'PropsWithoutRef<P> & { ref: ForwardedRef<any>; }' is not assignable to type 'IntrinsicAttributes & P'.
+  Type 'PropsWithoutRef<P> & { ref: ForwardedRef<any>; }' is not assignable to type 'P'.
+    'PropsWithoutRef<P> & { ref: ForwardedRef<any>; }' is assignable to the constraint of type 'P', but 'P' could be instantiated with a different subtype of constraint 'object'.
+    233 |     });
+    234 |
+  > 235 |     return <Component {...props} ref={ref} />;
+        |             ^^^^^^^^^
+    236 |   });
+    237 | };
+    238 |
+
+WARNING in src/components/lazy/index.ts:13:47
+TS2322: Type 'Promise<typeof import("/mnt/f/DevAssitPro/DevAssist-Pro/frontend/src/components/kpAnalyzer/PDFExportDialog")>' is not assignable to type 'Promise<{ default: ComponentType<any>; }>'.
+  Property 'default' is missing in type 'typeof import("/mnt/f/DevAssitPro/DevAssist-Pro/frontend/src/components/kpAnalyzer/PDFExportDialog")' but required in type '{ default: ComponentType<any>; }'.
+    11 | export const LazyKPDetailedAnalysisResults = lazy(() => import('../kpAnalyzer/KPDetailedAnalysisResults'));
+    12 | export const LazyKPDetailedReport = lazy(() => import('../kpAnalyzer/KPDetailedReport'));
+  > 13 | export const LazyPDFExportDialog = lazy(() => import('../kpAnalyzer/PDFExportDialog'));
+       |                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    14 |
+    15 | // Lazy-loaded компоненты визуализации
+    16 | export const LazyResultsVisualization = lazy(() => import('../visualization/ResultsVisualization'));
+
+WARNING in src/components/ui/AccessibleForm.tsx:170:15
+TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Argument of type '{ id: string; 'data-field': string; 'aria-invalid': string; 'aria-describedby': string; 'aria-required': boolean; className: string; }' is not assignable to parameter of type 'Partial<unknown> & Attributes'.
+      Object literal may only specify known properties, and 'id' does not exist in type 'Partial<unknown> & Attributes'.
+    168 |           if (React.isValidElement(child)) {
+    169 |             return React.cloneElement(child, {
+  > 170 |               id,
+        |               ^^
+    171 |               'data-field': id,
+    172 |               'aria-invalid': error ? 'true' : 'false',
+    173 |               'aria-describedby': [
+
+WARNING in src/components/ui/DesignSystemProvider.tsx:219:5
+TS1117: An object literal cannot have multiple properties with the same name.
+    217 |     // Color utilities
+    218 |     bg: (color: keyof typeof ds.colors) => `bg-${color}`,
+  > 219 |     text: (color: keyof typeof ds.colors) => `text-${color}`,
+        |     ^^^^
+    220 |     border: (color: keyof typeof ds.colors) => `border-${color}`,
+    221 |     
+    222 |     // Border radius utilities
+
+WARNING in src/components/ui/index.ts:3:10
+TS2614: Module '"./LoadingSpinner"' has no exported member 'LoadingSpinner'. Did you mean to use 'import LoadingSpinner from "./LoadingSpinner"' instead?
+    1 | // Основные UI компоненты
+    2 | export { Button } from './Button';
+  > 3 | export { Input } from './Input';
+      |          ^^^^^^^^^^^^^^
+    4 | export { LoadingSpinner } from './LoadingSpinner';
+    5 | export { BentoGrid } from './BentoGrid';
+    6 | export { DisplayCards } from './DisplayCards';
+
+WARNING in src/components/ui/index.ts:4:10
+TS2614: Module '"./BentoGrid"' has no exported member 'BentoGrid'. Did you mean to use 'import BentoGrid from "./BentoGrid"' instead?
+    2 | export { Button } from './Button';
+    3 | export { Input } from './Input';
+  > 4 | export { LoadingSpinner } from './LoadingSpinner';
+      |          ^^^^^^^^^
+    5 | export { BentoGrid } from './BentoGrid';
+    6 | export { DisplayCards } from './DisplayCards';
+    7 | export { HeroSection } from './HeroSection';
+
+WARNING in src/components/ui/index.ts:5:10
+TS2614: Module '"./DisplayCards"' has no exported member 'DisplayCards'. Did you mean to use 'import DisplayCards from "./DisplayCards"' instead?
+    3 | export { Input } from './Input';
+    4 | export { LoadingSpinner } from './LoadingSpinner';
+  > 5 | export { BentoGrid } from './BentoGrid';
+      |          ^^^^^^^^^^^^
+    6 | export { DisplayCards } from './DisplayCards';
+    7 | export { HeroSection } from './HeroSection';
+    8 | export { NavigationBar } from './NavigationBar';
+
+WARNING in src/components/ui/index.ts:9:10
+TS2724: '"./RegistrationToast"' has no exported member named 'RegistrationToast'. Did you mean 'RegistrationToastProps'?
+     7 | export { HeroSection } from './HeroSection';
+     8 | export { NavigationBar } from './NavigationBar';
+  >  9 | export { PricingCard } from './PricingCard';
+       |          ^^^^^^^^^^^^^^^^^
+    10 | export { RegistrationToast } from './RegistrationToast';
+    11 | export { AnimatedGroup } from './AnimatedGroup';
+    12 | export { ModernSidebar } from './ModernSidebar';
+
+WARNING in src/components/ui/LazyLoader.tsx:45:8
+TS2322: Type 'PropsWithoutRef<P> & { ref: ForwardedRef<any>; }' is not assignable to type 'IntrinsicAttributes & P'.
+  Type 'PropsWithoutRef<P> & { ref: ForwardedRef<any>; }' is not assignable to type 'P'.
+    'PropsWithoutRef<P> & { ref: ForwardedRef<any>; }' is assignable to the constraint of type 'P', but 'P' could be instantiated with a different subtype of constraint 'object'.
+    43 |   return React.forwardRef<any, P>((props, ref) => (
+    44 |     <LazyLoader fallback={fallback}>
+  > 45 |       <Component {...props} ref={ref} />
+       |        ^^^^^^^^^
+    46 |     </LazyLoader>
+    47 |   ));
+    48 | };
+
+WARNING in src/components/ui/LazyLoader.tsx:67:50
+TS2304: Cannot find name 'SkeletonLoader'.
+    65 |       style={{ minHeight: height }}
+    66 |     >
+  > 67 |       {isIntersecting ? children : (fallback || <SkeletonLoader />)}
+       |                                                  ^^^^^^^^^^^^^^
+    68 |     </div>
+    69 |   );
+    70 | };
+
+WARNING in src/components/ui/SkeletonLoader.tsx:94:15
+TS2322: Type '{ className: string; style: { width: string; }; }' is not assignable to type 'IntrinsicAttributes & SkeletonProps'.
+  Property 'style' does not exist on type 'IntrinsicAttributes & SkeletonProps'.
+    92 |             <Skeleton 
+    93 |               className="h-3 rounded-full" 
+  > 94 |               style={{ width: `${Math.random() * 60 + 20}%` }}
+       |               ^^^^^
+    95 |             />
+    96 |             <Skeleton className="h-3 w-12" />
+    97 |           </div>
+
+WARNING in src/components/ui/UnifiedComponents.tsx:15:11
+TS2430: Interface 'UnifiedInputProps' incorrectly extends interface 'InputHTMLAttributes<HTMLInputElement>'.
+  Types of property 'size' are incompatible.
+    Type 'string' is not assignable to type 'number'.
+      Type 'string' is not assignable to type 'number'.
+    13 | }
+    14 |
+  > 15 | interface UnifiedInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+       |           ^^^^^^^^^^^^^^^^^
+    16 |   variant?: 'default' | 'error' | 'success';
+    17 |   size?: 'sm' | 'md' | 'lg';
+    18 |   leftIcon?: React.ReactNode;
+
+WARNING in src/components/ui/UnifiedComponents.tsx:275:6
+TS2322: Type '{ children: ReactNode; defaultChecked?: boolean; defaultValue?: string | number | readonly string[]; suppressContentEditableWarning?: boolean; suppressHydrationWarning?: boolean; accessKey?: string; ... 256 more ...; className: string; }' is not assignable to type 'SVGProps<SVGSymbolElement>'.
+  Types of property 'onCopy' are incompatible.
+    Type 'ClipboardEventHandler<HTMLElement>' is not assignable to type 'ClipboardEventHandler<SVGSymbolElement>'.
+      Type 'HTMLElement' is missing the following properties from type 'SVGSymbolElement': ownerSVGElement, viewportElement, preserveAspectRatio, viewBox
+    273 |
+    274 |   return (
+  > 275 |     <Component
+        |      ^^^^^^^^^
+    276 |       className={cn(
+    277 |         variantStyles[variant],
+    278 |         colorStyles[color],
+
+WARNING in src/providers/QueryProvider.tsx:24:13
+TS2322: Type '{ initialIsOpen: boolean; buttonPosition: any; }' is not assignable to type 'IntrinsicAttributes'.
+  Property 'initialIsOpen' does not exist on type 'IntrinsicAttributes'.
+    22 |         <Suspense fallback={null}>
+    23 |           <ReactQueryDevtools 
+  > 24 |             initialIsOpen={false}
+       |             ^^^^^^^^^^^^^
+    25 |             buttonPosition={"bottom-right" as any}
+    26 |           />
+    27 |         </Suspense>
+
+WARNING in src/services/ai/realKpAnalysisService.ts:607:9
+TS2322: Type '{ id: string; tz_name: string; kp_name: string; company_name: any; tech_stack: any; pricing: any; timeline: any; total_cost: any; currency: any; cost_breakdown: any; competitive_advantages: any; team_expertise: any; ... 10 more ...; confidence_score: any; }' is not assignable to type 'RealAnalysisResult'.
+  Object literal may only specify known properties, and 'post_launch_support' does not exist in type 'RealAnalysisResult'.
+    605 |         team_expertise: fullAnalysis.team_expertise,
+    606 |         methodology: fullAnalysis.methodology,
+  > 607 |         quality_assurance: fullAnalysis.quality_assurance,
+        |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    608 |         post_launch_support: fullAnalysis.post_launch_support,
+    609 |         document_quality: fullAnalysis.document_quality,
+    610 |         file_format: fullAnalysis.file_format,
+
+WARNING in src/services/unifiedApiClient.ts:229:7
+TS2322: Type 'string' is not assignable to type 'number'.
+    227 |     console.log('[UnifiedApiClient] Using mock registration');
+    228 |     
+  > 229 |     // Simulate network delay
+        |       ^^
+    230 |     await new Promise(resolve => setTimeout(resolve, 1000));
+    231 |
+    232 |     const mockUser: User = {
+
+WARNING in src/test-types.ts
+TS1208: 'test-types.ts' cannot be compiled under '--isolatedModules' because it is considered a global script file. Add an import, export, or an empty 'export {}' statement to make it a module.
+
+WARNING in src/utils/index.ts:43:70
+TS2339: Property 'default' does not exist on type 'typeof import("/mnt/f/DevAssitPro/DevAssist-Pro/frontend/src/utils/documentProcessor")'.
+    41 |   
+    42 |   // Документы
+  > 43 |   documentProcessor: () => import('./documentProcessor').then(m => m.default),
+       |                                                                      ^^^^^^^
+    44 |   
+    45 |   // Файлы
+    46 |   fileAdapters: () => import('./fileAdapters').then(m => m.default),
+
+WARNING in src/utils/index.ts:46:60
+TS2339: Property 'default' does not exist on type 'typeof import("/mnt/f/DevAssitPro/DevAssist-Pro/frontend/src/utils/fileAdapters")'.
+    44 |   
+    45 |   // Файлы
+  > 46 |   fileAdapters: () => import('./fileAdapters').then(m => m.default),
+       |                                                            ^^^^^^^
+    47 |   
+    48 |   // KP анализатор
+    49 |   kpAnalyzerUtils: () => import('./kpAnalyzerUtils').then(m => m.default),
+
+WARNING in src/utils/index.ts:49:66
+TS2339: Property 'default' does not exist on type 'typeof import("/mnt/f/DevAssitPro/DevAssist-Pro/frontend/src/utils/kpAnalyzerUtils")'.
+    47 |   
+    48 |   // KP анализатор
+  > 49 |   kpAnalyzerUtils: () => import('./kpAnalyzerUtils').then(m => m.default),
+       |                                                                  ^^^^^^^
+    50 |   
+    51 |   // Аутентификация
+    52 |   authUtils: () => import('./authUtils').then(m => m.default),
+
+WARNING in src/utils/index.ts:52:54
+TS2339: Property 'default' does not exist on type 'typeof import("/mnt/f/DevAssitPro/DevAssist-Pro/frontend/src/utils/authUtils")'.
+    50 |   
+    51 |   // Аутентификация
+  > 52 |   authUtils: () => import('./authUtils').then(m => m.default),
+       |                                                      ^^^^^^^
+    53 |   
+    54 |   // Оптимизация
+    55 |   assetOptimizer: () => import('./assetOptimizer').then(m => m.default)
+
+WARNING in src/utils/types.ts:119:3
+TS2693: 'ContrastAnalysis' only refers to a type, but is being used as a value here.
+    117 |
+    118 | export default {
+  > 119 |   ContrastAnalysis,
+        |   ^^^^^^^^^^^^^^^^
+    120 |   ColorValidationResult,
+    121 |   AssetOptimizationOptions,
+    122 |   ImageCompressionOptions,
+
+WARNING in src/utils/types.ts:120:3
+TS2693: 'ColorValidationResult' only refers to a type, but is being used as a value here.
+    118 | export default {
+    119 |   ContrastAnalysis,
+  > 120 |   ColorValidationResult,
+        |   ^^^^^^^^^^^^^^^^^^^^^
+    121 |   AssetOptimizationOptions,
+    122 |   ImageCompressionOptions,
+    123 |   DocumentProcessingResult,
+
+WARNING in src/utils/types.ts:121:3
+TS2693: 'AssetOptimizationOptions' only refers to a type, but is being used as a value here.
+    119 |   ContrastAnalysis,
+    120 |   ColorValidationResult,
+  > 121 |   AssetOptimizationOptions,
+        |   ^^^^^^^^^^^^^^^^^^^^^^^^
+    122 |   ImageCompressionOptions,
+    123 |   DocumentProcessingResult,
+    124 |   KPAnalysisConfig,
+
+WARNING in src/utils/types.ts:122:3
+TS2693: 'ImageCompressionOptions' only refers to a type, but is being used as a value here.
+    120 |   ColorValidationResult,
+    121 |   AssetOptimizationOptions,
+  > 122 |   ImageCompressionOptions,
+        |   ^^^^^^^^^^^^^^^^^^^^^^^
+    123 |   DocumentProcessingResult,
+    124 |   KPAnalysisConfig,
+    125 |   FileUploadConfig,
+
+WARNING in src/utils/types.ts:123:3
+TS2693: 'DocumentProcessingResult' only refers to a type, but is being used as a value here.
+    121 |   AssetOptimizationOptions,
+    122 |   ImageCompressionOptions,
+  > 123 |   DocumentProcessingResult,
+        |   ^^^^^^^^^^^^^^^^^^^^^^^^
+    124 |   KPAnalysisConfig,
+    125 |   FileUploadConfig,
+    126 |   AuthConfig,
+
+WARNING in src/utils/types.ts:124:3
+TS2693: 'KPAnalysisConfig' only refers to a type, but is being used as a value here.
+    122 |   ImageCompressionOptions,
+    123 |   DocumentProcessingResult,
+  > 124 |   KPAnalysisConfig,
+        |   ^^^^^^^^^^^^^^^^
+    125 |   FileUploadConfig,
+    126 |   AuthConfig,
+    127 |   ValidationResult,
+
+WARNING in src/utils/types.ts:125:3
+TS2693: 'FileUploadConfig' only refers to a type, but is being used as a value here.
+    123 |   DocumentProcessingResult,
+    124 |   KPAnalysisConfig,
+  > 125 |   FileUploadConfig,
+        |   ^^^^^^^^^^^^^^^^
+    126 |   AuthConfig,
+    127 |   ValidationResult,
+    128 |   PerformanceMetrics,
+
+WARNING in src/utils/types.ts:126:3
+TS2693: 'AuthConfig' only refers to a type, but is being used as a value here.
+    124 |   KPAnalysisConfig,
+    125 |   FileUploadConfig,
+  > 126 |   AuthConfig,
+        |   ^^^^^^^^^^
+    127 |   ValidationResult,
+    128 |   PerformanceMetrics,
+    129 |   AccessibilityCheck
+
+WARNING in src/utils/types.ts:127:3
+TS2693: 'ValidationResult' only refers to a type, but is being used as a value here.
+    125 |   FileUploadConfig,
+    126 |   AuthConfig,
+  > 127 |   ValidationResult,
+        |   ^^^^^^^^^^^^^^^^
+    128 |   PerformanceMetrics,
+    129 |   AccessibilityCheck
+    130 | };
+
+WARNING in src/utils/types.ts:128:3
+TS2693: 'PerformanceMetrics' only refers to a type, but is being used as a value here.
+    126 |   AuthConfig,
+    127 |   ValidationResult,
+  > 128 |   PerformanceMetrics,
+        |   ^^^^^^^^^^^^^^^^^^
+    129 |   AccessibilityCheckCompiled with warnings.
+
+[eslint] 
+src/services/httpInterceptors.ts
+  Line 13:10:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 22:9:    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 40:22:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 41:22:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 59:5:    Unexpected console statement              no-console
+  Line 65:21:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 105:5:   Unexpected console statement              no-console
+  Line 122:5:   Unexpected console statement              no-console
+  Line 140:41:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 140:78:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 168:64:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 171:7:   Unexpected console statement              no-console
+  Line 189:7:   Unexpected console statement              no-console
+  Line 216:37:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 231:62:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 235:5:   Unexpected console statement              no-console
+  Line 264:11:  Unexpected console statement              no-console
+  Line 284:11:  Unexpected console statement              no-console
+  Line 348:21:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 363:33:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 375:33:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 379:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 380:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 381:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 382:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 383:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 400:7:   Unexpected console statement              no-console
+  Line 408:17:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 412:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 412:43:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 416:17:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 416:42:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 420:19:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 420:44:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 424:20:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in [eslint] 
+src/services/httpInterceptors.ts
+  Line 13:10:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 22:9:    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 40:22:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 41:22:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 59:5:    Unexpected console statement              no-console
+  Line 65:21:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 105:5:   Unexpected console statement              no-console
+  Line 122:5:   Unexpected console statement              no-console
+  Line 140:41:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 140:78:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 168:64:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 171:7:   Unexpected console statement              no-console
+  Line 189:7:   Unexpected console statement              no-console
+  Line 216:37:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 231:62:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 235:5:   Unexpected console statement              no-console
+  Line 264:11:  Unexpected console statement              no-console
+  Line 284:11:  Unexpected console statement              no-console
+  Line 348:21:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 363:33:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 375:33:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 379:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 380:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 381:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 382:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 383:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 400:7:   Unexpected console statement              no-console
+  Line 408:17:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 412:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 412:43:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 416:17:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 416:42:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 420:19:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 420:44:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 424:20:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+webpack compiled with 1 warning
+Files successfully emitted, waiting for typecheck results...
+Issues checking in progress...
+WARNING in src/auth/index.ts:3:26
+TS2305: Module '"../contexts/AuthContext"' has no exported member 'RegisterData'.
+    1 | // Authentication Context
+    2 | export { AuthProvider, useAuth } from '../contexts/AuthContext';
+  > 3 | export type { AuthState, RegisterData } from '../contexts/AuthContext';
+      |                          ^^^^^^^^^^^^
+    4 | export type { User } from '../types/auth';
+    5 |
+    6 WARNING in src/auth/index.ts:3:26
+TS2305: Module '"../contexts/AuthContext"' has no exported member 'RegisterData'.
+    1 | // Authentication Context
+    2 | export { AuthProvider, useAuth } from '../contexts/AuthContext';
+  > 3 | export type { AuthState, RegisterData } from '../contexts/AuthContext';
+      |                          ^^^^^^^^^^^^
+    4 | export type { User } from '../types/auth';
+    5 |
+    6 | // Authentication Hooks
+
+WARNING in src/components/debug/PerformanceMonitor.tsx:235:13
+TS2322: Type 'PropsWithoutRef<P> & { ref: ForwardedRef<any>; }' is not assignable to type 'IntrinsicAttributes & P'.
+  Type 'PropsWithoutRef<P> & { ref: ForwardedRef<any>; }' is not assignable to type 'P'.
+    'PropsWithoutRef<P> & { ref: ForwardedRef<any>; }' is assignable to the constraint of type 'P', but 'P' could be instantiated with a different subtype of constraint 'object'.
+    233 |     });
+    234 |
+  > 235 |     return <Component {...props} ref={ref} />;
+        |             ^^^^^^^^^
+    236 |   });
+    237 | };
+    238 |
+
+WARNING in src/components/lazy/index.ts:13:47
+TS2322: Type 'Promise<typeof import("/mnt/f/DevAssitPro/DevAssist-Pro/frontend/src/components/kpAnalyzer/PDFExportDialog")>' is not assignable to type 'Promise<{ default: ComponentType<any>; }>'.
+  Property 'default' is missing in type 'typeof import("/mnt/f/DevAssitPro/DevAssist-Pro/frontend/src/components/kpAnalyzer/PDFExportDialog")' but required in type '{ default: ComponentType<any>; }'.
+    11 | export const LazyKPDetailedAnalysisResults = lazy(() => import('../kpAnalyzer/KPDetailedAnalysisResults'));
+    12 | export const LazyKPDetailedReport = lazy(() => import('../kpAnalyzer/KPDetailedReport'));
+  > 13 | export const LazyPDFExportDialog = lazy(() => import('../kpAnalyzer/PDFExportDialog'));
+       |                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    14 |
+    15 | // Lazy-loaded компоненты визуализации
+    16 | export const LazyResultsVisualization = lazy(() => import('../visualization/ResultsVisualization'));
+
+WARNING in src/components/ui/AccessibleForm.tsx:170:15
+TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Argument of type '{ id: string; 'data-field': string; 'aria-invalid': string; 'aria-describedby': string; 'aria-required': boolean; className: string; }' is not assignable to parameter of type 'Partial<unknown> & Attributes'.
+      Object literal may only specify known properties, and 'id' does not exist in type 'Partial<unknown> & Attributes'.
+    168 |           if (React.isValidElement(child)) {
+    169 |             return React.cloneElement(child, {
+  > 170 |               id,
+        |               ^^
+    171 |               'data-field': id,
+    172 |               'aria-invalid': error ? 'true' : 'false',
+    173 |               'aria-describedby': [
+
+WARNING in src/components/ui/DesignSystemProvider.tsx:219:5
+TS1117: An object literal cannot have multiple properties with the same name.
+    217 |     // Color utilities
+    218 |     bg: (color: keyof typeof ds.colors) => `bg-${color}`,
+  > 219 |     text: (color: keyof typeof ds.colors) => `text-${color}`,
+        |     ^^^^
+    220 |     border: (color: keyof typeof ds.colors) => `border-${color}`,
+    221 |     
+    222 |     // Border radius utilities
+
+WARNING in src/components/ui/index.ts:3:10
+TS2614: Module '"./LoadingSpinner"' has no exported member 'LoadingSpinner'. Did you mean to use 'import LoadingSpinner from "./LoadingSpinner"' instead?
+    1 | // Основные UI компоненты
+    2 | export { Button } from './Button';
+  > 3 | export { Input } from './Input';
+      |          ^^^^^^^^^^^^^^
+    4 | export { LoadingSpinner } from './LoadingSpinner';
+    5 | export { BentoGrid } from './BentoGrid';
+    6 | export { DisplayCards } from './DisplayCards';
+
+WARNING in src/components/ui/index.ts:4:10
+TS2614: Module '"./BentoGrid"' has no exported member 'BentoGrid'. Did you mean to use 'import BentoGrid from "./BentoGrid"' instead?
+    2 | export { Button } from './Button';
+    3 | export { Input } from './Input';
+  > 4 | export { LoadingSpinner } from './LoadingSpinner';
+      |          ^^^^^^^^^
+    5 | export { BentoGrid } from './BentoGrid';
+    6 | export { DisplayCards } from './DisplayCards';
+    7 | export { HeroSection } from './HeroSection';
+
+WARNING in src/components/ui/index.ts:5:10
+TS2614: Module '"./DisplayCards"' has no exported member 'DisplayCards'. Did you mean to use 'import DisplayCards from "./DisplayCards"' instead?
+    3 | export { Input } from './Input';
+    4 | export { LoadingSpinner } from './LoadingSpinner';
+  > 5 | export { BentoGrid } from './BentoGrid';
+      |          ^^^^^^^^^^^^
+    6 | export { DisplayCards } from './DisplayCards';
+    7 | export { HeroSection } from './HeroSection';
+    8 | export { NavigationBar } from './NavigationBar';
+
+WARNING in src/components/ui/index.ts:9:10
+TS2724: '"./RegistrationToast"' has no exported member named 'RegistrationToast'. Did you mean 'RegistrationToastProps'?
+     7 | export { HeroSection } from './HeroSection';
+     8 | export { NavigationBar } from './NavigationBar';
+  >  9 | export { PricingCard } from './PricingCard';
+       |          ^^^^^^^^^^^^^^^^^
+    10 | export { RegistrationToast } from './RegistrationToast';
+    11 | export { AnimatedGroup } from './AnimatedGroup';
+    12 | export { ModernSidebar } from './ModernSidebar';
+
+WARNING in src/components/ui/LazyLoader.tsx:45:8
+TS2322: Type 'PropsWithoutRef<P> & { ref: ForwardedRef<any>; }' is not assignable to type 'IntrinsicAttributes & P'.
+  Type 'PropsWithoutRef<P> & { ref: ForwardedRef<any>; }' is not assignable to type 'P'.
+    'PropsWithoutRef<P> & { ref: ForwardedRef<any>; }' is assignable to the constraint of type 'P', but 'P' could be instantiated with a different subtype of constraint 'object'.
+    43 |   return React.forwardRef<any, P>((props, ref) => (
+    44 |     <LazyLoader fallback={fallback}>
+  > 45 |       <Component {...props} ref={ref} />
+       |        ^^^^^^^^^
+    46 |     </LazyLoader>
+    47 |   ));
+    48 | };
+
+WARNING in src/components/ui/LazyLoader.tsx:67:50
+TS2304: Cannot find name 'SkeletonLoader'.
+    65 |       style={{ minHeight: height }}
+    66 |     >
+  > 67 |       {isIntersecting ? children : (fallback || <SkeletonLoader />)}
+       |                                                  ^^^^^^^^^^^^^^
+    68 |     </div>
+    69 |   );
+    70 | };
+
+WARNING in src/components/ui/SkeletonLoader.tsx:94:15
+TS2322: Type '{ className: string; style: { width: string; }; }' is not assignable to type 'IntrinsicAttributes & SkeletonProps'.
+  Property 'style' does not exist on type 'IntrinsicAttributes & SkeletonProps'.
+    92 |             <Skeleton 
+    93 |               className="h-3 rounded-full" 
+  > 94 |               style={{ width: `${Math.random() * 60 + 20}%` }}
+       |               ^^^^^
+    95 |             />
+    96 |             <Skeleton className="h-3 w-12" />
+    97 |           </div>
+
+WARNING in src/components/ui/UnifiedComponents.tsx:15:11
+TS2430: Interface 'UnifiedInputProps' incorrectly extends interface 'InputHTMLAttributes<HTMLInputElement>'.
+  Types of property 'size' are incompatible.
+    Type 'string' is not assignable to type 'number'.
+      Type 'string' is not assignable to type 'number'.
+    13 | }
+    14 |
+  > 15 | interface UnifiedInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+       |           ^^^^^^^^^^^^^^^^^
+    16 |   variant?: 'default' | 'error' | 'success';
+    17 |   size?: 'sm' | 'md' | 'lg';
+    18 |   leftIcon?: React.ReactNode;
+
+WARNING in src/components/ui/UnifiedComponents.tsx:275:6
+TS2322: Type '{ children: ReactNode; defaultChecked?: boolean; defaultValue?: string | number | readonly string[]; suppressContentEditableWarning?: boolean; suppressHydrationWarning?: boolean; accessKey?: string; ... 256 more ...; className: string; }' is not assignable to type 'SVGProps<SVGSymbolElement>'.
+  Types of property 'onCopy' are incompatible.
+    Type 'ClipboardEventHandler<HTMLElement>' is not assignable to type 'ClipboardEventHandler<SVGSymbolElement>'.
+      Type 'HTMLElement' is missing the following properties from type 'SVGSymbolElement': ownerSVGElement, viewportElement, preserveAspectRatio, viewBox
+    273 |
+    274 |   return (
+  > 275 |     <Component
+        |      ^^^^^^^^^
+    276 |       className={cn(
+    277 |         variantStyles[variant],
+    278 |         colorStyles[color],
+
+WARNING in src/providers/QueryProvider.tsx:24:13
+TS2322: Type '{ initialIsOpen: boolean; buttonPosition: any; }' is not assignable to type 'IntrinsicAttributes'.
+  Property 'initialIsOpen' does not exist on type 'IntrinsicAttributes'.
+    22 |         <Suspense fallback={null}>
+    23 |           <ReactQueryDevtools 
+  > 24 |             initialIsOpen={false}
+       |             ^^^^^^^^^^^^^
+    25 |             buttonPosition={"bottom-right" as any}
+    26 |           />
+    27 |         </Suspense>
+
+WARNING in src/services/ai/realKpAnalysisService.ts:607:9
+TS2322: Type '{ id: string; tz_name: string; kp_name: string; company_name: any; tech_stack: any; pricing: any; timeline: any; total_cost: any; currency: any; cost_breakdown: any; competitive_advantages: any; team_expertise: any; ... 10 more ...; confidence_score: any; }' is not assignable to type 'RealAnalysisResult'.
+  Object literal may only specify known properties, and 'post_launch_support' does not exist in type 'RealAnalysisResult'.
+    605 |         team_expertise: fullAnalysis.team_expertise,
+    606 |         methodology: fullAnalysis.methodology,
+  > 607 |         quality_assurance: fullAnalysis.quality_assurance,
+        |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    608 |         post_launch_support: fullAnalysis.post_launch_support,
+    609 |         document_quality: fullAnalysis.document_quality,
+    610 |         file_format: fullAnalysis.file_format,
+
+WARNING in src/services/unifiedApiClient.ts:229:7
+TS2322: Type 'string' is not assignable to type 'number'.
+    227 |     console.log('[UnifiedApiClient] Using mock registration');
+    228 |     
+  > 229 |     // Simulate network delay
+        |       ^^
+    230 |     await new Promise(resolve => setTimeout(resolve, 1000));
+    231 |
+    232 |     const mockUser: User = {
+
+WARNING in src/test-types.ts
+TS1208: 'test-types.ts' cannot be compiled under '--isolatedModules' because it is considered a global script file. Add an import, export, or an empty 'export {}' statement to make it a module.
+
+WARNING in src/utils/index.ts:43:70
+TS2339: Property 'default' does not exist on type 'typeof import("/mnt/f/DevAssitPro/DevAssist-Pro/frontend/src/utils/documentProcessor")'.
+    41 |   
+    42 |   // Документы
+  > 43 |   documentProcessor: () => import('./documentProcessor').then(m => m.default),
+       |                                                                      ^^^^^^^
+    44 |   
+    45 |   // Файлы
+    46 |   fileAdapters: () => import('./fileAdapters').then(m => m.default),
+
+WARNING in src/utils/index.ts:46:60
+TS2339: Property 'default' does not exist on type 'typeof import("/mnt/f/DevAssitPro/DevAssist-Pro/frontend/src/utils/fileAdapters")'.
+    44 |   
+    45 |   // Файлы
+  > 46 |   fileAdapters: () => import('./fileAdapters').then(m => m.default),
+       |                                                            ^^^^^^^
+    47 |   
+    48 |   // KP анализатор
+    49 |   kpAnalyzerUtils: () => import('./kpAnalyzerUtils').then(m => m.default),
+
+WARNING in src/utils/index.ts:49:66
+TS2339: Property 'default' does not exist on type 'typeof import("/mnt/f/DevAssitPro/DevAssist-Pro/frontend/src/utils/kpAnalyzerUtils")'.
+    47 |   
+    48 |   // KP анализатор
+  > 49 |   kpAnalyzerUtils: () => import('./kpAnalyzerUtils').then(m => m.default),
+       |                                                                  ^^^^^^^
+    50 |   
+    51 |   // Аутентификация
+    52 |   authUtils: () => import('./authUtils').then(m => m.default),
+
+WARNING in src/utils/index.ts:52:54
+TS2339: Property 'default' does not exist on type 'typeof import("/mnt/f/DevAssitPro/DevAssist-Pro/frontend/src/utils/authUtils")'.
+    50 |   
+    51 |   // Аутентификация
+  > 52 |   authUtils: () => import('./authUtils').then(m => m.default),
+       |                                                      ^^^^^^^
+    53 |   
+    54 |   // Оптимизация
+    55 |   assetOptimizer: () => import('./assetOptimizer').then(m => m.default)
+
+WARNING in src/utils/types.ts:119:3
+TS2693: 'ContrastAnalysis' only refers to a type, but is being used as a value here.
+    117 |
+    118 | export default {
+  > 119 |   ContrastAnalysis,
+        |   ^^^^^^^^^^^^^^^^
+    120 |   ColorValidationResult,
+    121 |   AssetOptimizationOptions,
+    122 |   ImageCompressionOptions,
+
+WARNING in src/utils/types.ts:120:3
+TS2693: 'ColorValidationResult' only refers to a type, but is being used as a value here.
+    118 | export default {
+    119 |   ContrastAnalysis,
+  > 120 |   ColorValidationResult,
+        |   ^^^^^^^^^^^^^^^^^^^^^
+    121 |   AssetOptimizationOptions,
+    122 |   ImageCompressionOptions,
+    123 |   DocumentProcessingResult,
+
+WARNING in src/utils/types.ts:121:3
+TS2693: 'AssetOptimizationOptions' only refers to a type, but is being used as a value here.
+    119 |   ContrastAnalysis,
+    120 |   ColorValidationResult,
+  > 121 |   AssetOptimizationOptions,
+        |   ^^^^^^^^^^^^^^^^^^^^^^^^
+    122 |   ImageCompressionOptions,
+    123 |   DocumentProcessingResult,
+    124 |   KPAnalysisConfig,
+
+WARNING in src/utils/types.ts:122:3
+TS2693: 'ImageCompressionOptions' only refers to a type, but is being used as a value here.
+    120 |   ColorValidationResult,
+    121 |   AssetOptimizationOptions,
+  > 122 |   ImageCompressionOptions,
+        |   ^^^^^^^^^^^^^^^^^^^^^^^
+    123 |   DocumentProcessingResult,
+    124 |   KPAnalysisConfig,
+    125 |   FileUploadConfig,
+
+WARNING in src/utils/types.ts:123:3
+TS2693: 'DocumentProcessingResult' only refers to a type, but is being used as a value here.
+    121 |   AssetOptimizationOptions,
+    122 |   ImageCompressionOptions,
+  > 123 |   DocumentProcessingResult,
+        |   ^^^^^^^^^^^^^^^^^^^^^^^^
+    124 |   KPAnalysisConfig,
+    125 |   FileUploadConfig,
+    126 |   AuthConfig,
+
+WARNING in src/utils/types.ts:124:3
+TS2693: 'KPAnalysisConfig' only refers to a type, but is being used as a value here.
+    122 |   ImageCompressionOptions,
+    123 |   DocumentProcessingResult,
+  > 124 |   KPAnalysisConfig,
+        |   ^^^^^^^^^^^^^^^^
+    125 |   FileUploadConfig,
+    126 |   AuthConfig,
+    127 |   ValidationResult,
+
+WARNING in src/utils/types.ts:125:3
+TS2693: 'FileUploadConfig' only refers to a type, but is being used as a value here.
+    123 |   DocumentProcessingResult,
+    124 |   KPAnalysisConfig,
+  > 125 |   FileUploadConfig,
+        |   ^^^^^^^^^^^^^^^^
+    126 |   AuthConfig,
+    127 |   ValidationResult,
+    128 |   PerformanceMetrics,
+
+WARNING in src/utils/types.ts:126:3
+TS2693: 'AuthConfig' only refers to a type, but is being used as a value here.
+    124 |   KPAnalysisConfig,
+    125 |   FileUploadConfig,
+  > 126 |   AuthConfig,
+        |   ^^^^^^^^^^
+    127 |   ValidationResult,
+    128 |   PerformanceMetrics,
+    129 |   AccessibilityCheck
+
+WARNING in src/utils/types.ts:127:3
+TS2693: 'ValidationResult' only refers to a type, but is being used as a value here.
+    125 |   FileUploadConfig,
+    126 |   AuthConfig,
+  > 127 |   ValidationResult,
+        |   ^^^^^^^^^^^^^^^^
+    128 |   PerformanceMetrics,
+    129 |   AccessibilityCheck
+    130 | };
+
+WARNING in src/utils/types.ts:128:3
+TS2693: 'PerformanceMetrics' only refers to a type, but is being used as a value here.
+    126 |Compiling...
+Compiled with warnings.
+
+[eslint] 
+src/services/httpInterceptors.ts
+  Line 13:10:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 22:9:    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 40:22:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 41:22:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 59:5:    Unexpected console statement              no-console
+  Line 65:21:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 105:5:   Unexpected console statement              no-console
+  Line 122:5:   Unexpected console statement              no-console
+  Line 140:41:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 140:78:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 168:64:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 171:7:   Unexpected console statement              no-console
+  Line 189:7:   Unexpected console statement              no-console
+  Line 216:37:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 231:62:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 235:5:   Unexpected console statement              no-console
+  Line 264:11:  Unexpected console statement              no-console
+  Line 284:11:  Unexpected console statement              no-console
+  Line 348:21:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 363:33:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 375:33:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 379:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 380:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 381:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 382:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 383:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 400:7:   Unexpected console statement              no-console
+  Line 408:17:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 412:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 412:43:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 416:17:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 416:42:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 420:19:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 420:44:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 424:20:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in [eslint] 
+src/services/httpInterceptors.ts
+  Line 13:10:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 22:9:    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 40:22:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 41:22:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 59:5:    Unexpected console statement              no-console
+  Line 65:21:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 105:5:   Unexpected console statement              no-console
+  Line 122:5:   Unexpected console statement              no-console
+  Line 140:41:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 140:78:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 168:64:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 171:7:   Unexpected console statement              no-console
+  Line 189:7:   Unexpected console statement              no-console
+  Line 216:37:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 231:62:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 235:5:   Unexpected console statement              no-console
+  Line 264:11:  Unexpected console statement              no-console
+  Line 284:11:  Unexpected console statement              no-console
+  Line 348:21:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 363:33:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 375:33:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 379:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 380:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 381:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 382:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 383:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 400:7:   Unexpected console statement              no-console
+  Line 408:17:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 412:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 412:43:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 416:17:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 416:42:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 420:19:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 420:44:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 424:20:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+webpack compiled with 1 warning
+Files successfully emitted, waiting for typecheck results...
+Issues checking in progress...
+WARNING in src/auth/index.ts:3:26
+TS2305: Module '"../contexts/AuthContext"' has no exported member 'RegisterData'.
+    1 | // Authentication Context
+    2 | export { AuthProvider, useAuth } from '../contexts/AuthContext';
+  > 3 | export type { AuthState, RegisterData } from '../contexts/AuthContext';
+      |                          ^^^^^^^^^^^^
+    4 | export type { User } from '../types/auth';
+    5 |
+    6 | // Authentication Hooks
+
+WARNING in src/components/debug/PerformanceMonitor.tsx:235:13
+TS2322: Type 'PropsWithoutRef<P> & { ref: ForwardedRef<any>; }' is not assignable to type 'IntrinsicAttributes & P'.
+  Type 'PropsWithoutRef<P> & { ref: ForwardedRef<any>; }' is not assignable to type 'P'.
+    'PropsWithoutRef<P> & { ref: ForwardedRef<any>; }' is assignable to the constraint of type 'P', but 'P' could be instantiated with a different subtype of constraint 'object'.
+    233 |     });
+    234 |
+  > 235 |     return <Component {...props} ref={ref} />;
+        |             ^^^^^^^^^
+    236 |   });
+    237 | };
+    238 |
+
+WARNING in src/components/lazy/index.ts:13:47
+TS2322: Type 'Promise<typeof import("/mnt/f/DevAssitPro/DevAssist-Pro/frontend/src/components/kpAnalyzer/PDFExportDialog")>' is not assignable to type 'Promise<{ default: ComponentType<any>; }>'.
+  Property 'default' is missing in type 'typeof import("/mnt/f/DevAssitPro/DevAssist-Pro/frontend/src/components/kpAnalyzer/PDFExportDialog")' but required in type '{ default: ComponentType<any>; }'.
+    11 | export const LazyKPDetailedAnalysisResults = lazy(() => import('../kpAnalyzer/KPDetailedAnalysisResults'));
+    12 | export const LazyKPDetailedReport = lazy(() => import('../kpAnalyzer/KPDetailedReport'));
+  > 13 | export const LazyPDFExportDialog = lazy(() => import('../kpAnalyzer/PDFExportDialog'));
+       |                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    14 |
+    15 | // Lazy-loaded компоненты визуализации
+    16 | export const LazyResultsVisualization = lazy(() => import('../visualization/ResultsVisualization'));
+
+WARNING in src/components/ui/AccessibleForm.tsx:170:15
+TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Argument of type '{ id: string; 'data-field': string; 'aria-invalid': string; 'aria-describedby': string; 'aria-required': boolean; className: string; }' is not assignable to parameter of type 'Partial<unknown> & Attributes'.
+      Object literal may only specify known properties, and 'id' does not exist in type 'Partial<unknown> & Attributes'.
+    168 |           if (React.isValidElement(child)) {
+    169 |             return React.cloneElement(child, {
+  > 170 |               id,
+        |               ^^
+    171 |               'data-field': id,
+    172 |               'aria-invalid': error ? 'true' : 'false',
+    173 |               'aria-describedby': [
+
+WARNING in src/components/ui/DesignSystemProvider.tsx:219:5
+TS1117: An object literal cannot have multiple properties with the same name.
+    217 |     // Color utilities
+    218 |     bg: (color: keyof typeof ds.colors) => `bg-${color}`,
+  > 219 |     text: (color: keyof typeof ds.colors) => `text-${color}`,
+        |     ^^^^
+    220 |     border: (color: keyof typeof ds.colors) => `border-${color}`,
+    221 |     
+    222 |     // Border radius utilities
+
+WARNING in src/components/ui/index.ts:3:10
+TS2614: Module '"./LoadingSpinner"' has no exported member 'LoadingSpinner'. Did you mean to use 'import LoadingSpinner from "./LoadingSpinner"' instead?
+    1 | // Основные UI компоненты
+    2 | export { Button } from './Button';
+  > 3 | export { Input } from './Input';
+      |          ^^^^^^^^^^^^^^
+    4 | export { LoadingSpinner } from './LoadingSpinner';
+    5 | export { BentoGrid } from './BentoGrid';
+    6 | export { DisplayCards } from './DisplayCards';
+
+WARNING in src/components/ui/index.ts:4:10
+TS2614: Module '"./BentoGrid"' has no exported member 'BentoGrid'. Did you mean to use 'import BentoGrid from "./BentoGrid"' instead?
+    2 | export { Button } from './Button';
+    3 | export { Input } from './Input';
+  > 4 | export { LoadingSpinner } from './LoadingSpinner';
+      |          ^^^^^^^^^
+    5 | export { BentoGrid } from './BentoGrid';
+    6 | export { DisplayCards } from './DisplayCards';
+    7 | export { HeroSection } from './HeroSection';
+
+WARNING in src/components/ui/index.ts:5:10
+TS2614: Module '"./DisplayCards"' has no exported member 'DisplayCards'. Did you mean to use 'import DisplayCards from "./DisplayCards"' instead?
+    3 | export { Input } from './Input';
+    4 | export { LoadingSpinner } from './LoadingSpinner';
+  > 5 | export { BentoGrid } from './BentoGrid';
+      |          ^^^^^^^^^^^^
+    6 | export { DisplayCards } from './DisplayCards';
+    7 | export { HeroSection } from './HeroSection';
+    8 | export { NavigationBar } from './NavigationBar';
+
+WARNING in src/components/ui/index.ts:9:10
+TS2724: '"./RegistrationToast"' has no exported member named 'RegistrationToast'. Did you mean 'RegistrationToastProps'?
+     7 | export { HeroSection } from './HeroSection';
+     8 | export { NavigationBar } from './NavigationBar';
+  >  9 | export { PricingCard } from './PricingCard';
+       |          ^^^^^^^^^^^^^^^^^
+    10 | export { RegistrationToast } from './RegistrationToast';
+    11 | export { AnimatedGroup } from './AnimatedGroup';
+    12 | export { ModernSidebar } from './ModernSidebar';
+
+WARNING in src/components/ui/LazyLoader.tsx:45:8
+TS2322: Type 'PropsWithoutRef<P> & { ref: ForwardedRef<any>; }' is not assignable to type 'IntrinsicAttributes & P'.
+  Type 'PropsWithoutRef<P> & { ref: ForwardedRef<any>; }' is not assignable to type 'P'.
+    'PropsWithoutRef<P> & { ref: ForwardedRef<any>; }' is assignable to the constraint of type 'P', but 'P' could be instantiated with a different subtype of constraint 'object'.
+    43 |   return React.forwardRef<any, P>((props, ref) => (
+    44 |     <LazyLoader fallback={fallback}>
+  > 45 |       <Component {...props} ref={ref} />
+       |        ^^^^^^^^^
+    46 |     </LazyLoader>
+    47 |   ));
+    48 | };
+
+WARNING in src/components/ui/LazyLoader.tsx:67:50
+TS2304: Cannot find name 'SkeletonLoader'.
+    65 |       style={{ minHeight: height }}
+    66 |     >
+  > 67 |       {isIntersecting ? children : (fallback || <SkeletonLoader />)}
+       |                                                  ^^^^^^^^^^^^^^
+    68 |     </div>
+    69 |   );
+    70 | };
+
+WARNING in src/components/ui/SkeletonLoader.tsx:94:15
+TS2322: Type '{ className: string; style: { width: string; }; }' is not assignable to type 'IntrinsicAttributes & SkeletonProps'.
+  Property 'style' does not exist on type 'IntrinsicAttributes & SkeletonProps'.
+    92 |             <Skeleton 
+    93 |               className="h-3 rounded-full" 
+  > 94 |               style={{ width: `${Math.random() * 60 + 20}%` }}
+       |               ^^^^^
+    95 |             />
+    96 |             <Skeleton className="h-3 w-12" />
+    97 |           </div>
+
+WARNING in src/components/ui/UnifiedComponents.tsx:15:11
+TS2430: Interface 'UnifiedInputProps' incorrectly extends interface 'InputHTMLAttributes<HTMLInputElement>'.
+  Types of property 'size' are incompatible.
+    Type 'string' is not assignable to type 'number'.
+      Type 'string' is not assignable to type 'number'.
+    13 | }
+    14 |
+  > 15 | interface UnifiedInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+       |           ^^^^^^^^^^^^^^^^^
+    16 |   variant?: 'default' | 'error' | 'success';
+    17 |   size?: 'sm' | 'md' | 'lg';
+    18 |   leftIcon?: React.ReactNode;
+
+WARNING in src/components/ui/UnifiedComponents.tsx:275:6
+TS2322: Type '{ children: ReactNode; defaultChecked?: boolean; defaultValue?: string | number | readonly string[]; suppressContentEditableWarning?: boolean; suppressHydrationWarning?: boolean; accessKey?: string; ... 256 more ...; className: string; }' is not assignable to type 'SVGProps<SVGSymbolElement>'.
+  Types of property 'onCopy' are incompatible.
+    Type 'ClipboardEventHandler<HTMLElement>' is not assignable to type 'ClipboardEventHandler<SVGSymbolElement>'.
+      Type 'HTMLElement' is missing the following properties from type 'SVGSymbolElement': ownerSVGElement, viewportElement, preserveAspectRatio, viewBox
+    273 |
+    274 |   return (
+  > 275 |     <Component
+        |      ^^^^^^^^^
+    276 |       className={cn(
+    277 |         variantStyles[variant],
+    278 |         colorStyles[color],
+
+WARNING in src/providers/QueryProvider.tsx:24:13
+TS2322: Type '{ initialIsOpen: boolean; buttonPosition: any; }' is not assignable to type 'IntrinsicAttributes'.
+  Property 'initialIsOpen' does not exist on type 'IntrinsicAttributes'.
+    22 |         <Suspense fallback={null}>
+    23 |           <ReactQueryDevtools 
+  > 24 |             initialIsOpen={false}
+       |             ^^^^^^^^^^^^^
+    25 |             buttonPosition={"bottom-right" as any}
+    26 |           />
+    27 |         </Suspense>
+
+WARNING in src/services/ai/realKpAnalysisService.ts:607:9
+TS2322: Type '{ id: string; tz_name: string; kp_name: string; company_name: any; tech_stack: any; pricing: any; timeline: any; total_cost: any; currency: any; cost_breakdown: any; competitive_advantages: any; team_expertise: any; ... 10 more ...; confidence_score: any; }' is not assignable to type 'RealAnalysisResult'.
+  Object literal may only specify known properties, and 'post_launch_support' does not exist in type 'RealAnalysisResult'.
+    605 |         team_expertise: fullAnalysis.team_expertise,
+    606 |         methodology: fullAnalysis.methodology,
+  > 607 |         quality_assurance: fullAnalysis.quality_assurance,
+        |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    608 |         post_launch_support: fullAnalysis.post_launch_support,
+    609 |         document_quality: fullAnalysis.document_quality,
+    610 |         file_format: fullAnalysis.file_format,
+
+WARNING in src/services/unifiedApiClient.ts:229:7
+TS2322: Type 'string' is not assignable to type 'number'.
+    227 |     console.log('[UnifiedApiClient] Using mock registration');
+    228 |     
+  > 229 |     // Simulate network delay
+        |       ^^
+    230 |     await new Promise(resolve => setTimeout(resolve, 1000));
+    231 |
+    232 |     const mockUser: User = {
+
+WARNING in src/test-types.ts
+TS1208: 'test-types.ts' cannot be compiled under '--isolatedModules' because it is considered a global script file. Add an import, export, or an empty 'export {}' statement to make it a module.
+
+WARNING in src/utils/index.ts:43:70
+TS2339: Property 'default' does not exist on type 'typeof import("/mnt/f/DevAssitPro/DevAssist-Pro/frontend/src/utils/documentProcessor")'.
+    41 |   
+    42 |   // Документы
+  > 43 |   documentProcessor: () => import('./documentProcessor').then(m => m.default),
+       |                                                                      ^^^^^^^
+    44 |   
+    45 |   // Файлы
+    46 |   fileAdapters: () => import('./fileAdapters').then(m => m.default),
+
+WARNING in src/utils/index.ts:46:60
+TS2339: Property 'default' does not exist on type 'typeof import("/mnt/f/DevAssitPro/DevAssist-Pro/frontend/src/utils/fileAdapters")'.
+    44 |   
+    45 |   // Файлы
+  > 46 |   fileAdapters: () => import('./fileAdapters').then(m => m.default),
+       |                                                            ^^^^^^^
+    47 |   
+    48 |   // KP анализатор
+    49 |   kpAnalyzerUtils: () => import('./kpAnalyzerUtils').then(m => m.default),
+
+WARNING in src/utils/index.ts:49:66
+TS2339: Property 'default' does not exist on type 'typeof import("/mnt/f/DevAssitPro/DevAssist-Pro/frontend/src/utils/kpAnalyzerUtils")'.
+    47 |   
+    48 |   // KP анализатор
+  > 49 |   kpAnalyzerUtils: () => import('./kpAnalyzerUtils').then(m => m.default),
+       |                                                                  ^^^^^^^
+    50 |   
+    51 |   // Аутентификация
+    52 |   authUtils: () => import('./authUtils').then(m => m.default),
+
+WARNING in src/utils/index.ts:52:54
+TS2339: Property 'default' does not exist on type 'typeof import("/mnt/f/DevAssitPro/DevAssist-Pro/frontend/src/utils/authUtils")'.
+    50 |   
+    51 |   // Аутентификация
+  > 52 |   authUtils: () => import('./authUtils').then(m => m.default),
+       |                                                      ^^^^^^^
+    53 |   
+    54 |   // Оптимизация
+    55 |   assetOptimizer: () => import('./assetOptimizer').then(m => m.default)
+
+WARNING in src/utils/types.ts:119:3
+TS2693: 'ContrastAnalysis' only refers to a type, but is being used as a value here.
+    117 |
+    118 | export default {
+  > 119 |   ContrastAnalysis,
+        |   ^^^^^^^^^^^^^^^^
+    120 |   ColorValidationResult,
+    121 |   AssetOptimizationOptions,
+    122 |   ImageCompressionOptions,
+
+WARNING in src/utils/types.ts:120:3
+TS2693: 'ColorValidationResult' only refers to a type, but is being used as a value here.
+    118 | export default {
+    119 |   ContrastAnalysis,
+  > 120 |   ColorValidationResult,
+        |   ^^^^^^^^^^^^^^^^^^^^^
+    121 |   AssetOptimizationOptions,
+    122 |   ImageCompressionOptions,
+    123 |   DocumentProcessingResult,
+
+WARNING in src/utils/types.ts:121:3
+TS2693: 'AssetOptimizationOptions' only refers to a type, but is being used as a value here.
+    119 |   ContrastAnalysis,
+    120 |   ColorValidationResult,
+  > 121 |   AssetOptimizationOptions,
+        |   ^^^^^^^^^^^^^^^^^^^^^^^^
+    122 |   ImageCompressionOptions,
+    123 |   DocumentProcessingResult,
+    124 |   KPAnalysisConfig,
+
+WARNING in src/utils/types.ts:122:3
+TS2693: 'ImageCompressionOptions' only refers to a type, but is being used as a value here.
+    120 |   ColorValidationResult,
+    121 |   AssetOptimizationOptions,
+  > 122 |   ImageCompressionOptions,
+        |   ^^^^^^^^^^^^^^^^^^^^^^^
+    123 |   DocumentProcessingResult,
+    124 |   KPAnalysisConfig,
+    125 |   FileUploadConfig,
+
+WARNING in src/utils/types.ts:123:3
+TS2693: 'DocumentProcessingResult' only refers to a type, but is being used as a value here.
+    121 |   AssetOptimizationOptions,
+    122 |   ImageCompressionOptions,
+  > 123 |   DocumentProcessingResult,
+        |   ^^^^^^^^^^^^^^^^^^^^^^^^
+    124 |   KPAnalysisConfig,
+    125 |   FileUploadConfig,
+    126 |   AuthConfig,
+
+WARNING in src/utils/types.ts:124:3
+TS2693: 'KPAnalysisConfig' only refers to a type, but is being used as a value here.
+    122 |   ImageCompressionOptions,
+    123 |   DocumentProcessingResult,
+  > 124 |   KPAnalysisConfig,
+        |   ^^^^^^^^^^^^^^^^
+    125 |   FileUploadConfig,
+    126 |   AuthConfig,
+    127 |   ValidationResult,
+
+WARNING in src/utils/types.ts:125:3
+TS2693: 'FileUploadConfig' only refers to a type, but is being used as a value here.
+    123 |   DocumentProcessingResult,
+    124 |   KPAnalysisConfig,
+  > 125 |   FileUploadConfig,
+        |   ^^^^^^^^^^^^^^^^
+    126 |   AuthConfig,
+    127 |   ValidationResult,
+    128 |   PerformanceMetrics,
+
+WARNING in src/utils/types.ts:126:3
+TS2693: 'AuthConfig' only refers to a type, but is being used as a value here.
+    124 |   KPAnalysisConfig,
+    125 |   FileUploadConfig,
+  > 126 |   AuthConfig,
+        |   ^^^^^^^^^^
+    127 |   ValidationResult,
+    128 |   PerformanceMetrics,
+    129 |   AccessibilityCheck
+
+WARNING in src/utils/types.ts:127:3
+TS2693: 'ValidationResult' only refers to a type, but is being used as a value here.
+    125 |   FileUploadConfig,
+    126 |   AuthConfig,
+  > 127 |   ValidationResult,
+        |   ^^^^^^^^^^^^^^^^
+    128 |   PerformanceMetrics,
+    129 |   AccessibilityCheck
+    130 | };
+
+WARNING in src/utils/types.ts:128:3
+TS2693: 'PerformanceMetrics' only refers to a type, but is being used as a value here.
+    126 |   AuthConfig,
+    127 |   ValidationResult,
+  > 128 |   PerformanceMetrics,
+        |   ^^^^^^^^^^^^^^^^^^
+    129 |   AccessibilityCheck
+    130 | };
+
+WARNING in src/utils/types.ts:129:3
+TS2693: 'AccessibilityCheck' only refers to a type, but is being used as a value here.
+    127 |   ValidationResult,
+    128 |   PerformanceMetrics,
+  > 129 |   AccessibilityCheck
+        |   ^^^^^^^^^^^^^^^^^^
+    130 | };
+
+Compiling...
+Compiled with warnings.
+
+[eslint] 
+src/services/httpInterceptors.ts
+  Line 13:10:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 22:9:    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 40:22:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 41:22:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 59:5:    Unexpected console statement              no-console
+  Line 65:21:   Unexpected any. Specify a dCompiled with warnings.
+
+[eslint] 
+src/services/httpInterceptors.ts
+  Line 13:10:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 22:9:    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 40:22:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 41:22:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 59:5:    Unexpected console statement              no-console
+  Line 65:21:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 105:5:   Unexpected console statement              no-console
+  Line 122:5:   Unexpected console statement              no-console
+  Line 140:41:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 140:78:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 168:64:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 171:7:   Unexpected console statement              no-console
+  Line 189:7:   Unexpected console statement              no-console
+  Line 216:37:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 231:62:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 235:5:   Unexpected console statement              no-console
+  Line 264:11:  Unexpected console statement              no-console
+  Line 284:11:  Unexpected console statement              no-console
+  Line 348:21:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 363:33:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 375:33:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 379:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 380:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 381:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 382:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 383:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 400:7:   Unexpected console statement              no-console
+  Line 408:17:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 412:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 412:43:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 416:17:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 416:42:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 420:19:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 420:44:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 424:20:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 431:1:   Unexpected console statement              no-console
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in [eslint] 
+src/services/httpInterceptors.ts
+  Line 13:10:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 22:9:    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 40:22:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 41:22:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 59:5:    Unexpected console statement              no-console
+  Line 65:21:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 105:5:   Unexpected console statement              no-console
+  Line 122:5:   Unexpected console statement              no-console
+  Line 140:41:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 140:78:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 168:64:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 171:7:   Unexpected console statement              no-console
+  Line 189:7:   Unexpected console statement              no-console
+  Line 216:37:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 231:62:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 235:5:   Unexpected console statement              no-console
+  Line 264:11:  Unexpected console statement              no-console
+  Line 284:11:  Unexpected console statement              no-console
+  Line 348:21:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 363:33:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 375:33:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 379:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 380:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 381:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 382:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 383:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 400:7:   Unexpected console statement              no-console
+  Line 408:17:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 412:18:  Unexpected any. Specify a different type  @typeWARNING in src/auth/index.ts:3:26
+TS2305: Module '"../contexts/AuthContext"' has no exported member 'RegisterData'.
+    1 | // Authentication Context
+    2 | export { AuthProvider, useAuth } from '../contexts/AuthContext';
+  > 3 | export type { AuthState, RegisterData } from '../contexts/AuthContext';
+      |                          ^^^^^^^^^^^^
+    4 | export type { User } from '../types/auth';
+    5 |
+    6 | // Authentication Hooks
+
+WARNING in src/components/debug/PerformanceMonitor.tsx:235:13
+TS2322: Type 'PropsWithoutRef<P> & { ref: ForwardedRef<any>; }' is not assignable to type 'IntrinsicAttributes & P'.
+  Type 'PropsWithoutRef<P> & { ref: ForwardedRef<any>; }' is not assigWARNING in src/auth/index.ts:3:26
+TS2305: Module '"../contexts/AuthContext"' has no exported member 'RegisterData'.
+    1 | // Authentication Context
+    2 | export { AuthProvider, useAuth } from '../contexts/AuthContext';
+  > 3 | export type { AuthState, RegisterData } from '../contexts/AuthContext';
+      |                          ^^^^^^^^^^^^
+    4 | export type { User } from '../types/auth';
+    5 |
+    6 | // Authentication Hooks
+
+WARNING in src/components/debug/PerformanceMonitor.tsx:235:13
+TS2322: Type 'PropsWithoutRef<P> & { ref: ForwardedRef<any>; }' is not assignable to type 'IntrinsicAttributes & P'.
+  Type 'PropsWithoutRef<P> & { ref: ForwardedRef<any>; }' is not assignable to type 'P'.
+    'PropsWithoutRef<P> & { ref: ForwardedRef<any>; }' is assignable to the constraint of type 'P', but 'P' could be instantiated with a different subtype of constraint 'object'.
+    233 |     });
+    234 |
+  > 235 |     return <Component {...props} ref={ref} />;
+        |             ^^^^^^^^^
+    236 |   });
+    237 | };
+    238 |
+
+WARNING in src/components/lazy/index.ts:13:47
+TS2322: Type 'Promise<typeof import("/mnt/f/DevAssitPro/DevAssist-Pro/frontend/src/components/kpAnalyzer/PDFExportDialog")>' is not assignable to type 'Promise<{ default: ComponentType<any>; }>'.
+  Property 'default' is missing in type 'typeof import("/mnt/f/DevAssitPro/DevAssist-Pro/frontend/src/components/kpAnalyzer/PDFExportDialog")' but required in type '{ default: ComponentType<any>; }'.
+    11 | export const LazyKPDetailedAnalysisResults = lazy(() => import('../kpAnalyzer/KPDetailedAnalysisResults'));
+    12 | export const LazyKPDetailedReport = lazy(() => import('../kpAnalyzer/KPDetailedReport'));
+  > 13 | export const LazyPDFExportDialog = lazy(() => import('../kpAnalyzer/PDFExportDialog'));
+       |                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    14 |
+    15 | // Lazy-loaded компоненты визуализации
+    16 | export const LazyResultsVisualization = lazy(() => import('../visualization/ResultsVisualization'));
+
+WARNING in src/components/ui/AccessibleForm.tsx:170:15
+TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Argument of type '{ id: string; 'data-field': string; 'aria-invalid': string; 'aria-describedby': string; 'aria-required': boolean; className: string; }' is not assignable to parameter of type 'Partial<unknown> & Attributes'.
+      Object literal may only specify known properties, and 'id' does not exist in type 'Partial<unknown> & Attributes'.
+    168 |           if (React.isValidElement(child)) {
+    169 |             return React.cloneElement(child, {
+  > 170 |               id,
+        |               ^^
+    171 |               'data-field': id,
+    172 |               'aria-invalid': error ? 'true' : 'false',
+    173 |               'aria-describedby': [
+
+WARNING in src/components/ui/DesignSystemProvider.tsx:219:5
+TS1117: An object literal cannot have multiple properties with the same name.
+    217 |     // Color utilities
+    218 |     bg: (color: keyof typeof ds.colors) => `bg-${color}`,
+  > 219 |     textColor: (color: keyof typeof ds.colors) => `text-${color}`,
+        |     ^^^^
+    220 |     border: (color: keyof typeof ds.colors) => `border-${color}`,
+    221 |     
+    222 |     // Border radius utilities
+
+WARNING in src/components/ui/index.ts:3:10
+TS2614: Module '"./LoadingSpinner"' has no exported member 'LoadingSpinner'. Did you mean to use 'import LoadingSpinner from "./LoadingSpinner"' instead?
+    1 | // Основные UI компоненты
+    2 | export { Button } from './Button';
+  > 3 | export { Input } from './Input';
+      |          ^^^^^^^^^^^^^^
+    4 | export { LoadingSpinner } from './LoadingSpinner';
+    5 | export { BentoGrid } from './BentoGrid';
+    6 | export { DisplayCards } from './DisplayCards';
+
+WARNING in src/components/ui/index.ts:4:10
+TS2614: Module '"./BentoGrid"' has no exported member 'BentoGrid'. Did you mean to use 'import BentoGrid from "./BentoGrid"' instead?
+    2 | export { Button } from './Button';
+    3 | export { Input } from './Input';
+  > 4 | export { LoadingSpinner } from './LoadingSpinner';
+      |          ^^^^^^^^^
+    5 | export { BentoGrid } from './BentoGrid';
+    6 | export { DisplayCards } from './DisplayCards';
+    7 | export { HeroSection } from './HeroSection';
+
+WARNING in src/components/ui/index.ts:5:10
+TS2614: Module '"./DisplayCards"' has no exported member 'DisplayCards'. Did you mean to use 'import DisplayCards from "./DisplayCards"' instead?
+    3 | export { Input } from './Input';
+    4 | export { LoadingSpinner } from './LoadingSpinner';
+  > 5 | export { BentoGrid } from './BentoGrid';
+      |          ^^^^^^^^^^^^
+    6 | export { DisplayCards } from './DisplayCards';
+    7 | export { HeroSection } from './HeroSection';
+    8 | export { NavigationBar } from './NavigationBar';
+
+WARNING in src/components/ui/index.ts:9:10
+TS2724: '"./RegistrationToast"' has no exported member named 'RegistrationToast'. Did you mean 'RegistrationToastProps'?
+     7 | export { HeroSection } from './HeroSection';
+     8 | export { NavigationBar } from './NavigationBar';
+  >  9 | export { PricingCard } from './PricingCard';
+       |          ^^^^^^^^^^^^^^^^^
+    10 | export { RegistrationToast } from './RegistrationToast';
+    11 | export { AnimatedGroup } from './AnimatedGroup';
+    12 | export { ModernSidebar } from './ModernSidebar';
+
+WARNING in src/components/ui/LazyLoader.tsx:45:8
+TS2322: Type 'PropsWithoutRef<P> & { ref: ForwardedRef<any>; }' is not assignable to type 'IntrinsicAttributes & P'.
+  Type 'PropsWithoutRef<P> & { ref: ForwardedRef<any>; }' is not assignable to type 'P'.
+    'PropsWithoutRef<P> & { ref: ForwardedRef<any>; }' is assignable to the constraint of type 'P', but 'P' could be instantiated with a different subtype of constraint 'object'.
+    43 |   return React.forwardRef<any, P>((props, ref) => (
+    44 |     <LazyLoader fallback={fallback}>
+  > 45 |       <Component {...props} ref={ref} />
+       |        ^^^^^^^^^
+    46 |     </LazyLoader>
+    47 |   ));
+    48 | };
+
+WARNING in src/components/ui/LazyLoader.tsx:67:50
+TS2304: Cannot find name 'SkeletonLoader'.
+    65 |       style={{ minHeight: height }}
+    66 |     >
+  > 67 |       {isIntersecting ? children : (fallback || <SkeletonLoader />)}
+       |                                                  ^^^^^^^^^^^^^^
+    68 |     </div>
+    69 |   );
+    70 | };
+
+WARNING in src/components/ui/SkeletonLoader.tsx:94:15
+TS2322: Type '{ className: string; style: { width: string; }; }' is not assignable to type 'IntrinsicAttributes & SkeletonProps'.
+  Property 'style' does not exist on type 'IntrinsicAttributes & SkeletonProps'.
+    92 |             <Skeleton 
+    93 |               className="h-3 rounded-full" 
+  > 94 |               style={{ width: `${Math.random() * 60 + 20}%` }}
+       |               ^^^^^
+    95 |             />
+    96 |             <Skeleton className="h-3 w-12" />
+    97 |           </div>
+
+WARNING in src/components/ui/UnifiedComponents.tsx:15:11
+TS2430: Interface 'UnifiedInputProps' incorrectly extends interface 'InputHTMLAttributes<HTMLInputElement>'.
+  Types of property 'size' are incompatible.
+    Type 'string' is not assignable to type 'number'.
+      Type 'string' is not assignable to type 'number'.
+    13 | }
+    14 |
+  > 15 | interface UnifiedInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+       |           ^^^^^^^^^^^^^^^^^
+    16 |   variant?: 'default' | 'error' | 'success';
+    17 |   size?: 'sm' | 'md' | 'lg';
+    18 |   leftIcon?: React.ReactNode;
+
+WARNING in src/components/ui/UnifiedComponents.tsx:275:6
+TS2322: Type '{ children: ReactNode; defaultChecked?: boolean; defaultValue?: string | number | readonly string[]; suppressContentEditableWarning?: boolean; suppressHydrationWarning?: boolean; accessKey?: string; ... 256 more ...; className: string; }' is not assignable to type 'SVGProps<SVGSymbolElement>'.
+  Types of property 'onCopy' are incompatible.
+    Type 'ClipboardEventHandler<HTMLElement>' is not assignable to type 'ClipboardEventHandler<SVGSymbolElement>'.
+      Type 'HTMLElement' is missing the following properties from type 'SVGSymbolElement': ownerSVGElement, viewportElement, preserveAspectRatio, viewBox
+    273 |
+    274 |   return (
+  > 275 |     <Component
+        |      ^^^^^^^^^
+    276 |       className={cn(
+    277 |         variantStyles[variant],
+    278 |         colorStyles[color],
+
+WARNING in src/providers/QueryProvider.tsx:24:13
+TS2322: Type '{ initialIsOpen: boolean; buttonPosition: any; }' is not assignable to type 'IntrinsicAttributes'.
+  Property 'initialIsOpen' does not exist on type 'IntrinsicAttributes'.
+    22 |         <Suspense fallback={null}>
+    23 |           <ReactQueryDevtools 
+  > 24 |             initialIsOpen={false}
+       |             ^^^^^^^^^^^^^
+    25 |             buttonPosition={"bottom-right" as any}
+    26 |           />
+    27 |         </Suspense>
+
+WARNING in src/services/ai/realKpAnalysisService.ts:607:9
+TS2322: Type '{ id: string; tz_name: string; kp_name: string; company_name: any; tech_stack: any; pricing: any; timeline: any; total_cost: any; currency: any; cost_breakdown: any; competitive_advantages: any; team_expertise: any; ... 10 more ...; confidence_score: any; }' is not assignable to type 'RealAnalysisResult'.
+  Object literal may only specify known properties, and 'post_launch_support' does not exist in type 'RealAnalysisResult'.
+    605 |         team_expertise: fullAnalysis.team_expertise,
+    606 |         methodology: fullAnalysis.methodology,
+  > 607 |         quality_assurance: fullAnalysis.quality_assurance,
+        |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    608 |         post_launch_support: fullAnalysis.post_launch_support,
+    609 |         document_quality: fullAnalysis.document_quality,
+    610 |         file_format: fullAnalysis.file_format,
+
+WARNING in src/services/unifiedApiClient.ts:229:7
+TS2322: Type 'string' is not assignable to type 'number'.
+    227 |     console.log('[UnifiedApiClient] Using mock registration');
+    228 |     
+  > 229 |     // Simulate network delay
+        |       ^^
+    230 |     await new Promise(resolve => setTimeout(resolve, 1000));
+    231 |
+    232 |     const mockUser: User = {
+
+WARNING in src/test-types.ts
+TS1208: 'test-types.ts' cannot be compiled under '--isolatedModules' because it is considered a global script file. Add an import, export, or an empty 'export {}' statement to make it a module.
+
+WARNING in src/utils/index.ts:43:70
+TS2339: Property 'default' does not exist on type 'typeof import("/mnt/f/DevAssitPro/DevAssist-Pro/frontend/src/utils/documentProcessor")'.
+    41 |   
+    42 |   // Документы
+  > 43 |   documentProcessor: () => import('./documentProcessor').then(m => m.default),
+       |                                                                      ^^^^^^^
+    44 |   
+    45 |   // Файлы
+    46 |   fileAdapters: () => import('./fileAdapters').then(m => m.default),
+
+WARNING in src/utils/index.ts:46:60
+TS2339: Property 'default' does not exist on type 'typeof import("/mnt/f/DevAssitPro/DevAssist-Pro/frontend/src/utils/fileAdapters")'.
+    44 |   
+    45 |   // Файлы
+  > 46 |   fileAdapters: () => import('./fileAdapters').then(m => m.default),
+       |                                                            ^^^^^^^
+    47 |   
+    48 |   // KP анализатор
+    49 |   kpAnalyzerUtils: () => import('./kpAnalyzerUtils').then(m => m.default),
+
+WARNING in src/utils/index.ts:49:66
+TS2339: Property 'default' does not exist on type 'typeof import("/mnt/f/DevAssitPro/DevAssist-Pro/frontend/src/utils/kpAnalyzerUtils")'.
+    47 |   
+    48 |   // KP анализатор
+  > 49 |   kpAnalyzerUtils: () => import('./kpAnalyzerUtils').then(m => m.default),
+       |                                                                  ^^^^^^^
+    50 |   
+    51 |   // Аутентификация
+    52 |   authUtils: () => import('./authUtils').then(m => m.default),
+
+WARNING in src/utils/index.ts:52:54
+TS2339: Property 'default' does not exist on type 'typeof import("/mnt/f/DevAssitPro/DevAssist-Pro/frontend/src/utils/authUtils")'.
+    50 |   
+    51 |   // Аутентификация
+  > 52 |   authUtils: () => import('./authUtils').then(m => m.default),
+       |                                                      ^^^^^^^
+    53 |   
+    54 |   // Оптимизация
+    55 |   assetOptimizer: () => import('./assetOptimizer').then(m => m.default)
+
+WARNING in src/utils/types.ts:119:3
+TS2693: 'ContrastAnalysis' only refers to a type, but is being used as a value here.
+    117 |
+    118 | // Экспорт типов только для использования в других файлах
+  > 119 | export type {
+        |   ^^^^^^^^^^^^^^^^
+    120 |   ContrastAnalysis,
+    121 |   ColorValidationResult,
+    122 |   AssetOptimizationOptions,
+
+WARNING in src/utils/types.ts:120:3
+TS2693: 'ColorValidationResult' only refers to a type, but is being used as a value here.
+    118 | // Экспорт типов только для использования в других файлах
+    119 | export type {
+  > 120 |   ContrastAnalysis,
+        |   ^^^^^^^^^^^^^^^^^^^^^
+    121 |   ColorValidationResult,
+    122 |   AssetOptimizationOptions,
+    123 |   ImageCompressionOptions,
+
+WARNING in src/utils/types.ts:121:3
+TS2693: 'AssetOptimizationOptions' only refers to a type, but is being used as a value here.
+    119 | export type {
+    120 |   ContrastAnalysis,
+  > 121 |   ColorValidationResult,
+        |   ^^^^^^^^^^^^^^^^^^^^^^^^
+    122 |   AssetOptimizationOptions,
+    123 |   ImageCompressionOptions,
+    124 |   DocumentProcessingResult,
+
+WARNING in src/utils/types.ts:122:3
+TS2693: 'ImageCompressionOptions' only refers to a type, but is being used as a value here.
+    120 |   ContrastAnalysis,
+    121 |   ColorValidationResult,
+  > 122 |   AssetOptimizationOptions,
+        |   ^^^^^^^^^^^^^^^^^^^^^^^
+    123 |   ImageCompressionOptions,
+    124 |   DocumentProcessingResult,
+    125 |   KPAnalysisConfig,
+
+WARNING in src/utils/types.ts:123:3
+TS2693: 'DocumentProcessingResult' only refers to a type, but is being used as a value here.
+    121 |   ColorValidationResult,
+    122 |   AssetOptimizationOptions,
+  > 123 |   ImageCompressionOptions,
+        |   ^^^^^^^^^^^^^^^^^^^^^^^^
+    124 |   DocumentProcessingResult,
+    125 |   KPAnalysisConfig,
+    126 |   FileUploadConfig,
+
+WARNING in src/utils/types.ts:124:3
+TS2693: 'KPAnalysisConfig' only refers to a type, but is being used as a value here.
+    122 |   AssetOptimizationOptions,
+    123 |   ImageCompressionOptions,
+  > 124 |   DocumentProcessingResult,
+        |   ^^^^^^^^^^^^^^^^
+    125 |   KPAnalysisConfig,
+    126 |   FileUploadConfig,
+    127 |   AuthConfig,
+
+WARNING in src/utils/types.ts:125:3
+TS2693: 'FileUploadConfig' only refers to a type, but is being used as a value here.
+    123 |   ImageCompressionOptions,
+    124 |   DocumentProcessingResult,
+  > 125 |   KPAnalysisConfig,
+        |   ^^^^^^^^^^^^^^^^
+    126 |   FileUploadConfig,
+    127 |   AuthConfig,
+    128 |   ValidationResult,
+
+WARNING in src/utils/types.ts:126:3
+TS2693: 'AuthConfig' only refers to a type, but is being used as a value here.
+    124 |   DocumentProcessingResult,
+    125 |   KPAnalysisConfig,
+  > 126 |   FileUploadConfig,
+        |   ^^^^^^^^^^
+    127 |   AuthConfig,
+    128 |   ValidationResult,
+    129 |   PerformanceMetrics,
+
+WARNING in src/utils/types.ts:127:3
+TS2693: 'ValidationResult' only refers to a type, but is being used as a value here.
+    125 |   KPAnalysisConfig,
+    126 |   FileUploadConfig,
+  > 127 |   AuthConfig,
+        |   ^^^^^^^^^^^^^^^^
+    Compiling...
+Compiled with warnings.
+
+[eslint] 
+src/services/httpInterceptors.ts
+  Line 13:10:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 22:9:    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 40:22:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 41:22:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 59:5:    Unexpected console statement              no-console
+  Line 65:21:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 105:5:   Unexpected console statement              no-console
+  Line 122:5:   UneCompiled with warnings.
+
+[eslint] 
+src/services/httpInterceptors.ts
+  Line 13:10:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 22:9:    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 40:22:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 41:22:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 59:5:    Unexpected console statement              no-console
+  Line 65:21:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 105:5:   Unexpected console statement              no-console
+  Line 122:5:   Unexpected console statement              no-console
+  Line 140:41:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 140:78:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 168:64:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 171:7:   Unexpected console statement              no-console
+  Line 189:7:   Unexpected console statement              no-console
+  Line 216:37:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 231:62:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 235:5:   Unexpected console statement              no-console
+  Line 264:11:  Unexpected console statement              no-console
+  Line 284:11:  Unexpected console statement              no-console
+  Line 348:21:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 363:33:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 375:33:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 379:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 380:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 381:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 382:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 383:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 400:7:   Unexpected console statement              no-console
+  Line 408:17:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 412:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 412:43:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 416:17:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 416:42:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 420:19:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 420:44:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 424:20:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 431:1:   Unexpected console statement              no-console
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in [eslint] 
+src/services/httpInterceptors.ts
+  Line 13:10:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 22:9:    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 40:22:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 41:22:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 59:5:    Unexpected console statement              no-console
+  Line 65:21:   Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 105:5:   Unexpected console statement              no-console
+  Line 122:5:   Unexpected console statement              no-console
+  Line 140:41:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 140:78:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 168:64:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 171:7:   Unexpected console statement              no-console
+  Line 189:7:   Unexpected console statement              no-console
+  Line 216:37:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 231:62:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 235:5:   Unexpected console statement              no-console
+  Line 264:11:  Unexpected console statement              no-console
+  Line 284:11:  Unexpected console statement              no-console
+  Line 348:21:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 363:33:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 375:33:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 379:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 380:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 381:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 382:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 383:18:  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  Line 400:7:   Unexpected console statement              no-console
+  Line 408:17:  UnFiles successfully emitted, waiting for typecheck results...
+Issues checking in progress...
+WARNING in src/auth/index.ts:3:26
+TS2305: Module '"../contexts/AuthContext"' has no exported member 'RegisterData'.
+    1 | // Authentication Context
+    2 | export { AuthProvider, useAuth } from '../contexts/AuthContext';
+  > 3 | export type { AuthState, RegisterData } from '../contexts/AuthContext';
+      |                          ^^^^^^^^^^^^
+    4 | export type { User } from '../types/auth';
+    5 |
+    6 | // Authentication Hooks
+
+WARNING in src/components/debug/PerformanceMonitor.tsx:235:13
+TS2322: Type 'PropsWithoutRef<P> & { ref: ForwardedRef<any>; }' is not assignable to type 'IntrinsicAttributes & P'.
+  Type 'PropsWithoutRef<P> & { ref: ForwardedRef<any>; }' is not assignable to type 'P'.
+    'PropsWithoutRef<P> & { ref: ForwardedRef<any>; }' is assignable to the constraint of type 'P', but 'P' could be inWARNING in src/auth/index.ts:3:26
+TS2305: Module '"../contexts/AuthContext"' has no exported member 'RegisterData'.
+    1 | // Authentication Context
+    2 | export { AuthProvider, useAuth } from '../contexts/AuthContext';
+  > 3 | export type { AuthState, RegisterData } from '../contexts/AuthContext';
+      |                          ^^^^^^^^^^^^
+    4 | export type { User } from '../types/auth';
+    5 |
+    6 | // Authentication Hooks
+
+WARNING in src/components/debug/PerformanceMonitor.tsx:235:13
+TS2322: Type 'PropsWithoutRef<P> & { ref: ForwardedRef<any>; }' is not assignable to type 'IntrinsicAttributes & P'.
+  Type 'PropsWithoutRef<P> & { ref: ForwardedRef<any>; }' is not assignable to type 'P'.
+    'PropsWithoutRef<P> & { ref: ForwardedRef<any>; }' is assignable to the constraint of type 'P', but 'P' could be instantiated with a different subtype of constraint 'object'.
+    233 |     });
+    234 |
+  > 235 |     return <Component {...props} ref={ref} />;
+        |             ^^^^^^^^^
+    236 |   });
+    237 | };
+    238 |
+
+WARNING in src/components/lazy/index.ts:13:47
+TS2322: Type 'Promise<typeof import("/mnt/f/DevAssitPro/DevAssist-Pro/frontend/src/components/kpAnalyzer/PDFExportDialog")>' is not assignable to type 'Promise<{ default: ComponentType<any>; }>'.
+  Property 'default' is missing in type 'typeof import("/mnt/f/DevAssitPro/DevAssist-Pro/frontend/src/components/kpAnalyzer/PDFExportDialog")' but required in type '{ default: ComponentType<any>; }'.
+    11 | export const LazyKPDetailedAnalysisResults = lazy(() => import('../kpAnalyzer/KPDetailedAnalysisResults'));
+    12 | export const LazyKPDetailedReport = lazy(() => import('../kpAnalyzer/KPDetailedReport'));
+  > 13 | export const LazyPDFExportDialog = lazy(() => import('../kpAnalyzer/PDFExportDialog'));
+       |                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    14 |
+    15 | // Lazy-loaded компоненты визуализации
+    16 | export const LazyResultsVisualization = lazy(() => import('../visualization/ResultsVisualization'));
+
+WARNING in src/components/main/HeaderImproved.tsx:47:28
+TS2304: Cannot find name 'HTMLButtonButton'.
+    45 |   const [tempSelectedComparisonModel, setTempSelectedComparisonModel] = useState(selectedComparisonModel);
+    46 |   const panelRef = useRef<HTMLDivElement>(null);
+  > 47 |   const buttonRef = useRef<HTMLButtonElement>(null);
+       |                            ^^^^^^^^^^^^^^^^
+    48 |   
+    49 |   const navigationItems = [
+    50 |     { key: 'dashboard', label: 'Dashboard', icon: <Grid3X3 className="w-4 h-4" /> },
+
+WARNING in src/components/ui/AccessibleForm.tsx:170:15
+TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Argument of type '{ id: string; 'data-field': string; 'aria-invalid': string; 'aria-describedby': string; 'aria-required': boolean; className: string; }' is not assignable to parameter of type 'Partial<unknown> & Attributes'.
+      Object literal may only specify known properties, and 'id' does not exist in type 'Partial<unknown> & Attributes'.
+    168 |           if (React.isValidElement(child)) {
+    169 |             return React.cloneElement(child, {
+  > 170 |               id,
+        |               ^^
+    171 |               'data-field': id,
+    172 |               'aria-invalid': error ? 'true' : 'false',
+    173 |               'aria-describedby': [
+
+WARNING in src/components/ui/DesignSystemProvider.tsx:219:5
+TS1117: An object literal cannot have multiple properties with the same name.
+    217 |     // Color utilities
+    218 |     bg: (color: keyof typeof ds.colors) => `bg-${color}`,
+  > 219 |     textColor: (color: keyof typeof ds.colors) => `text-${color}`,
+        |     ^^^^
+    220 |     border: (color: keyof typeof ds.colors) => `border-${color}`,
+    221 |     
+    222 |     // Border radius utilities
+
+WARNING in src/components/ui/LazyLoader.tsx:45:8
+TS2322: Type 'PropsWithoutRef<P> & { ref: ForwardedRef<any>; }' is not assignable to type 'IntrinsicAttributes & P'.
+  Type 'PropsWithoutRef<P> & { ref: ForwardedRef<any>; }' is not assignable to type 'P'.
+    'PropsWithoutRef<P> & { ref: ForwardedRef<any>; }' is assignable to the constraint of type 'P', but 'P' could be instantiated with a different subtype of constraint 'object'.
+    43 |   return React.forwardRef<any, P>((props, ref) => (
+    44 |     <LazyLoader fallback={fallback}>
+  > 45 |       <Component {...props} ref={ref} />
+       |        ^^^^^^^^^
+    46 |     </LazyLoader>
+    47 |   ));
+    48 | };
+
+WARNING in src/components/ui/LazyLoader.tsx:67:50
+TS2304: Cannot find name 'SkeletonLoader'.
+    65 |       style={{ minHeight: height }}
+    66 |     >
+  > 67 |       {isIntersecting ? children : (fallback || <SkeletonLoader />)}
+       |                                                  ^^^^^^^^^^^^^^
+    68 |     </div>
+    69 |   );
+    70 | };
+
+WARNING in src/components/ui/MicroInteractions.tsx:111:6
+TS2322: Type '{ children: (ReactNode | Element)[]; form?: string; formAction?: string; formEncType?: string; formMethod?: string; formNoValidate?: boolean; formTarget?: string; name?: string; ... 269 more ...; onClick: (e: MouseEvent<...>) => void; } | { ...; } | { ...; } | { ...; } | { ...; }' is not assignable to type 'IntrinsicAttributes & HTMLAttributesWithoutMotionProps<ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & MotionProps & RefAttributes<...>'.
+  Type '{ children: (ReactNode | Element)[]; form?: string; formAction?: string; formEncType?: string; formMethod?: string; formNoValidate?: boolean; formTarget?: string; name?: string; ... 269 more ...; onClick: (e: MouseEvent<...>) => void; }' is not assignable to type 'MotionProps'.
+    Types of property 'onAnimationStart' are incompatible.
+      Type 'AnimationEventHandler<HTMLButtonElement>' is not assignable to type '(definition: AnimationDefinition) => void'.
+        Types of parameters 'event' and 'definition' are incompatible.
+          Type 'AnimationDefinition' is not assignable to type 'AnimationEvent<HTMLButtonElement>'.
+            Type 'string' is not assignable to type 'AnimationEvent<HTMLButtonElement>'.
+    109 |
+    110 |   return (
+  > 111 |     <motion.button
+        |      ^^^^^^^^^^^^^
+    112 |       ref={buttonRef}
+    113 |       className={cn(
+    114 |         'relative overflow-hidden rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed',
+
+WARNING in src/components/ui/MicroInteractions.tsx:229:8
+TS2322: Type '{ accept?: string; alt?: string; autoComplete?: HTMLInputAutoCompleteAttribute; capture?: boolean | "user" | "environment"; checked?: boolean; disabled?: boolean; ... 289 more ...; transition: { ...; }; }' is not assignable to type 'MotionProps'.
+  Types of property 'onAnimationStart' are incompatible.
+    Type 'AnimationEventHandler<HTMLInputElement>' is not assignable to type '(definition: AnimationDefinition) => void'.
+      Types of parameters 'event' and 'definition' are incompatible.
+        Type 'AnimationDefinition' is not assignable to type 'AnimationEvent<HTMLInputElement>'.
+          Type 'string' is not assignable to type 'AnimationEvent<HTMLInputElement>'.
+    227 |   return (
+    228 |     <div className="relative">
+  > 229 |       <motion.input
+        |        ^^^^^^^^^^^^
+    230 |         className={cn(
+    231 |           'w-full px-3 pt-6 pb-2 border rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500',
+    232 |           error ? 'border-red-500' : 'border-gray-300',
+
+WARNING in src/components/ui/SkeletonLoader.tsx:94:15
+TS2322: Type '{ className: string; style: { width: string; }; }' is not assignable to type 'IntrinsicAttributes & SkeletonProps'.
+  Property 'style' does not exist on type 'IntrinsicAttributes & SkeletonProps'.
+    92 |             <Skeleton 
+    93 |               className="h-3 rounded-full" 
+  > 94 |               style={{ width: `${Math.random() * 60 + 20}%` }}
+       |               ^^^^^
+    95 |             />
+    96 |             <Skeleton className="h-3 w-12" />
+    97 |           </div>
+
+WARNING in src/components/ui/UnifiedComponents.tsx:15:11
+TS2430: Interface 'UnifiedInputProps' incorrectly extends interface 'InputHTMLAttributes<HTMLInputElement>'.
+  Types of property 'size' are incompatible.
+    Type 'string' is not assignable to type 'number'.
+      Type 'string' is not assignable to type 'number'.
+    13 | }
+    14 |
+  > 15 | interface UnifiedInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+       |           ^^^^^^^^^^^^^^^^^
+    16 |   variant?: 'default' | 'error' | 'success';
+    17 |   size?: 'sm' | 'md' | 'lg';
+    18 |   leftIcon?: React.ReactNode;
+
+WARNING in src/components/ui/UnifiedComponents.tsx:275:6
+TS2322: Type '{ children: ReactNode; defaultChecked?: boolean; defaultValue?: string | number | readonly string[]; suppressContentEditableWarning?: boolean; suppressHydrationWarning?: boolean; accessKey?: string; ... 256 more ...; className: string; }' is not assignable to type 'SVGProps<SVGSymbolElement>'.
+  Types of property 'onCopy' are incompatible.
+    Type 'ClipboardEventHandler<HTMLElement>' is not assignable to type 'ClipboardEventHandler<SVGSymbolElement>'.
+      Type 'HTMLElement' is missing the following properties from type 'SVGSymbolElement': ownerSVGElement, viewportElement, preserveAspectRatio, viewBox
+    273 |
+    274 |   return (
+  > 275 |     <Component
+        |      ^^^^^^^^^
+    276 |       className={cn(
+    277 |         variantStyles[variant],
+    278 |         colorStyles[color],
+
+WARNING in src/providers/QueryProvider.tsx:24:13
+TS2322: Type '{ initialIsOpen: boolean; buttonPosition: any; }' is not assignable to type 'IntrinsicAttributes'.
+  Property 'initialIsOpen' does not exist on type 'IntrinsicAttributes'.
+    22 |         <Suspense fallback={null}>
+    23 |           <ReactQueryDevtools 
+  > 24 |             initialIsOpen={false}
+       |             ^^^^^^^^^^^^^
+    25 |             buttonPosition={"bottom-right" as any}
+    26 |           />
+    27 |         </Suspense>
+
+WARNING in src/services/ai/realKpAnalysisService.ts:608:9
+TS2322: Type '{ id: string; tz_name: string; kp_name: string; company_name: any; tech_stack: any; pricing: any; timeline: any; total_cost: any; currency: any; cost_breakdown: any; competitive_advantages: any; team_expertise: any; ... 10 more ...; confidence_score: any; }' is not assignable to type 'RealAnalysisResult'.
+  Object literal may only specify known properties, and 'post_launch_support' does not exist in type 'RealAnalysisResult'.
+    606 |         methodology: fullAnalysis.methodology,
+    607 |         quality_assurance: fullAnalysis.quality_assurance,
+  > 608 |         post_launch_support: fullAnalysis.post_launch_support,
+        |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    609 |         document_quality: fullAnalysis.document_quality,
+    610 |         file_format: fullAnalysis.file_format,
+    611 |         summary: {
+
+WARNING in src/services/unifiedApiClient.ts:233:7
+TS2322: Type 'string' is not assignable to type 'number'.
+    231 |
+    232 |     const mockUser: User = {
+  > 233 |       id: Date.now().toString(),
+        |       ^^
+    234 |       email: userData.email,
+    235 |       full_name: `${userData.firstName} ${userData.lastName}`,
+    236 |       firstName: userData.firstName,
+
+WARNING in src/test-types.ts
+TS1208: 'test-types.ts' cannot be compiled under '--isolatedModules' because it is considered a global script file. Add an import, export, or an empty 'export {}' statement to make it a module.
+
+WARNING in src/utils/index.ts:43:70
+TS2339: Property 'default' does not exist on type 'typeof import("/mnt/f/DevAssitPro/DevAssist-Pro/frontend/src/utils/documentProcessor")'.
+    41 |   
+    42 |   // Документы
+  > 43 |   documentProcessor: () => import('./documentProcessor').then(m => m.default),
+       |                                                                      ^^^^^^^
+    44 |   
+    45 |   // Файлы
+    46 |   fileAdapters: () => import('./fileAdapters').then(m => m.default),
+
+WARNING in src/utils/index.ts:46:60
+TS2339: Property 'default' does not exist on type 'typeof import("/mnt/f/DevAssitPro/DevAssist-Pro/frontend/src/utils/fileAdapters")'.
+    44 |   
+    45 |   // Файлы
+  > 46 |   fileAdapters: () => import('./fileAdapters').then(m => m.default),
+       |                                                            ^^^^^^^
+    47 |   
+    48 |   // KP анализатор
+    49 |   kpAnalyzerUtils: () => import('./kpAnalyzerUtils').then(m => m.default),
+
+WARNING in src/utils/index.ts:49:66
+TS2339: Property 'default' does not exist on type 'typeof import("/mnt/f/DevAssitPro/DevAssist-Pro/frontend/src/utils/kpAnalyzerUtils")'.
+    47 |   
+    48 |   // KP анализатор
+  > 49 |   kpAnalyzerUtils: () => import('./kpAnalyzerUtils').then(m => m.default),
+       |                                                                  ^^^^^^^
+    50 |   
+    51 |   // Аутентификация
+    52 |   authUtils: () => import('./authUtils').then(m => m.default),
+
+WARNING in src/utils/index.ts:52:54
+TS2339: Property 'default' does not exist on type 'typeof import("/mnt/f/DevAssitPro/DevAssist-Pro/frontend/src/utils/authUtils")'.
+    50 |   
+    51 |   // Аутентификация
+  > 52 |   authUtils: () => import('./authUtils').then(m => m.default),
+       |                                                      ^^^^^^^
+    53 |   
+    54 |   // Оптимизация
+    55 |   assetOptimizer: () => import('./assetOptimizer').then(m => m.default)
+
+WARNING in src/utils/types.ts:119:3
+TS2693: 'ContrastAnalysis' only refers to a type, but is being used as a value here.
+    117 |
+    118 | // Экспорт типов только для использования в других файлах
+  > 119 | export type {
+        |   ^^^^^^^^^^^^^^^^
+    120 |   ContrastAnalysis,
+    121 |   ColorValidationResult,
+    122 |   AssetOptimizationOptions,
+
+WARNING in src/utils/types.ts:120:3
+TS2693: 'ColorValidationResult' only refers to a type, but is being used as a value here.
+    118 | // Экспорт типов только для использования в других файлах
+    119 | export type {
+  > 120 |   ContrastAnalysis,
+        |   ^^^^^^^^^^^^^^^^^^^^^
+    121 |   ColorValidationResult,
+    122 |   AssetOptimizationOptions,
+    123 |   ImageCompressionOptions,
+
+WARNING in src/utils/types.ts:121:3
+TS2693: 'AssetOptimizationOptions' only refers to a type, but is being used as a value here.
+    119 | export type {
+    120 |   ContrastAnalysis,
+  > 121 |   ColorValidationResult,
+        |   ^^^^^^^^^^^^^^^^^^^^^^^^
+    122 |   AssetOptimizationOptions,
+    123 |   ImageCompressionOptions,
+    124 |   DocumentProcessingResult,
+
+WARNING in src/utils/types.ts:122:3
+TS2693: 'ImageCompressionOptions' only refers to a type, but is being used as a value here.
+    120 |   ContrastAnalysis,
+    121 |   ColorValidationResult,
+  > 122 |   AssetOptimizationOptions,
+        |   ^^^^^^^^^^^^^^^^^^^^^^^
+    123 |   ImageCompressionOptions,
+    124 |   DocumentProcessingResult,
+    125 |   KPAnalysisConfig,
+
+WARNING in src/utils/types.ts:123:3
+TS2693: 'DocumentProcessingResult' only refers to a type, but is being used as a value here.
+    121 |   ColorValidationResult,
+    122 |   AssetOptimizationOptions,
+  > 123 |   ImageCompressionOptions,
+        |   ^^^^^^^^^^^^^^^^^^^^^^^^
+    124 |   DocumentProcessingResult,
+    125 |   KPAnalysisConfig,
+    126 |   FileUploadConfig,
+
+WARNING in src/utils/types.ts:124:3
+TS2693: 'KPAnalysisConfig' only refers to a type, but is being used as a value here.
+    122 |   AssetOptimizationOptions,
+    123 |   ImageCompressionOptions,
+  > 124 |   DocumentProcessingResult,
+        |   ^^^^^^^^^^^^^^^^
+    125 |   KPAnalysisConfig,
+    126 |   FileUploadConfig,
+    127 |   AuthConfig,
+
+WARNING in src/utils/types.ts:125:3
+TS2693: 'FileUploadConfig' only refers to a type, but is being used as a value here.
+    123 |   ImageCompressionOptions,
+    124 |   DocumentProcessingResult,
+  > 125 |   KPAnalysisConfig,
+        |   ^^^^^^^^^^^^^^^^
+    126 |   FileUploadConfig,
+    127 |   AuthConfig,
+    128 |   ValidationResult,
+
+WARNING in src/utils/types.ts:126:3
+TS2693: 'AuthConfig' only refers to a type, but is being used as a value here.
+    124 |   DocumentProcessingResult,
+    125 |   KPAnalysisConfig,
+  > 126 |   FileUploadConfig,
+        |   ^^^^^^^^^^
+    127 |   AuthConfig,
+    128 |   ValidationResult,
+    129 |   PerformanceMetrics,
+
+WARNING in src/utils/types.ts:127:3
+TS2693: 'ValidationResult' only refers to a type, but is being used as a value here.
+    125 |   KPAnalysisConfig,
+    126 |   FileUploadConfig,
+  > 127 |   AuthConfig,
+        |   ^^^^^^^^^^^^^^^^
+    128 |   ValidationResult,
+    129 |   PerformanceMetrics,
+    130 |   AccessibilityCheck
+
+WARNING in src/utils/types.ts:128:3
+TS2693: 'PerformanceMetrics' only refers to a type, but is being used as a value here.
+    126 |   FileUploadConfig,
+    127 |   AuthConfig,
+  > 128 |   ValidationResult,
+        |   ^^^^^^^^^^^^^^^^^^
+    129 |   PerformanceMetrics,
+    130 |   AccessibilityCheck
+    131 | };
+
+WARNING in src/utils/types.ts:129:3
+TS2693: 'AccessibilityCheck' only refers to a type, but is being used as a value here.
+    127 |   AuthConfig,
+    128 |   ValidationResult,
+  > 129 |   PerformanceMetrics,
+        |   ^^^^^^^^^^^^^^^^^^
+    130 |   AccessibilityCheck
+    131 | };
+

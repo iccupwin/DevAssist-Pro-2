@@ -13,7 +13,11 @@ class UnifiedApiClient {
   private token: string | null = null;
   private refreshToken: string | null = null;
 
-  constructor(baseUrl: string = 'http://localhost:8000') {
+  constructor(baseUrl: string = process.env.REACT_APP_API_URL || (
+    process.env.NODE_ENV === 'production' 
+      ? 'https://your-api-domain.com' 
+      : 'http://localhost:8000'
+  )) {
     this.baseUrl = baseUrl;
     this.loadTokens();
   }
@@ -302,7 +306,7 @@ class UnifiedApiClient {
   }
 
   async forgotPassword(email: string): Promise<AuthResponse> {
-    await this.request('/api/auth/forgot-password', {
+    await this.request('/api/auth/password-reset', {
       method: 'POST',
       body: JSON.stringify({ email }),
     });
@@ -314,7 +318,7 @@ class UnifiedApiClient {
   }
 
   async resetPassword(token: string, newPassword: string): Promise<AuthResponse> {
-    await this.request('/api/auth/reset-password', {
+    await this.request('/api/auth/password-reset/confirm', {
       method: 'POST',
       body: JSON.stringify({ token, new_password: newPassword }),
     });

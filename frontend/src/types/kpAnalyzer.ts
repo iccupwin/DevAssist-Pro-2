@@ -253,6 +253,17 @@ export interface KPAnalysisResult {
   timestamp?: Date; // Backward compatibility
   status?: 'pending' | 'analyzing' | 'completed' | 'error';
   
+  // New enhanced analysis fields
+  file_format?: 'pdf' | 'docx' | 'doc' | 'txt';
+  total_cost?: number;
+  cost_breakdown?: string;
+  team?: string;
+  team_expertise?: string;
+  methodology?: string;
+  competitive_advantages?: string;
+  support?: string;
+  quality_assurance?: string;
+  
   // Backward compatibility with old interface
   extractedData?: KPSummaryData;
   analysis?: {
@@ -319,6 +330,17 @@ export interface RealAnalysisResult {
   created_at: string;
   model_used: string;
   confidence_score: number;
+  
+  // New enhanced analysis fields
+  file_format?: string;
+  total_cost?: number;
+  currency?: string;
+  cost_breakdown?: string;
+  competitive_advantages?: string;
+  team_expertise?: string;
+  methodology?: string;
+  quality_assurance?: string;
+  support?: string;
 }
 
 export interface RealKPAnalysisProgress {

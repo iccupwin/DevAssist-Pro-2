@@ -115,7 +115,15 @@ class ReportGenerator:
     async def _get_analysis_data(self, analysis_id: int) -> Dict[str, Any]:
         """Получение данных анализа из базы данных"""
         # TODO: Реализовать получение данных из базы данных
-        # Заглушка для демонстрации
+        # Попробуем получить реальные данные из анализа
+        try:
+            # Здесь нужно подключиться к базе данных и получить реальные данные
+            # Пока используем заглушку, но добавим поддержку реальных данных о стоимости
+            pass
+        except Exception as e:
+            logger.warning(f"Failed to get real analysis data: {e}")
+        
+        # Заглушка для демонстрации с более реалистичными данными
         return {
             "analysis_id": analysis_id,
             "document_info": {

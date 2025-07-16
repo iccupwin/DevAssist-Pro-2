@@ -108,12 +108,12 @@ export const FileUploadZone: React.FC<FileUploadZoneProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 h-full">
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6 h-full">
       <div className="flex items-center gap-3 mb-4">
         {icon}
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
-          <p className="text-sm text-gray-600">{description}</p>
+          <h3 className="text-base md:text-lg font-semibold text-gray-900">{title}</h3>
+          <p className="text-sm md:text-base text-gray-600">{description}</p>
         </div>
       </div>
 
@@ -121,8 +121,9 @@ export const FileUploadZone: React.FC<FileUploadZoneProps> = ({
       <div
         {...getRootProps()}
         className={`
-          relative border-2 border-dashed rounded-lg p-6 text-center cursor-pointer
-          transition-colors duration-200 ease-in-out
+          relative border-2 border-dashed rounded-lg p-4 sm:p-6 md:p-8 text-center cursor-pointer
+          transition-colors duration-200 ease-in-out min-h-[120px] sm:min-h-[140px] md:min-h-[160px]
+          flex items-center justify-center
           ${isDragActive 
             ? 'border-blue-400 bg-blue-50' 
             : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
@@ -132,9 +133,9 @@ export const FileUploadZone: React.FC<FileUploadZoneProps> = ({
       >
         <input {...getInputProps()} />
         
-        <div className="flex flex-col items-center gap-3">
+        <div className="flex flex-col items-center gap-2 sm:gap-3">
           <Upload 
-            className={`w-10 h-10 ${
+            className={`w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 ${
               isDragActive ? 'text-blue-500' : 'text-gray-400'
             }`} 
           />
@@ -142,24 +143,24 @@ export const FileUploadZone: React.FC<FileUploadZoneProps> = ({
           {isUploading ? (
             <div className="flex items-center gap-2">
               <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-500 border-t-transparent"></div>
-              <span className="text-sm text-gray-600">Загрузка...</span>
+              <span className="text-xs sm:text-sm md:text-base text-gray-600">Загрузка...</span>
             </div>
           ) : (
             <>
-              <div className="text-sm text-gray-600">
+              <div className="text-xs sm:text-sm md:text-base text-gray-600 text-center">
                 {isDragActive ? (
                   <span className="text-blue-600 font-medium">
                     Отпустите файлы для загрузки
                   </span>
                 ) : (
                   <span>
-                    Перетащите файлы сюда или{' '}
+                    <span className="hidden sm:inline md:inline">Перетащите файлы сюда или </span>
                     <span className="text-blue-600 font-medium">выберите файлы</span>
                   </span>
                 )}
               </div>
-              <div className="text-xs text-gray-500">
-                Поддерживаемые форматы: {Object.values(accept).flat().join(', ')}
+              <div className="text-xs md:text-sm text-gray-500 text-center">
+                {Object.values(accept).flat().join(', ')}
               </div>
             </>
           )}
@@ -168,36 +169,35 @@ export const FileUploadZone: React.FC<FileUploadZoneProps> = ({
 
       {/* Error Message */}
       {uploadError && (
-        <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2">
+        <div className="mt-3 p-3 md:p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2">
           <AlertCircle className="w-4 h-4 text-red-500" />
-          <span className="text-sm text-red-700">{uploadError}</span>
+          <span className="text-sm md:text-base text-red-700">{uploadError}</span>
         </div>
       )}
 
       {/* Uploaded Files List */}
       {uploadedFiles.length > 0 && (
         <div className="mt-4 space-y-2">
-          <h4 className="text-sm font-medium text-gray-700">
+          <h4 className="text-xs sm:text-sm md:text-base font-medium text-gray-700">
             Загруженные файлы ({uploadedFiles.length})
           </h4>
           
-          <div className="space-y-2 max-h-32 overflow-y-auto">
+          <div className="space-y-2 max-h-32 sm:max-h-40 md:max-h-48 overflow-y-auto">
             {uploadedFiles.map((file) => (
               <div
                 key={file.id}
-                className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-2">
-                    <File className="w-4 h-4 text-green-600" />
-                    <CheckCircle className="w-4 h-4 text-green-500" />
+                className="flex items-center justify-between p-2 sm:p-3 md:p-4 bg-green-50 border border-green-200 rounded-lg">
+                <div className="flex items-center gap-2 sm:gap-3 md:gap-4 min-w-0 flex-1">
+                  <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+                    <File className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
+                    <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 text-green-500" />
                   </div>
                   
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium text-gray-900 truncate">
+                    <p className="text-xs sm:text-sm md:text-base font-medium text-gray-900 truncate">
                       {file.originalName}
                     </p>
-                    <p className="text-xs text-gray-600">
+                    <p className="text-xs md:text-sm text-gray-600">
                       {formatFileSize(file.size)} • {file.extension}
                     </p>
                   </div>
@@ -205,10 +205,10 @@ export const FileUploadZone: React.FC<FileUploadZoneProps> = ({
                 
                 <button
                   onClick={() => removeFile(file.id)}
-                  className="p-1 text-gray-400 hover:text-red-500 transition-colors"
+                  className="p-1 text-gray-400 hover:text-red-500 transition-colors rounded-full hover:bg-red-50 flex-shrink-0"
                   title="Удалить файл"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="w-3 h-3 sm:w-4 sm:h-4" />
                 </button>
               </div>
             ))}

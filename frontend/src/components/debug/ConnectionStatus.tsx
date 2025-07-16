@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getBackendApiUrl } from '../../config/app';
 import { Wifi, WifiOff, AlertTriangle } from 'lucide-react';
 
 interface ConnectionStatusProps {
@@ -16,7 +17,7 @@ export const ConnectionStatus: React.FC<ConnectionStatusProps> = ({ className = 
   const checkConnection = async () => {
     setStatus('checking');
     try {
-      const response = await fetch('http://localhost:8000/health', {
+      const response = await fetch(`${getBackendApiUrl()}/health`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

@@ -58,7 +58,11 @@ class SocketService {
       return
     }
     
-    const socketUrl = process.env.REACT_APP_SOCKET_URL || 'ws://localhost:5000'
+    const socketUrl = process.env.REACT_APP_SOCKET_URL || (
+      process.env.NODE_ENV === 'production' 
+        ? 'wss://your-websocket-domain.com' 
+        : 'ws://localhost:5000'
+    )
     
     this.socket = io(socketUrl, {
       auth: {

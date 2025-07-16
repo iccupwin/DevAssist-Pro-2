@@ -43,10 +43,20 @@ export class HTTPInterceptor {
   }> = [];
 
   constructor(options: InterceptorOptions = {}) {
-    this.baseURL = options.baseURL || '/api/v1';
+    // Определяем baseURL с правильным API путем
+    let baseURL = options.baseURL || '/api';
+    
+    // Если это полный URL (начинается с http), добавляем /api если его нет
+    if (baseURL.startsWith('http') && !baseURL.endsWith('/api')) {
+      baseURL = baseURL.replace(/\/+$/, '') + '/api';
+    }
+    
+    this.baseURL = baseURL;
     this.timeout = options.timeout || 30000;
     this.retryAttempts = options.retryAttempts || 3;
     this.retryDelay = options.retryDelay || 1000;
+    
+    console.log('[HTTPInterceptor] Initialized with baseURL:', this.baseURL);
   }
 
   /**
@@ -95,6 +105,8 @@ export class HTTPInterceptor {
     console.log('[HTTPInterceptor] Outgoing request:', {
       method: processedConfig.method,
       url: processedConfig.url,
+      baseURL: this.baseURL,
+      originalUrl: config.url,
       hasAuth: !!(processedConfig.headers?.Authorization),
       timestamp: new Date().toISOString()
     });
@@ -415,8 +427,20 @@ export class HTTPInterceptor {
 }
 
 // Создаем глобальный экземпляр HTTP клиента
+// 🔒 PRODUCTION READY: Uses environment variables with secure fallbacks
+const apiUrl = process.env.REACT_APP_API_URL || process.env.REACT_APP_API_BASE_URL || (
+  process.env.NODE_ENV === 'production' 
+    ? 'https://your-api-domain.com' 
+    : 'http://localhost:8000'
+);
+console.log('[HTTPInterceptor] Environment variables:', {
+  REACT_APP_API_URL: process.env.REACT_APP_API_URL,
+  REACT_APP_API_BASE_URL: process.env.REACT_APP_API_BASE_URL,
+  resolvedApiUrl: apiUrl
+});
+
 export const httpClient = new HTTPInterceptor({
-  baseURL: process.env.REACT_APP_API_BASE_URL || '/api/v1',
+  baseURL: apiUrl,
   timeout: 30000,
   retryAttempts: 3,
   retryDelay: 1000

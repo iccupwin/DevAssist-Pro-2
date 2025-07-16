@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
+import { AnimatedHero } from '../components/ui/animated-hero';
+import { Features } from '../components/blocks/features-8';
 const logoLight = '/devent-logo.png';
 const logoDark = '/devent-logo-white1.png';
 import { 
@@ -287,90 +289,29 @@ const CosmicLandingPage: React.FC = () => {
         )}
       </header>
 
-      {/* Hero Section */}
-      <section className="container w-full">
-        <div className="mx-auto grid place-items-center py-16 pb-8 md:py-32 md:pb-14 lg:max-w-6xl">
-          <div className="relative flex w-full items-center justify-center overflow-hidden">
-            {/* Animated Background Lines */}
-            <div className="from-primary via-secondary absolute top-20 left-0 h-14 w-px rounded-full bg-gradient-to-t to-transparent" style={{transform: 'translateX(30px) translateY(-200px)'}}></div>
-            <div className="from-primary via-secondary absolute top-20 left-0 h-14 w-px rounded-full bg-gradient-to-t to-transparent" style={{transform: 'translateX(600px) translateY(-200px)'}}></div>
-            <div className="from-primary via-secondary absolute top-20 left-0 w-px rounded-full bg-gradient-to-t to-transparent h-6" style={{transform: 'translateX(100px) translateY(-200px)'}}></div>
-            <div className="from-primary via-secondary absolute top-20 left-0 h-14 w-px rounded-full bg-gradient-to-t to-transparent" style={{transform: 'translateX(400px) translateY(-200px)'}}></div>
-            <div className="from-primary via-secondary absolute top-20 left-0 w-px rounded-full bg-gradient-to-t to-transparent h-20" style={{transform: 'translateX(800px) translateY(-200px)'}}></div>
-            <div className="from-primary via-secondary absolute top-20 left-0 w-px rounded-full bg-gradient-to-t to-transparent h-12" style={{transform: 'translateX(1000px) translateY(-200px)'}}></div>
-
-            <div className="space-y-8 pb-8 text-center lg:pb-20">
-              {/* Badge */}
-              <span className="inline-flex items-center justify-center rounded-md border px-2 font-medium w-fit whitespace-nowrap bg-muted py-2 text-sm">
-                <span className="text-primary mr-2">
-                  <span className="inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium border-transparent bg-background text-foreground hover:bg-background">
-                    Новинка
-                  </span>
-                </span>
-                <span>AI-Powered оптимизация для девелоперов</span>
-              </span>
-
-              {/* Heading */}
-              <div className="mx-auto max-w-4xl text-center text-4xl font-bold md:text-6xl animate-fade-in-up">
-                <h1>Революция в анализе коммерческих предложений для девелоперов</h1>
-              </div>
-
-              {/* Description */}
-              <p className="text-muted-foreground mx-auto max-w-2xl text-xl animate-fade-in-up">
-                Встречайте DevAssist Pro — первую в России AI-платформу для автоматизации процессов анализа КП в сфере недвижимости. Экономьте время, повышайте точность решений и опережайте конкурентов.
-              </p>
-
-              {/* CTA Buttons */}
-              <div className="mt-8 flex flex-col justify-center gap-4 md:flex-row animate-fade-in-up">
-                <button 
-                  onClick={() => navigate('/auth/register')}
-                  className="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-all bg-primary text-primary-foreground rounded-lg shadow-xs hover:bg-primary/90 hover:scale-105 py-2 h-12 px-10 text-base"
-                >
-                  Попробовать бесплатно
-                  <ChevronRight />
-                </button>
-                <button 
-                  onClick={() => navigate('/dashboard')}
-                  className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 hover:scale-105 py-2 h-12 px-10 text-base"
-                >
-                  Демо за 5 минут
-                </button>
-              </div>
-
-              {/* Features List */}
-              <div className="text-muted-foreground mt-6 flex flex-col items-center justify-center gap-4 text-sm md:flex-row animate-fade-in-up">
-                <div className="flex items-center gap-1">
-                  <Check className="text-primary size-4" />
-                  <span>Без кредитной карты</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Check className="text-primary size-4" />
-                  <span>14-дневный пробный период</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Check className="text-primary size-4" />
-                  <span>Отмена в любое время</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Hero Image */}
-          <div className="group relative animate-fade-in-up">
-            <div className="bg-primary/60 absolute top-2 left-1/2 mx-auto h-24 w-[90%] -translate-x-1/2 transform rounded-full blur-3xl lg:-top-8 lg:h-80 animate-pulse-slow"></div>
-            <img 
-              alt="DevAssist Pro dashboard" 
-              width="1240" 
-              height="1200" 
-              className="relative mx-auto flex w-full items-center rounded-lg leading-none hover:scale-105 transition-transform duration-700 ease-out"
-              style={{
-                maskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 20%, rgba(0,0,0,0) 90%)'
-              }}
-              src="/hero.png"
-            />
-          </div>
-        </div>
-      </section>
+      {/* Animated Hero Section */}
+      <AnimatedHero
+        title="Революция в анализе коммерческих предложений для девелоперов"
+        animatedWords={[
+          'КП и ТЗ',
+          'документации',
+          'бизнес-планов',
+          'проектов',
+          'предложений'
+        ]}
+        subtitle="🚀 Новинка - AI-Powered анализ"
+        description="Встречайте DevAssist Pro — первую в России AI-платформу для автоматизации процессов анализа КП в сфере недвижимости. Экономьте время, повышайте точность решений и опережайте конкурентов."
+        primaryButtonText="Попробовать бесплатно"
+        secondaryButtonText="Демо за 5 минут"
+        onPrimaryClick={() => navigate('/auth/register')}
+        onSecondaryClick={() => navigate('/dashboard')}
+        features={[
+          'Без кредитной карты',
+          '14-дневный пробный период',
+          'Отмена в любое время'
+        ]}
+        className="pt-8"
+      />
 
       {/* Company Logos */}
       <section className="pb-12 lg:pb-24">
@@ -412,92 +353,8 @@ const CosmicLandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Benefits Section */}
-      <section id="benefits" className="pb-20 sm:pb-32">
-        <div className="container">
-          <div className="grid lg:grid-cols-2 lg:gap-24">
-            <div>
-              <header className="mx-auto mb-6 lg:mb-12 sticky max-w-full text-center lg:top-[22rem] lg:text-start">
-                <div className="from-primary/60 to-primary mb-4 bg-gradient-to-b bg-clip-text font-semibold tracking-wider text-transparent uppercase">
-                  Преимущества
-                </div>
-                <h2 className="mb-4 text-3xl font-bold md:text-4xl">Почему выбирают DevAssist Pro?</h2>
-                <p className="text-muted-foreground mb-8 text-lg">
-                  Наша AI-платформа революционизирует процесс анализа коммерческих предложений в сфере недвижимости. Экономьте до 15 часов в неделю на рутинных задачах и принимайте более обоснованные решения.
-                </p>
-              </header>
-            </div>
-
-            <div className="flex w-full flex-col gap-6 lg:gap-56">
-              {/* Benefit 1 */}
-              <div className="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 group/number bg-background lg:sticky hover:shadow-lg transition-all duration-300 animate-fade-in-up" style={{top: '22rem'}}>
-                <div className="grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6">
-                  <div className="flex justify-between">
-                    <Blocks className="text-primary bg-primary/20 ring-primary/10 mb-6 size-10 rounded-full p-2 ring-8 animate-float" />
-                    <span className="text-muted-foreground/15 group-hover/number:text-muted-foreground/30 text-5xl font-bold transition-all delay-75">
-                      01
-                    </span>
-                  </div>
-                  <h3 className="text-xl font-semibold">Интеллектуальный анализ КП</h3>
-                  <p className="text-muted-foreground text-sm">
-                    Наша AI-система анализирует коммерческие предложения за секунды, выявляя соответствие техническому заданию с точностью 95%. Экономьте до 8 часов на каждом проекте.
-                  </p>
-                </div>
-                <div className="px-6">
-                  <button className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground hover:scale-105 h-9 px-4">
-                    Попробовать сейчас
-                    <ChevronRight className="size-4" />
-                  </button>
-                </div>
-              </div>
-
-              {/* Benefit 2 */}
-              <div className="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 group/number bg-background lg:sticky hover:shadow-lg transition-all duration-300 animate-fade-in-up" style={{top: '24rem'}}>
-                <div className="grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6">
-                  <div className="flex justify-between">
-                    <Zap className="text-primary bg-primary/20 ring-primary/10 mb-6 size-10 rounded-full p-2 ring-8 animate-pulse-slow" />
-                    <span className="text-muted-foreground/15 group-hover/number:text-muted-foreground/30 text-5xl font-bold transition-all delay-75">
-                      02
-                    </span>
-                  </div>
-                  <h3 className="text-xl font-semibold">Мгновенные отчеты</h3>
-                  <p className="text-muted-foreground text-sm">
-                    Автоматически генерируемые отчеты с детальным анализом, рейтингами подрядчиков и рекомендациями по выбору. Все готово за 30 секунд после загрузки документов.
-                  </p>
-                </div>
-                <div className="px-6">
-                  <button className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground hover:scale-105 h-9 px-4">
-                    Смотреть пример
-                    <ChevronRight className="size-4" />
-                  </button>
-                </div>
-              </div>
-
-              {/* Benefit 3 */}
-              <div className="text-card-foreground flex flex-col gap-6 rounded-xl border py-6 group/number bg-background lg:sticky hover:shadow-lg transition-all duration-300 animate-fade-in-up" style={{top: '26rem'}}>
-                <div className="grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6">
-                  <div className="flex justify-between">
-                    <Shield className="text-primary bg-primary/20 ring-primary/10 mb-6 size-10 rounded-full p-2 ring-8 animate-wiggle" />
-                    <span className="text-muted-foreground/15 group-hover/number:text-muted-foreground/30 text-5xl font-bold transition-all delay-75">
-                      03
-                    </span>
-                  </div>
-                  <h3 className="text-xl font-semibold">Экспертная оценка рисков</h3>
-                  <p className="text-muted-foreground text-sm">
-                    Система анализирует финансовую устойчивость подрядчиков, проверяет лицензии и выявляет потенциальные риски сотрудничества на основе открытых данных.
-                  </p>
-                </div>
-                <div className="px-6">
-                  <button className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground hover:scale-105 h-9 px-4">
-                    Оценить риски
-                    <ChevronRight className="size-4" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Features Section */}
+      <Features />
 
       {/* Solutions Section */}
       <section id="solutions" className="py-20 sm:py-32">

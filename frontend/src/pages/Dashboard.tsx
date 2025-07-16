@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { getBackendApiUrl } from '../config/app';
 import { 
   FileText, 
   PenTool, 
@@ -22,8 +23,10 @@ import { useTheme } from '../contexts/ThemeContext';
 import { RecentActivityFeed } from '../components/main';
 import { ResultsVisualization } from '../components/visualization';
 import { InteractiveComparison } from '../components/tables';
+import { ModernSidebar } from '../components/ui/ModernSidebar';
 import { useAIConfig } from '../hooks/useAIConfig';
 import type { AIProvider } from '../types/aiConfig';
+import { kpAnalyzerService } from '../services/ai/kpAnalyzerService';
 const logoLight = '/devent-logo.png';
 const logoDark = '/devent-logo-white1.png';
 
@@ -47,6 +50,7 @@ const Dashboard: React.FC = () => {
     Map<AIProvider, { ok: boolean; error?: { code: string; status?: number; message?: string } }>
   >(new Map());
   const [checkingStatus, setCheckingStatus] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   // Security check - redirect to login if not authenticated
   useEffect(() => {
@@ -77,7 +81,7 @@ const Dashboard: React.FC = () => {
       
       try {
         // Используем backend API Gateway вместо прямых вызовов к AI сервисам
-        const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+        const apiUrl = getBackendApiUrl();
         const response = await fetch(`${apiUrl}/api/llm/providers`, {
           method: 'GET',
           headers: {
@@ -171,7 +175,69 @@ const Dashboard: React.FC = () => {
     checkAIProviders();
   }, []);
 
-  // Демонстрационные данные для визуализации
+  // Реальные данные для визуализации
+  const [analysisResults, setAnalysisResults] = useState<any[]>([]);
+  const [isLoadingResults, setIsLoadingResults] = useState(false);
+
+  // Загрузка реальных данных анализа
+  const loadAnalysisResults = async () => {
+    setIsLoadingResults(true);
+    try {
+      // Получаем историю анализов из localStorage
+      const history = await kpAnalyzerService.getAnalysisHistory();
+      
+      // Преобразуем данные для компонента визуализации
+      const transformedResults = history.map((item: any, index: number) => {
+        const kpResults = item.kp_results || [];
+        const firstKp = kpResults[0] || {};
+        
+        return {
+          id: item.analysis_id?.toString() || index.toString(),
+          companyName: firstKp.company_name || `Компания ${index + 1}`,
+          proposalName: firstKp.proposal_name || 'Коммерческое предложение',
+          overallScore: firstKp.overall_score || 0,
+          maxScore: 100,
+          criteria: {
+            technical: firstKp.technical_score || 0,
+            commercial: firstKp.commercial_score || 0,
+            timeline: firstKp.timeline_score || 0,
+            experience: firstKp.experience_score || 0,
+            compliance: firstKp.compliance_score || 0,
+          },
+          budget: {
+            total: firstKp.total_budget || 0,
+            breakdown: {
+              development: firstKp.development_cost || 0,
+              testing: firstKp.testing_cost || 0,
+              deployment: firstKp.deployment_cost || 0,
+              support: firstKp.support_cost || 0,
+              other: firstKp.other_cost || 0,
+            },
+          },
+          metadata: {
+            submissionDate: item.created_at?.split('T')[0] || new Date().toISOString().split('T')[0],
+            evaluationDate: item.updated_at?.split('T')[0] || new Date().toISOString().split('T')[0],
+            evaluator: 'AI Система',
+            status: 'evaluated' as const,
+          },
+        };
+      });
+      
+      setAnalysisResults(transformedResults);
+    } catch (error) {
+      console.error('Ошибка загрузки данных анализа:', error);
+      setAnalysisResults([]);
+    } finally {
+      setIsLoadingResults(false);
+    }
+  };
+
+  // Загружаем данные при монтировании
+  useEffect(() => {
+    loadAnalysisResults();
+  }, []);
+
+  // Заглушка для совместимости с существующим кодом
   const mockAnalysisResults = [
     {
       id: '1',
@@ -558,61 +624,60 @@ const Dashboard: React.FC = () => {
     <div className={`min-h-screen transition-colors duration-300 ${
       isDarkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'
     }`}>
-      {/* Header */}
-      <header className={`border-b transition-colors duration-300 ${
-        isDarkMode ? 'border-gray-800 bg-gray-900' : 'border-gray-200 bg-white'
+      {/* Modern Sidebar */}
+      <ModernSidebar 
+        isCollapsed={sidebarCollapsed} 
+        onToggle={setSidebarCollapsed} 
+      />
+
+      {/* Main Content Area */}
+      <div className={`transition-all duration-300 ${
+        sidebarCollapsed ? 'md:ml-16' : 'md:ml-64'
       }`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-3">
-              <img 
-                src={isDarkMode ? logoDark : logoLight} 
-                alt="DevAssist Pro" 
-                className="w-8 h-8" 
-              />
-              <h1 className="text-xl font-semibold">DevAssist Pro</h1>
-            </div>
-            
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={toggleTheme}
-                className={`p-2 rounded-lg transition-colors ${
-                  isDarkMode 
-                    ? 'hover:bg-gray-800 text-gray-400 hover:text-white' 
-                    : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-              </button>
+        {/* Header */}
+        <header className={`border-b transition-colors duration-300 ${
+          isDarkMode ? 'border-gray-800 bg-gray-900' : 'border-gray-200 bg-white'
+        }`}>
+          <div className="px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center h-16">
+              <div className="flex items-center space-x-3 md:ml-0 ml-12">
+                <h1 className="text-xl font-semibold">Дашборд</h1>
+                <span className={`text-sm px-2 py-1 rounded-full ${
+                  isDarkMode ? 'bg-gray-800 text-gray-300' : 'bg-gray-100 text-gray-600'
+                }`}>
+                  DevAssist Pro
+                </span>
+              </div>
               
-              <button
-                onClick={() => navigate('/profile')}
-                className={`p-2 rounded-lg transition-colors ${
-                  isDarkMode 
-                    ? 'hover:bg-gray-800 text-gray-400 hover:text-white' 
-                    : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                <User className="w-5 h-5" />
-              </button>
-              
-              <button
-                onClick={handleLogout}
-                className={`p-2 rounded-lg transition-colors ${
-                  isDarkMode 
-                    ? 'hover:bg-gray-800 text-gray-400 hover:text-white' 
-                    : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                <LogOut className="w-5 h-5" />
-              </button>
+              <div className="flex items-center space-x-4">
+                <button
+                  onClick={toggleTheme}
+                  className={`p-2 rounded-lg transition-colors ${
+                    isDarkMode 
+                      ? 'hover:bg-gray-800 text-gray-400 hover:text-white' 
+                      : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                </button>
+                
+                <button
+                  onClick={() => navigate('/profile')}
+                  className={`p-2 rounded-lg transition-colors ${
+                    isDarkMode 
+                      ? 'hover:bg-gray-800 text-gray-400 hover:text-white' 
+                      : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  <User className="w-5 h-5" />
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      </header>
+        </header>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Main Content */}
+        <main className="px-4 sm:px-6 lg:px-8 py-8">
         {/* Welcome Section */}
         <div className="mb-8">
           <h2 className="text-2xl font-bold mb-2">Добро пожаловать в DevAssist Pro</h2>
@@ -661,18 +726,18 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* Main Dashboard Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
           {/* Left Column - Modules, Visualization, or Comparison */}
           <div className="lg:col-span-2">
             {activeTab === 'modules' ? (
               <>
-                <h3 className="text-lg font-semibold mb-4">Модули системы</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <h3 className="text-base sm:text-lg font-semibold mb-4">Модули системы</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                   {modules.map((module) => (
                     <div
                       key={module.id}
                       onClick={() => handleModuleClick(module)}
-                      className={`group relative rounded-xl border p-6 transition-all duration-200 ${
+                      className={`group relative rounded-xl border p-4 sm:p-6 transition-all duration-200 ${
                         isDarkMode 
                           ? 'bg-gray-800 border-gray-700 hover:bg-gray-750' 
                           : 'bg-white border-gray-200 hover:bg-gray-50'
@@ -683,7 +748,7 @@ const Dashboard: React.FC = () => {
                       }`}
                     >
                       {/* Status Badge */}
-                      <div className="absolute top-4 right-4">
+                      <div className="absolute top-3 right-3 sm:top-4 sm:right-4">
                         {module.status === 'active' ? (
                           <span className="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">
                             Активен
@@ -696,7 +761,7 @@ const Dashboard: React.FC = () => {
                       </div>
 
                       {/* Icon */}
-                      <div className={`w-12 h-12 rounded-lg flex items-center justify-center mb-4 ${
+                      <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-lg flex items-center justify-center mb-3 sm:mb-4 ${
                         module.status === 'active'
                           ? 'bg-blue-600 text-white'
                           : isDarkMode 
@@ -727,14 +792,16 @@ const Dashboard: React.FC = () => {
               </>
             ) : activeTab === 'visualization' ? (
               <ResultsVisualization
-                results={mockAnalysisResults}
+                results={analysisResults}
                 showFilters={true}
                 showExportOptions={true}
                 onExport={(type) => {
                   // Export functionality
+                  console.log('Export as:', type);
                 }}
                 onRefresh={() => {
-                  // Data update
+                  // Data refresh functionality - перезагружаем реальные данные
+                  loadAnalysisResults();
                 }}
               />
             ) : (
@@ -856,6 +923,7 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
       </main>
+      </div>
     </div>
   );
 };

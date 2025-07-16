@@ -7,7 +7,6 @@ import { websocketBridge } from '../services/websocketBridge';
 import { TokenService, tokenService, TokenPair } from '../services/tokenService';
 import { useTokenRefresh } from '../hooks/useTokenRefresh';
 import { unifiedApiClient } from '../services/unifiedApiClient';
-import { DEV_TEST_USERS, DEV_CONFIG } from '../config/development';
 
 export interface AuthState {
   user: User | null;
@@ -205,13 +204,6 @@ interface AuthContextType {
   getSessionInfo: () => any;
 }
 
-export interface RegisterData {
-  email: string;
-  password: string;
-  firstName: string;
-  lastName: string;
-  acceptTerms: boolean;
-}
 
 // Создание контекста
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -466,9 +458,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Обновление профиля
   const updateProfile = async (data: Partial<User>): Promise<void> => {
     try {
-      // TODO: Заменить на реальный API вызов
-      await mockUpdateProfileAPI(data);
-      dispatch({ type: 'UPDATE_USER', payload: data });
+      const updatedUser = await authBridge.updateUserProfile(data);
+      if (updatedUser) {
+        dispatch({ type: 'UPDATE_USER', payload: updatedUser });
+      }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Ошибка обновления профиля';
       dispatch({ type: 'AUTH_FAILURE', payload: errorMessage });
@@ -476,7 +469,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  // Обновление токена (упрощенная версия для development)
+  // Обновление токена
   const refreshToken = async (): Promise<boolean> => {
     const storedRefreshToken = localStorage.getItem(AUTH_CONFIG.REFRESH_TOKEN_STORAGE_KEY);
     
@@ -489,27 +482,32 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     dispatch({ type: 'REFRESH_TOKEN_START' });
 
     try {
-      // В development режиме просто обновляем время истечения
-      const newTokenExpiresAt = Date.now() + 3600 * 1000; // Еще час
-      const newToken = 'mock_jwt_token_refreshed_' + Date.now();
-      const newRefreshToken = 'mock_refresh_token_refreshed_' + Date.now();
+      const success = await authBridge.refreshToken();
       
-      // Обновляем localStorage
-      localStorage.setItem(AUTH_CONFIG.TOKEN_STORAGE_KEY, newToken);
-      localStorage.setItem(AUTH_CONFIG.REFRESH_TOKEN_STORAGE_KEY, newRefreshToken);
-      localStorage.setItem(AUTH_CONFIG.TOKEN_EXPIRES_AT_KEY, newTokenExpiresAt.toString());
-      
-      dispatch({
-        type: 'REFRESH_TOKEN_SUCCESS',
-        payload: {
-          token: newToken,
-          refreshToken: newRefreshToken,
-          tokenExpiresAt: newTokenExpiresAt
+      if (success) {
+        // Обновляем токены из localStorage после успешного обновления
+        const newToken = localStorage.getItem(AUTH_CONFIG.TOKEN_STORAGE_KEY);
+        const newRefreshToken = localStorage.getItem(AUTH_CONFIG.REFRESH_TOKEN_STORAGE_KEY);
+        const newTokenExpiresAt = Date.now() + 3600 * 1000; // Предполагаем час
+        
+        if (newToken && newRefreshToken) {
+          localStorage.setItem(AUTH_CONFIG.TOKEN_EXPIRES_AT_KEY, newTokenExpiresAt.toString());
+          
+          dispatch({
+            type: 'REFRESH_TOKEN_SUCCESS',
+            payload: {
+              token: newToken,
+              refreshToken: newRefreshToken,
+              tokenExpiresAt: newTokenExpiresAt
+            }
+          });
+          
+          console.log('[AuthContext] Token refreshed successfully');
+          return true;
         }
-      });
+      }
       
-      console.log('[AuthContext] Token refreshed successfully in development mode');
-      return true;
+      throw new Error('Token refresh failed');
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Token refresh failed';
       console.error('[AuthContext] Token refresh failed:', errorMessage);
@@ -522,9 +520,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Восстановление пароля
   const forgotPassword = async (email: string): Promise<AuthResponse> => {
     try {
-      // TODO: Заменить на реальный API вызов
-      await mockForgotPasswordAPI(email);
-      return { success: true, message: 'Письмо для восстановления пароля отправлено' };
+      const response = await authBridge.forgotPassword(email);
+      return response;
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Ошибка отправки письма';
       return { success: false, error: errorMessage };
@@ -534,9 +531,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Сброс пароля
   const resetPassword = async (data: ResetPasswordFormData): Promise<AuthResponse> => {
     try {
-      // TODO: Заменить на реальный API вызов
-      await mockResetPasswordAPI(data.token, data.password);
-      return { success: true, message: 'Пароль успешно изменен' };
+      const response = await authBridge.resetPassword(data.token, data.password);
+      return response;
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Ошибка сброса пароля';
       return { success: false, error: errorMessage };
@@ -630,116 +626,3 @@ export const useAuth = (): AuthContextType => {
   return context;
 };
 
-// Mock API функции (используются только в development режиме)
-const mockLoginAPI = async (email: string, password: string): Promise<{
-  success: boolean;
-  user?: User;
-  token?: string;
-  refreshToken?: string;
-  error?: string;
-}> => {
-  await new Promise(resolve => setTimeout(resolve, 1000)); // Имитация задержки
-
-  // SECURITY: Только в development режиме
-  if (!DEV_CONFIG.USE_MOCK_AUTH) {
-    return {
-      success: false,
-      error: 'Mock authentication is disabled in production',
-    };
-  }
-
-  // Поиск пользователя в тестовых данных
-  const testUser = DEV_TEST_USERS.find(
-    user => user.email === email && user.password === password
-  );
-
-  if (testUser) {
-    return {
-      success: true,
-      user: testUser.profile,
-      token: 'mock_jwt_token_' + Date.now(),
-      refreshToken: 'mock_refresh_token_' + Date.now(),
-    };
-  }
-
-  return {
-    success: false,
-    error: 'Неверный email или пароль',
-  };
-};
-
-const mockRegisterAPI = async (data: RegisterData): Promise<{
-  success: boolean;
-  user?: User;
-  token?: string;
-  refreshToken?: string;
-  error?: string;
-}> => {
-  await new Promise(resolve => setTimeout(resolve, 1000));
-
-  return {
-    success: true,
-    user: {
-      id: Date.now(),
-      email: data.email,
-      full_name: `${data.firstName} ${data.lastName}`,
-      firstName: data.firstName,
-      lastName: data.lastName,
-      role: 'user' as const,
-      avatar: '',
-      isEmailVerified: false,
-      is2FAEnabled: false,
-      is_active: true,
-      is_verified: false,
-      is_superuser: false,
-      subscription: {
-        plan: 'Free',
-        status: 'active' as const,
-        expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-      },
-      preferences: {
-        language: 'ru',
-        theme: 'system' as const,
-        notifications: {
-          email: true,
-          push: false,
-        },
-      },
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      lastLoginAt: new Date().toISOString(),
-    },
-    token: 'mock_jwt_token_' + Date.now(),
-    refreshToken: 'mock_refresh_token_' + Date.now(),
-  };
-};
-
-const mockLogoutAPI = async () => {
-  await new Promise(resolve => setTimeout(resolve, 500));
-  return { success: true };
-};
-
-const mockUpdateProfileAPI = async (data: Partial<User>) => {
-  await new Promise(resolve => setTimeout(resolve, 500));
-  return { success: true, user: data };
-};
-
-const mockRefreshTokenAPI = async (refreshToken: string) => {
-  await new Promise(resolve => setTimeout(resolve, 500));
-  
-  return {
-    success: true,
-    token: 'mock_jwt_token_' + Date.now(),
-    refreshToken: 'mock_refresh_token_' + Date.now(),
-  };
-};
-
-const mockForgotPasswordAPI = async (email: string) => {
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  return { success: true };
-};
-
-const mockResetPasswordAPI = async (token: string, password: string) => {
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  return { success: true };
-};

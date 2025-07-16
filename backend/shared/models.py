@@ -113,7 +113,7 @@ class Document(Base, TimestampMixin):
     
     # Извлеченный контент
     extracted_text = Column(Text, nullable=True)
-    metadata = Column(JSON, nullable=True)
+    document_metadata = Column(JSON, nullable=True)
     
     # Связи
     uploaded_by_id = Column(Integer, ForeignKey("users.id"), nullable=False)

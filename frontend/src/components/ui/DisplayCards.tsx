@@ -52,7 +52,7 @@ interface DisplayCardsProps {
   cards?: DisplayCardProps[];
 }
 
-export default function DisplayCards({ cards }: DisplayCardsProps) {
+function DisplayCards({ cards }: DisplayCardsProps) {
   const defaultCards = [
     {
       className: "[grid-area:stack] hover:-translate-y-10 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-gray-300 dark:before:outline-gray-700 before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-white/40 dark:before:bg-black/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration-700 hover:grayscale-0 before:left-0 before:top-0",
@@ -75,3 +75,6 @@ export default function DisplayCards({ cards }: DisplayCardsProps) {
     </div>
   );
 }
+
+export { DisplayCards };
+export default DisplayCards;

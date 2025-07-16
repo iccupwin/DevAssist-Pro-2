@@ -135,4 +135,5 @@ const RegistrationToast: React.FC<RegistrationToastProps> = ({
   )
 }
 
+export { RegistrationToast };
 export default RegistrationToast; 

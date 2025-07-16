@@ -483,3 +483,5 @@ export const PDFExportDialog: React.FC<PDFExportDialogProps> = ({
     </div>
   );
 };
+
+export default PDFExportDialog;

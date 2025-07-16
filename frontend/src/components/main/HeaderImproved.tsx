@@ -12,7 +12,9 @@ import {
   ChevronDown,
   Sun,
   Moon,
-  Grid3X3
+  Grid3X3,
+  Menu,
+  X
 } from 'lucide-react';
 
 interface HeaderProps {
@@ -38,6 +40,7 @@ const HeaderImproved: React.FC<HeaderProps> = ({
 }) => {
   const navigate = useNavigate();
   const [showModelSettings, setShowModelSettings] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [tempSelectedModel, setTempSelectedModel] = useState(selectedModel);
   const [tempSelectedComparisonModel, setTempSelectedComparisonModel] = useState(selectedComparisonModel);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -150,7 +153,19 @@ const HeaderImproved: React.FC<HeaderProps> = ({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
           {/* Left side - Breadcrumb */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 sm:space-x-4">
+            {/* Mobile menu button */}
+            <button
+              onClick={() => setShowMobileMenu(!showMobileMenu)}
+              className={`md:hidden p-2 rounded-lg transition-colors ${
+                isDarkMode 
+                  ? 'text-gray-400 hover:text-white hover:bg-gray-800' 
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+              }`}
+            >
+              {showMobileMenu ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+            
             <button
               onClick={() => navigate('/dashboard')}
               className={`flex items-center space-x-2 transition-colors group ${
@@ -160,22 +175,22 @@ const HeaderImproved: React.FC<HeaderProps> = ({
               }`}
             >
               <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-              <span className="text-sm font-medium">Dashboard</span>
+              <span className="text-sm font-medium hidden sm:inline">Dashboard</span>
             </button>
             
-            <ChevronRight className={`w-4 h-4 ${isDarkMode ? 'text-gray-600' : 'text-gray-400'}`} />
+            <ChevronRight className={`w-4 h-4 hidden sm:block ${isDarkMode ? 'text-gray-600' : 'text-gray-400'}`} />
             
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-2 sm:space-x-3">
               <div className={`w-5 h-5 rounded flex items-center justify-center ${
                 isDarkMode ? 'bg-white' : 'bg-gray-900'
               }`}>
                 <FileText className={`w-3 h-3 ${isDarkMode ? 'text-black' : 'text-white'}`} />
               </div>
               <div>
-                <h1 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                <h1 className={`text-base sm:text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                   KP Analyzer
                 </h1>
-                <div className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                <div className={`text-xs sm:text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                   {getCurrentStepLabel()}
                 </div>
               </div>
@@ -183,7 +198,7 @@ const HeaderImproved: React.FC<HeaderProps> = ({
           </div>
 
           {/* Right side - Settings and Step Navigation */}
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-2 sm:space-x-3">
             {/* Theme Toggle Button */}
             <button
               onClick={onToggleTheme}
@@ -191,7 +206,7 @@ const HeaderImproved: React.FC<HeaderProps> = ({
               title={isDarkMode ? 'Переключить на светлую тему' : 'Переключить на тёмную тему'}
             >
               {isDarkMode ? (
-                <Sun className="w-5 h-5 text-yellow-400" />
+                <Sun className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400" />
               ) : (
                 <Moon className="w-5 h-5 text-gray-600" />
               )}
@@ -389,6 +404,85 @@ const HeaderImproved: React.FC<HeaderProps> = ({
             />
           </div>
         </div>
+
+        {/* Mobile Navigation Menu */}
+        {showMobileMenu && (
+          <div className={`md:hidden absolute top-full left-0 right-0 z-50 border-t backdrop-blur-md ${
+            isDarkMode 
+              ? 'bg-black/90 border-gray-800' 
+              : 'bg-white/90 border-gray-200'
+          }`}>
+            <div className="max-w-7xl mx-auto px-4 py-4">
+              <div className="grid grid-cols-2 gap-3">
+                {navigationItems.map((item, index) => {
+                  const isActive = currentStep === item.key;
+                  const isCompleted = navigationItems.findIndex(s => s.key === currentStep) > index;
+                  
+                  return (
+                    <button
+                      key={item.key}
+                      onClick={() => {
+                        onStepChange(item.key);
+                        setShowMobileMenu(false);
+                      }}
+                      className={`flex items-center space-x-3 p-3 rounded-xl text-sm font-medium transition-all duration-200 text-left ${
+                        isActive
+                          ? isDarkMode 
+                            ? 'bg-white text-black shadow-sm'
+                            : 'bg-gray-900 text-white shadow-sm'
+                          : isCompleted
+                          ? isDarkMode
+                            ? 'bg-green-900/20 text-green-400 border border-green-400/20'
+                            : 'bg-green-50 text-green-600 border border-green-200'
+                          : isDarkMode
+                            ? 'bg-gray-800/50 text-gray-400 hover:bg-gray-800 hover:text-gray-200'
+                            : 'bg-gray-50 text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                      }`}
+                    >
+                      <div className={`transition-colors ${
+                        isActive 
+                          ? isDarkMode ? 'text-black' : 'text-white'
+                          : isCompleted 
+                            ? 'text-green-400' 
+                            : isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                      }`}>
+                        {item.icon}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center space-x-2">
+                          <span className="truncate">{item.label}</span>
+                          {isCompleted && (
+                            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse flex-shrink-0"></div>
+                          )}
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+              
+              {/* Mobile Progress Bar */}
+              <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                <div className="flex items-center justify-between mb-2">
+                  <span className={`text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                    Прогресс
+                  </span>
+                  <span className={`text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                    {navigationItems.findIndex(s => s.key === currentStep) + 1}/{navigationItems.length}
+                  </span>
+                </div>
+                <div className={`h-2 rounded-full ${isDarkMode ? 'bg-gray-800' : 'bg-gray-200'}`}>
+                  <div 
+                    className="h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full transition-all duration-500 ease-out"
+                    style={{ 
+                      width: `${((navigationItems.findIndex(s => s.key === currentStep) + 1) / navigationItems.length) * 100}%` 
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
       </div>
     </header>

@@ -32,7 +32,11 @@ class BackendServiceApi {
   private baseURL: string;
 
   constructor() {
-    this.baseURL = process.env.REACT_APP_BACKEND_API_URL || 'http://localhost:8000/admin';
+    this.baseURL = process.env.REACT_APP_BACKEND_API_URL || (
+      process.env.NODE_ENV === 'production' 
+        ? 'https://your-api-domain.com/admin' 
+        : 'http://localhost:8000/admin'
+    );
   }
 
   /**

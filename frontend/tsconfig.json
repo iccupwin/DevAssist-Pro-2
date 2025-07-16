@@ -27,5 +27,13 @@
   },
   "include": [
     "src/**/*"
+  ],
+  "exclude": [
+    "src/**/*.stories.tsx",
+    "src/**/*.stories.ts",
+    "src/**/*.stories.js",
+    "src/**/*.stories.jsx",
+    "node_modules/@storybook/**/*",
+    ".storybook/**/*"
   ]
 }
