@@ -252,7 +252,7 @@ export class HTTPInterceptor {
     // В development режиме используем упрощенное хранение токенов
     if (process.env.NODE_ENV === 'development') {
       const simpleToken = localStorage.getItem(AUTH_CONFIG.TOKEN_STORAGE_KEY);
-      const tokenExpiresAt = localStorage.getItem(AUTH_CONFIG.TOKEN_EXPIRES_AT_KEY);
+      const tokenExpiresAt = localStorage.getItem(AUTH_CONFIG.TOKEN_EXPIRY_STORAGE_KEY);
       
       if (simpleToken && tokenExpiresAt) {
         const isValid = parseInt(tokenExpiresAt) > Date.now();

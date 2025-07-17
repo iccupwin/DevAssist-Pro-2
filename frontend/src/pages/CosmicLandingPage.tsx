@@ -63,8 +63,8 @@ const CosmicLandingPage: React.FC = () => {
     }`}>
       {/* Header */}
       <header className="sticky top-2 z-40 lg:top-5">
-        <div className="container">
-          <div className="bg-background/70 flex items-center justify-between rounded-2xl border p-3 backdrop-blur-sm">
+        <div className="container max-w-7xl">
+          <div className="bg-background/70 flex items-center justify-between rounded-2xl border p-3 backdrop-blur-sm min-h-[60px]">
             {/* Logo */}
             <a className="flex font-bold items-center" href="#home">
               <img 
@@ -146,10 +146,10 @@ const CosmicLandingPage: React.FC = () => {
             </nav>
 
             {/* Theme Toggle & Actions */}
-            <div className="hidden items-center lg:flex">
+            <div className="hidden items-center lg:flex gap-2">
               <button 
                 onClick={toggleTheme}
-                className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground size-9"
+                className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground size-9 mr-2"
               >
                 <div className="flex items-center gap-2 dark:hidden">
                   <Moon />
@@ -160,13 +160,10 @@ const CosmicLandingPage: React.FC = () => {
               </button>
               <div className="flex gap-2">
                 {isAuthenticated && user ? (
-                  <div className="flex items-center gap-3">
-                    <div className="text-sm text-muted-foreground">
-                      Добро пожаловать, {user.firstName || user.email}
-                    </div>
+                  <div className="flex items-center gap-2">
                     <button 
                       onClick={() => navigate('/dashboard')}
-                      className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 h-10 rounded-md px-6"
+                      className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 h-10 rounded-md px-4"
                     >
                       <User className="w-4 h-4" />
                       Панель управления

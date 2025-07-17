@@ -292,13 +292,10 @@ const LandingPage: React.FC = () => {
               </button>
               <div className="flex gap-2">
                 {isAuthenticated && user ? (
-                  <div className="flex items-center gap-3">
-                    <div className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                      Добро пожаловать, {user.firstName || user.email}
-                    </div>
+                  <div className="flex items-center gap-2">
                     <button 
                       onClick={() => navigate('/dashboard')}
-                      className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all h-10 rounded-md px-6 ${
+                      className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all h-10 rounded-md px-4 ${
                         isDarkMode
                           ? 'bg-white text-black hover:bg-gray-100 shadow-sm'
                           : 'bg-gray-900 text-white hover:bg-gray-800 shadow-sm'
