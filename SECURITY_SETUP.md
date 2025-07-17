@@ -4,7 +4,7 @@
 
 ### 1. Удален реальный API ключ Anthropic
 - **Файл**: `frontend/.env`
-- **Было**: `REACT_APP_ANTHROPIC_API_KEY=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`
+- **Было**: 
 - **Стало**: `REACT_APP_ANTHROPIC_API_KEY=your_anthropic_api_key_here`
 
 ### 2. Обновлен .gitignore
