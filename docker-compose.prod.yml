@@ -1,0 +1,359 @@
+version: '3.8'
+
+services:
+  # ===== DATABASE =====
+  postgres:
+    image: postgres:15-alpine
+    container_name: devassist_postgres_prod
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-devassist_pro}
+      POSTGRES_USER: ${POSTGRES_USER:-devassist}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-devassist_secure_password}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --locale=ru_RU.UTF-8"
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/database/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-devassist} -d ${POSTGRES_DB:-devassist_pro}"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: unless-stopped
+    networks:
+      - devassist-network
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.5'
+
+  # ===== CACHE =====
+  redis:
+    image: redis:7-alpine
+    container_name: devassist_redis_prod
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redis_secure_password}
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-redis_secure_password}", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - devassist-network
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.25'
+
+  # ===== BACKEND SERVICES =====
+  api-gateway:
+    build:
+      context: ./backend
+      dockerfile: ../Dockerfile.backend.prod
+      args:
+        SERVICE_DIR: api_gateway
+    container_name: devassist_api_gateway_prod
+    ports:
+      - "${API_GATEWAY_PORT:-8000}:8000"
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-devassist}:${POSTGRES_PASSWORD:-devassist_secure_password}@postgres:5432/${POSTGRES_DB:-devassist_pro}
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-redis_secure_password}@redis:6379/0
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_ALGORITHM=HS256
+      - JWT_EXPIRE_MINUTES=30
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - ENVIRONMENT=production
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:3000,https://yourdomain.com}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - devassist-network
+    volumes:
+      - ./backend/shared:/app/shared:ro
+      - api_gateway_logs:/app/logs
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '1.0'
+
+  auth-service:
+    build:
+      context: ./backend
+      dockerfile: ../Dockerfile.backend.prod
+      args:
+        SERVICE_DIR: services/auth
+    container_name: devassist_auth_service_prod
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-devassist}:${POSTGRES_PASSWORD:-devassist_secure_password}@postgres:5432/${POSTGRES_DB:-devassist_pro}
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-redis_secure_password}@redis:6379/1
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_ALGORITHM=HS256
+      - JWT_EXPIRE_MINUTES=30
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - YANDEX_CLIENT_ID=${YANDEX_CLIENT_ID}
+      - YANDEX_CLIENT_SECRET=${YANDEX_CLIENT_SECRET}
+      - MICROSOFT_CLIENT_ID=${MICROSOFT_CLIENT_ID}
+      - MICROSOFT_CLIENT_SECRET=${MICROSOFT_CLIENT_SECRET}
+      - ENVIRONMENT=production
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - devassist-network
+    volumes:
+      - ./backend/shared:/app/shared:ro
+      - auth_service_logs:/app/logs
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+
+  llm-service:
+    build:
+      context: ./backend
+      dockerfile: ../Dockerfile.backend.prod
+      args:
+        SERVICE_DIR: services/llm
+    container_name: devassist_llm_service_prod
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-devassist}:${POSTGRES_PASSWORD:-devassist_secure_password}@postgres:5432/${POSTGRES_DB:-devassist_pro}
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-redis_secure_password}@redis:6379/2
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - ENVIRONMENT=production
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - MAX_CONCURRENT_REQUESTS=${MAX_CONCURRENT_REQUESTS:-10}
+      - REQUEST_TIMEOUT=${REQUEST_TIMEOUT:-300}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - devassist-network
+    volumes:
+      - ./backend/shared:/app/shared:ro
+      - llm_service_logs:/app/logs
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1.5'
+
+  documents-service:
+    build:
+      context: ./backend
+      dockerfile: ../Dockerfile.backend.prod
+      args:
+        SERVICE_DIR: services/documents
+    container_name: devassist_documents_service_prod
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-devassist}:${POSTGRES_PASSWORD:-devassist_secure_password}@postgres:5432/${POSTGRES_DB:-devassist_pro}
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-redis_secure_password}@redis:6379/3
+      - UPLOAD_PATH=/app/uploads
+      - MAX_FILE_SIZE=${MAX_FILE_SIZE:-100MB}
+      - SUPPORTED_FORMATS=pdf,docx,txt
+      - ENVIRONMENT=production
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - devassist-network
+    volumes:
+      - ./backend/shared:/app/shared:ro
+      - document_uploads:/app/uploads
+      - documents_service_logs:/app/logs
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.75'
+
+  dashboard-service:
+    build:
+      context: ./backend
+      dockerfile: ../Dockerfile.backend.prod
+      args:
+        SERVICE_DIR: services/dashboard
+    container_name: devassist_dashboard_service_prod
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-devassist}:${POSTGRES_PASSWORD:-devassist_secure_password}@postgres:5432/${POSTGRES_DB:-devassist_pro}
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-redis_secure_password}@redis:6379/4
+      - ENVIRONMENT=production
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - devassist-network
+    volumes:
+      - ./backend/shared:/app/shared:ro
+      - dashboard_service_logs:/app/logs
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+
+  reports-service:
+    build:
+      context: ./backend
+      dockerfile: ../Dockerfile.backend.prod
+      args:
+        SERVICE_DIR: services/reports
+    container_name: devassist_reports_service_prod
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-devassist}:${POSTGRES_PASSWORD:-devassist_secure_password}@postgres:5432/${POSTGRES_DB:-devassist_pro}
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-redis_secure_password}@redis:6379/5
+      - ENVIRONMENT=production
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      llm-service:
+        condition: service_started
+    restart: unless-stopped
+    networks:
+      - devassist-network
+    volumes:
+      - ./backend/shared:/app/shared:ro
+      - reports_data:/app/reports
+      - reports_service_logs:/app/logs
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.75'
+
+  # ===== FRONTEND =====
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend.prod
+    container_name: devassist_frontend_prod
+    ports:
+      - "${FRONTEND_PORT:-3000}:80"
+    environment:
+      - REACT_APP_API_URL=${REACT_APP_API_URL:-http://localhost:8000}
+      - REACT_APP_WS_URL=${REACT_APP_WS_URL:-ws://localhost:8000}
+      - REACT_APP_USE_REAL_API=true
+      - REACT_APP_GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - REACT_APP_YANDEX_CLIENT_ID=${YANDEX_CLIENT_ID}
+      - REACT_APP_MICROSOFT_CLIENT_ID=${MICROSOFT_CLIENT_ID}
+      - REACT_APP_ENVIRONMENT=production
+    depends_on:
+      - api-gateway
+    restart: unless-stopped
+    networks:
+      - devassist-network
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.25'
+
+  # ===== NGINX REVERSE PROXY =====
+  nginx:
+    image: nginx:alpine
+    container_name: devassist_nginx_prod
+    ports:
+      - "${HTTP_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+      - nginx_logs:/var/log/nginx
+    depends_on:
+      - frontend
+      - api-gateway
+    restart: unless-stopped
+    networks:
+      - devassist-network
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+          cpus: '0.1'
+
+  # ===== MONITORING (Optional) =====
+  watchtower:
+    image: containrrr/watchtower
+    container_name: devassist_watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_POLL_INTERVAL=3600
+      - WATCHTOWER_INCLUDE_RESTARTING=true
+    restart: unless-stopped
+    networks:
+      - devassist-network
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+          cpus: '0.05'
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  document_uploads:
+    driver: local
+  reports_data:
+    driver: local
+  api_gateway_logs:
+    driver: local
+  auth_service_logs:
+    driver: local
+  llm_service_logs:
+    driver: local
+  documents_service_logs:
+    driver: local
+  dashboard_service_logs:
+    driver: local
+  reports_service_logs:
+    driver: local
+  nginx_logs:
+    driver: local
+
+networks:
+  devassist-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
