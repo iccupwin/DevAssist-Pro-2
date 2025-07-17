@@ -1,0 +1,25 @@
+# Frontend Development Dockerfile
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Install dependencies for better compatibility
+RUN apk add --no-cache git
+
+# Copy package files
+COPY package*.json ./
+
+# Install npm dependencies
+RUN npm install
+
+# Copy source code
+COPY . .
+
+# Create volume mount points
+RUN mkdir -p /app/src /app/public
+
+# Expose port
+EXPOSE 3000
+
+# Development server with hot reload
+CMD ["npm", "start"]

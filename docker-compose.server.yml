@@ -1,0 +1,259 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: devassist_postgres
+    environment:
+      POSTGRES_DB: devassist_pro
+      POSTGRES_USER: devassist_user
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secure_postgres_123}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/pgdata
+      - ./backend/database/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    ports:
+      - "5432:5432"
+    networks:
+      - devassist_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U devassist_user -d devassist_pro"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: devassist_redis
+    command: redis-server --requirepass ${REDIS_PASSWORD:-redis_secure_123}
+    ports:
+      - "6379:6379"
+    networks:
+      - devassist_network
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+  # Auth Service
+  auth-service:
+    build:
+      context: ./backend/services/auth
+      dockerfile: Dockerfile
+    container_name: devassist_auth
+    environment:
+      - DATABASE_URL=postgresql://devassist_user:${POSTGRES_PASSWORD:-secure_postgres_123}@postgres:5432/devassist_pro
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-redis_secure_123}@redis:6379/0
+      - JWT_SECRET=${JWT_SECRET:-your_jwt_secret_key_here}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - devassist_network
+    restart: unless-stopped
+
+  # LLM Service
+  llm-service:
+    build:
+      context: ./backend/services/llm
+      dockerfile: Dockerfile
+    container_name: devassist_llm
+    environment:
+      - DATABASE_URL=postgresql://devassist_user:${POSTGRES_PASSWORD:-secure_postgres_123}@postgres:5432/devassist_pro
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-redis_secure_123}@redis:6379/0
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - devassist_network
+    restart: unless-stopped
+
+  # Documents Service
+  documents-service:
+    build:
+      context: ./backend/services/documents
+      dockerfile: Dockerfile
+    container_name: devassist_documents
+    environment:
+      - DATABASE_URL=postgresql://devassist_user:${POSTGRES_PASSWORD:-secure_postgres_123}@postgres:5432/devassist_pro
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-redis_secure_123}@redis:6379/0
+    volumes:
+      - document_uploads:/app/uploads
+      - document_results:/app/results
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - devassist_network
+    restart: unless-stopped
+
+  # Reports Service
+  reports-service:
+    build:
+      context: ./backend/services/reports
+      dockerfile: Dockerfile
+    container_name: devassist_reports
+    environment:
+      - DATABASE_URL=postgresql://devassist_user:${POSTGRES_PASSWORD:-secure_postgres_123}@postgres:5432/devassist_pro
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-redis_secure_123}@redis:6379/0
+    volumes:
+      - report_outputs:/app/reports
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - devassist_network
+    restart: unless-stopped
+
+  # Dashboard Service
+  dashboard-service:
+    build:
+      context: ./backend/services/dashboard
+      dockerfile: Dockerfile
+    container_name: devassist_dashboard
+    environment:
+      - DATABASE_URL=postgresql://devassist_user:${POSTGRES_PASSWORD:-secure_postgres_123}@postgres:5432/devassist_pro
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-redis_secure_123}@redis:6379/0
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - devassist_network
+    restart: unless-stopped
+
+  # API Gateway (Main Backend)
+  api-gateway:
+    build:
+      context: ./backend/api_gateway
+      dockerfile: Dockerfile
+    container_name: devassist_api_gateway
+    environment:
+      - DATABASE_URL=postgresql://devassist_user:${POSTGRES_PASSWORD:-secure_postgres_123}@postgres:5432/devassist_pro
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-redis_secure_123}@redis:6379/0
+      - JWT_SECRET=${JWT_SECRET:-your_jwt_secret_key_here}
+      - AUTH_SERVICE_URL=http://auth-service:8000
+      - LLM_SERVICE_URL=http://llm-service:8000
+      - DOCUMENTS_SERVICE_URL=http://documents-service:8000
+      - REPORTS_SERVICE_URL=http://reports-service:8000
+      - DASHBOARD_SERVICE_URL=http://dashboard-service:8000
+      - CORS_ORIGINS=http://${SERVER_IP:-localhost}:3000,http://${SERVER_IP:-localhost}
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      auth-service:
+        condition: service_started
+      llm-service:
+        condition: service_started
+      documents-service:
+        condition: service_started
+      reports-service:
+        condition: service_started
+      dashboard-service:
+        condition: service_started
+    networks:
+      - devassist_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+  # React Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: devassist_frontend
+    environment:
+      - REACT_APP_API_URL=http://${SERVER_IP:-localhost}:8000/api
+      - REACT_APP_BACKEND_URL=http://${SERVER_IP:-localhost}:8000
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+      - ./frontend/package.json:/app/package.json
+      - ./frontend/package-lock.json:/app/package-lock.json
+      - /app/node_modules
+    depends_on:
+      api-gateway:
+        condition: service_healthy
+    networks:
+      - devassist_network
+    restart: unless-stopped
+
+  # Streamlit Demo (Optional)
+  streamlit-demo:
+    build:
+      context: .
+      dockerfile: Dockerfile.streamlit
+    container_name: devassist_streamlit
+    environment:
+      - DATABASE_URL=postgresql://devassist_user:${POSTGRES_PASSWORD:-secure_postgres_123}@postgres:5432/devassist_pro
+      - API_BASE_URL=http://api-gateway:8000
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+    ports:
+      - "8501:8501"
+    volumes:
+      - streamlit_data:/app/data
+    depends_on:
+      api-gateway:
+        condition: service_healthy
+    networks:
+      - devassist_network
+    restart: unless-stopped
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: devassist_nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.server.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - frontend
+      - api-gateway
+    networks:
+      - devassist_network
+    restart: unless-stopped
+
+networks:
+  devassist_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  document_uploads:
+    driver: local
+  document_results:
+    driver: local
+  report_outputs:
+    driver: local
+  streamlit_data:
+    driver: local
