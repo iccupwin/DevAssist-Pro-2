@@ -1,5 +1,5 @@
 # Multi-stage production Dockerfile for React Frontend
-FROM node:18-alpine as builder
+FROM node:20-alpine as builder
 
 # Установка системных зависимостей
 RUN apk add --no-cache git
@@ -10,8 +10,8 @@ WORKDIR /app
 # Копирование package files
 COPY frontend/package*.json ./
 
-# Установка зависимостей с очисткой npm cache
-RUN npm ci --only=production && npm cache clean --force
+# Установка зависимостей (используем npm install для исправления lock файла)
+RUN npm install --omit=dev && npm cache clean --force
 
 # Копирование исходного кода
 COPY frontend/ .
