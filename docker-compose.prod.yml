@@ -1,22 +1,20 @@
-version: '3.8'
-
 services:
   # ===== DATABASE =====
   postgres:
     image: postgres:15-alpine
     container_name: devassist_postgres_prod
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-devassist_pro}
-      POSTGRES_USER: ${POSTGRES_USER:-devassist}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-devassist_secure_password}
+      POSTGRES_DB: ${DB_NAME:-devassist_pro}
+      POSTGRES_USER: ${DB_USER:-devassist}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-devassist_secure_password}
       POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --locale=ru_RU.UTF-8"
     ports:
-      - "${POSTGRES_PORT:-5432}:5432"
+      - "${DB_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./backend/database/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-devassist} -d ${POSTGRES_DB:-devassist_pro}"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-devassist} -d ${DB_NAME:-devassist_pro}"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -56,15 +54,13 @@ services:
   # ===== BACKEND SERVICES =====
   api-gateway:
     build:
-      context: ./backend
-      dockerfile: ../Dockerfile.backend.prod
-      args:
-        SERVICE_DIR: api_gateway
+      context: .
+      dockerfile: Dockerfile.backend.prod
     container_name: devassist_api_gateway_prod
     ports:
       - "${API_GATEWAY_PORT:-8000}:8000"
     environment:
-      - DATABASE_URL=postgresql://${POSTGRES_USER:-devassist}:${POSTGRES_PASSWORD:-devassist_secure_password}@postgres:5432/${POSTGRES_DB:-devassist_pro}
+      - DATABASE_URL=postgresql://${DB_USER:-devassist}:${DB_PASSWORD:-devassist_secure_password}@postgres:5432/${DB_NAME:-devassist_pro}
       - REDIS_URL=redis://:${REDIS_PASSWORD:-redis_secure_password}@redis:6379/0
       - JWT_SECRET=${JWT_SECRET}
       - JWT_ALGORITHM=HS256
@@ -91,16 +87,15 @@ services:
         limits:
           memory: 1G
           cpus: '1.0'
+    command: ["uvicorn", "backend.api_gateway.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4"]
 
   auth-service:
     build:
-      context: ./backend
-      dockerfile: ../Dockerfile.backend.prod
-      args:
-        SERVICE_DIR: services/auth
+      context: .
+      dockerfile: Dockerfile.backend.prod
     container_name: devassist_auth_service_prod
     environment:
-      - DATABASE_URL=postgresql://${POSTGRES_USER:-devassist}:${POSTGRES_PASSWORD:-devassist_secure_password}@postgres:5432/${POSTGRES_DB:-devassist_pro}
+      - DATABASE_URL=postgresql://${DB_USER:-devassist}:${DB_PASSWORD:-devassist_secure_password}@postgres:5432/${DB_NAME:-devassist_pro}
       - REDIS_URL=redis://:${REDIS_PASSWORD:-redis_secure_password}@redis:6379/1
       - JWT_SECRET=${JWT_SECRET}
       - JWT_ALGORITHM=HS256
@@ -129,16 +124,15 @@ services:
         limits:
           memory: 512M
           cpus: '0.5'
+    command: ["uvicorn", "backend.services.auth.main:app", "--host", "0.0.0.0", "--port", "8001"]
 
   llm-service:
     build:
-      context: ./backend
-      dockerfile: ../Dockerfile.backend.prod
-      args:
-        SERVICE_DIR: services/llm
+      context: .
+      dockerfile: Dockerfile.backend.prod
     container_name: devassist_llm_service_prod
     environment:
-      - DATABASE_URL=postgresql://${POSTGRES_USER:-devassist}:${POSTGRES_PASSWORD:-devassist_secure_password}@postgres:5432/${POSTGRES_DB:-devassist_pro}
+      - DATABASE_URL=postgresql://${DB_USER:-devassist}:${DB_PASSWORD:-devassist_secure_password}@postgres:5432/${DB_NAME:-devassist_pro}
       - REDIS_URL=redis://:${REDIS_PASSWORD:-redis_secure_password}@redis:6379/2
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
@@ -163,16 +157,15 @@ services:
         limits:
           memory: 2G
           cpus: '1.5'
+    command: ["uvicorn", "backend.services.llm.main:app", "--host", "0.0.0.0", "--port", "8002"]
 
   documents-service:
     build:
-      context: ./backend
-      dockerfile: ../Dockerfile.backend.prod
-      args:
-        SERVICE_DIR: services/documents
+      context: .
+      dockerfile: Dockerfile.backend.prod
     container_name: devassist_documents_service_prod
     environment:
-      - DATABASE_URL=postgresql://${POSTGRES_USER:-devassist}:${POSTGRES_PASSWORD:-devassist_secure_password}@postgres:5432/${POSTGRES_DB:-devassist_pro}
+      - DATABASE_URL=postgresql://${DB_USER:-devassist}:${DB_PASSWORD:-devassist_secure_password}@postgres:5432/${DB_NAME:-devassist_pro}
       - REDIS_URL=redis://:${REDIS_PASSWORD:-redis_secure_password}@redis:6379/3
       - UPLOAD_PATH=/app/uploads
       - MAX_FILE_SIZE=${MAX_FILE_SIZE:-100MB}
@@ -196,16 +189,15 @@ services:
         limits:
           memory: 1G
           cpus: '0.75'
+    command: ["uvicorn", "backend.services.documents.main:app", "--host", "0.0.0.0", "--port", "8003"]
 
   dashboard-service:
     build:
-      context: ./backend
-      dockerfile: ../Dockerfile.backend.prod
-      args:
-        SERVICE_DIR: services/dashboard
+      context: .
+      dockerfile: Dockerfile.backend.prod
     container_name: devassist_dashboard_service_prod
     environment:
-      - DATABASE_URL=postgresql://${POSTGRES_USER:-devassist}:${POSTGRES_PASSWORD:-devassist_secure_password}@postgres:5432/${POSTGRES_DB:-devassist_pro}
+      - DATABASE_URL=postgresql://${DB_USER:-devassist}:${DB_PASSWORD:-devassist_secure_password}@postgres:5432/${DB_NAME:-devassist_pro}
       - REDIS_URL=redis://:${REDIS_PASSWORD:-redis_secure_password}@redis:6379/4
       - ENVIRONMENT=production
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
@@ -225,16 +217,15 @@ services:
         limits:
           memory: 512M
           cpus: '0.5'
+    command: ["uvicorn", "backend.services.dashboard.main:app", "--host", "0.0.0.0", "--port", "8004"]
 
   reports-service:
     build:
-      context: ./backend
-      dockerfile: ../Dockerfile.backend.prod
-      args:
-        SERVICE_DIR: services/reports
+      context: .
+      dockerfile: Dockerfile.backend.prod
     container_name: devassist_reports_service_prod
     environment:
-      - DATABASE_URL=postgresql://${POSTGRES_USER:-devassist}:${POSTGRES_PASSWORD:-devassist_secure_password}@postgres:5432/${POSTGRES_DB:-devassist_pro}
+      - DATABASE_URL=postgresql://${DB_USER:-devassist}:${DB_PASSWORD:-devassist_secure_password}@postgres:5432/${DB_NAME:-devassist_pro}
       - REDIS_URL=redis://:${REDIS_PASSWORD:-redis_secure_password}@redis:6379/5
       - ENVIRONMENT=production
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
@@ -257,6 +248,7 @@ services:
         limits:
           memory: 1G
           cpus: '0.75'
+    command: ["uvicorn", "backend.services.reports.main:app", "--host", "0.0.0.0", "--port", "8005"]
 
   # ===== FRONTEND =====
   frontend:
