@@ -57,18 +57,32 @@ check_env_vars() {
     
     source .env
     
+    # Используем имена переменных из существующего .env файла
     required_vars=(
-        "POSTGRES_PASSWORD"
+        "DB_PASSWORD"
         "REDIS_PASSWORD" 
         "JWT_SECRET"
         "ANTHROPIC_API_KEY"
-        "OPENAI_API_KEY"
     )
     
+    # Опциональные переменные (предупреждение, но не ошибка)
+    optional_vars=(
+        "OPENAI_API_KEY"
+        "GOOGLE_API_KEY"
+    )
+    
+    # Проверка обязательных переменных
     for var in "${required_vars[@]}"; do
-        if [ -z "${!var}" ] || [ "${!var}" = "YOUR_"* ]; then
+        if [ -z "${!var}" ] || [ "${!var}" = "your_"* ] || [ "${!var}" = "YOUR_"* ]; then
             error "Переменная $var не установлена или содержит значение по умолчанию"
             exit 1
+        fi
+    done
+    
+    # Проверка опциональных переменных
+    for var in "${optional_vars[@]}"; do
+        if [ -z "${!var}" ] || [ "${!var}" = "your_"* ] || [ "${!var}" = "YOUR_"* ]; then
+            warn "Переменная $var не настроена (это не критично)"
         fi
     done
     
@@ -86,7 +100,7 @@ create_backup() {
         # Бэкап базы данных
         if docker-compose -f docker-compose.prod.yml ps postgres | grep -q "Up"; then
             log "Создание бэкапа базы данных..."
-            docker-compose -f docker-compose.prod.yml exec -T postgres pg_dump -U ${POSTGRES_USER:-devassist} ${POSTGRES_DB:-devassist_pro} > "$BACKUP_DIR/database.sql"
+            docker-compose -f docker-compose.prod.yml exec -T postgres pg_dump -U ${DB_USER:-devassist} ${DB_NAME:-devassist_pro} > "$BACKUP_DIR/database.sql"
         fi
         
         # Бэкап файлов
@@ -134,7 +148,7 @@ wait_for_services() {
     
     # Ожидание базы данных
     for i in {1..30}; do
-        if docker-compose -f docker-compose.prod.yml exec -T postgres pg_isready -U ${POSTGRES_USER:-devassist} &>/dev/null; then
+        if docker-compose -f docker-compose.prod.yml exec -T postgres pg_isready -U ${DB_USER:-devassist} &>/dev/null; then
             break
         fi
         if [ $i -eq 30 ]; then
@@ -191,7 +205,7 @@ health_check() {
     fi
     
     # Проверка базы данных
-    if ! docker-compose -f docker-compose.prod.yml exec -T postgres pg_isready -U ${POSTGRES_USER:-devassist} &>/dev/null; then
+    if ! docker-compose -f docker-compose.prod.yml exec -T postgres pg_isready -U ${DB_USER:-devassist} &>/dev/null; then
         error "База данных недоступна"
         return 1
     fi
