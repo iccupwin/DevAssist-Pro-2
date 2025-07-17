@@ -1,0 +1,96 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: devassist_postgres
+    environment:
+      POSTGRES_DB: devassist_pro
+      POSTGRES_USER: devassist_user
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secure_postgres_123}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - devassist_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U devassist_user -d devassist_pro"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+  # Streamlit Backend (работающий)
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.streamlit
+    container_name: devassist_backend
+    environment:
+      - DATABASE_URL=postgresql://devassist_user:${POSTGRES_PASSWORD:-secure_postgres_123}@postgres:5432/devassist_pro
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - STREAMLIT_SERVER_ADDRESS=0.0.0.0
+      - STREAMLIT_SERVER_PORT=8501
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./data:/app/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - devassist_network
+    restart: unless-stopped
+
+  # React Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: devassist_frontend
+    environment:
+      - REACT_APP_API_URL=http://${SERVER_IP:-localhost}:8501
+      - REACT_APP_BACKEND_URL=http://${SERVER_IP:-localhost}:8501
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+      - ./frontend/package.json:/app/package.json
+      - ./frontend/package-lock.json:/app/package-lock.json
+      - /app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - devassist_network
+    restart: unless-stopped
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: devassist_nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.simple.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - devassist_network
+    restart: unless-stopped
+
+networks:
+  devassist_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
