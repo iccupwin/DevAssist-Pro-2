@@ -53,7 +53,7 @@ openpyxl>=3.1.2
 xlrd>=2.0.1
 
 # Text extraction and OCR
-textract>=1.6.5
+# textract>=1.6.5  # Temporarily disabled due to metadata issues
 pytesseract>=0.3.10
 Pillow>=10.1.0
 
