@@ -16,6 +16,11 @@ RUN npm install --production=false
 
 # Copy frontend source and build
 COPY frontend/ .
+
+# Disable ESLint for production build
+ENV ESLINT_NO_DEV_ERRORS=true
+ENV GENERATE_SOURCEMAP=false
+
 RUN npm run build
 
 # Verify build output

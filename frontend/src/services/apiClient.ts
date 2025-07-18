@@ -4,6 +4,8 @@
  */
 
 import { httpClient } from './httpInterceptors';
+import { realApiService } from './realApiService';
+import { devAssistApi } from './apiWrapper';
 
 export interface ApiResponse<T> {
   data: T;
@@ -217,9 +219,6 @@ class ApiClient {
     return { data: response.data };
   }
 }
-
-import { realApiService } from './realApiService';
-import { devAssistApi } from './apiWrapper';
 
 // Используем только реальные API
 export const apiService = realApiService;

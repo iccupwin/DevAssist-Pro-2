@@ -186,8 +186,8 @@ class UnifiedApiClient {
       console.log('[UnifiedApiClient] Registration successful, response:', response);
 
       // Извлекаем токен и пользователя из ответа backend
-      let token = response.token;
-      let user = response.user;
+      const token = response.token;
+      const user = response.user;
       
       // Сохраняем токен если получен
       if (token) {
