@@ -1,277 +1,220 @@
 #!/bin/bash
 
-# ==================================================
+# =============================================================================
 # DevAssist Pro - Production Deployment Script
-# ==================================================
+# Automated deployment to production server: 46.149.67.122
+# =============================================================================
 
-set -e  # Выход при любой ошибке
+set -e
 
-# Цвета для вывода
+# Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-# Функция для логирования
-log() {
-    echo -e "${GREEN}[$(date +'%Y-%m-%d %H:%M:%S')] $1${NC}"
+# Configuration
+SERVER_IP="46.149.67.122"
+PROJECT_NAME="devassist-pro"
+DOCKER_IMAGE="devassist-pro:latest"
+CONTAINER_NAME="devassist-pro"
+DATA_DIR="/opt/devassist-pro/data"
+LOGS_DIR="/opt/devassist-pro/logs"
+CONFIG_DIR="/opt/devassist-pro/config"
+
+echo -e "${BLUE}🚀 DevAssist Pro Production Deployment${NC}"
+echo "=================================================="
+echo "Target Server: $SERVER_IP"
+echo "Project: $PROJECT_NAME"
+echo "Image: $DOCKER_IMAGE"
+echo "=================================================="
+
+# Function to print status
+print_status() {
+    echo -e "${GREEN}✅ $1${NC}"
 }
 
-warn() {
-    echo -e "${YELLOW}[$(date +'%Y-%m-%d %H:%M:%S')] WARNING: $1${NC}"
+print_warning() {
+    echo -e "${YELLOW}⚠️  $1${NC}"
 }
 
-error() {
-    echo -e "${RED}[$(date +'%Y-%m-%d %H:%M:%S')] ERROR: $1${NC}"
+print_error() {
+    echo -e "${RED}❌ $1${NC}"
 }
 
-# Проверка требований
-check_requirements() {
-    log "Проверка системных требований..."
-    
-    # Проверка Docker
-    if ! command -v docker &> /dev/null; then
-        error "Docker не установлен. Установите Docker перед продолжением."
+# Pre-deployment checks
+echo -e "${BLUE}🔍 Pre-deployment checks...${NC}"
+
+# Check if Docker is available
+if ! command -v docker &> /dev/null; then
+    print_error "Docker is not installed or not in PATH"
+    exit 1
+fi
+print_status "Docker is available"
+
+# Check if docker-compose is available
+if ! command -v docker-compose &> /dev/null; then
+    print_warning "docker-compose not found, using 'docker compose' instead"
+    COMPOSE_CMD="docker compose"
+else
+    COMPOSE_CMD="docker-compose"
+fi
+print_status "Docker Compose is available"
+
+# Check if required files exist
+REQUIRED_FILES=(
+    "Dockerfile.production"
+    "nginx.production.conf" 
+    "supervisord.conf"
+    "start-production.sh"
+    ".env.production"
+    "docker-compose.production.yml"
+)
+
+for file in "${REQUIRED_FILES[@]}"; do
+    if [ ! -f "$file" ]; then
+        print_error "Required file $file not found"
         exit 1
     fi
-    
-    # Проверка Docker Compose
-    if ! command -v docker-compose &> /dev/null; then
-        error "Docker Compose не установлен. Установите Docker Compose перед продолжением."
+done
+print_status "All required files present"
+
+# Check environment file
+if [ ! -f ".env.production" ]; then
+    print_error ".env.production file not found"
+    print_warning "Copy .env.example to .env.production and configure it"
+    exit 1
+fi
+
+# Validate critical environment variables
+print_status "Validating environment configuration..."
+source .env.production
+
+REQUIRED_VARS=(
+    "POSTGRES_PASSWORD"
+    "JWT_SECRET"
+    "OPENAI_API_KEY"
+    "ANTHROPIC_API_KEY"
+)
+
+for var in "${REQUIRED_VARS[@]}"; do
+    if [ -z "${!var}" ] || [ "${!var}" = "your_${var,,}_here" ] || [ "${!var}" = "change-this" ]; then
+        print_error "Environment variable $var is not configured properly"
+        print_warning "Edit .env.production and set real values"
         exit 1
     fi
-    
-    # Проверка .env файла
-    if [ ! -f ".env" ]; then
-        error "Файл .env не найден. Скопируйте .env.production в .env и заполните необходимые значения."
-        exit 1
+done
+print_status "Environment variables validated"
+
+# Build the Docker image
+echo -e "${BLUE}🔨 Building Docker image...${NC}"
+docker build -f Dockerfile.production -t $DOCKER_IMAGE .
+if [ $? -eq 0 ]; then
+    print_status "Docker image built successfully"
+else
+    print_error "Docker image build failed"
+    exit 1
+fi
+
+# Stop existing container if running
+echo -e "${BLUE}🛑 Stopping existing containers...${NC}"
+if docker ps -q --filter "name=$CONTAINER_NAME" | grep -q .; then
+    docker stop $CONTAINER_NAME
+    print_status "Stopped existing container"
+fi
+
+# Remove existing container
+if docker ps -aq --filter "name=$CONTAINER_NAME" | grep -q .; then
+    docker rm $CONTAINER_NAME
+    print_status "Removed existing container"
+fi
+
+# Create necessary directories
+echo -e "${BLUE}📁 Creating directories...${NC}"
+mkdir -p data logs config/production
+print_status "Directories created"
+
+# Start the application
+echo -e "${BLUE}🚀 Starting DevAssist Pro...${NC}"
+$COMPOSE_CMD -f docker-compose.production.yml up -d
+
+if [ $? -eq 0 ]; then
+    print_status "Application started successfully"
+else
+    print_error "Failed to start application"
+    exit 1
+fi
+
+# Wait for services to be ready
+echo -e "${BLUE}⏳ Waiting for services to be ready...${NC}"
+sleep 10
+
+# Health check
+echo -e "${BLUE}🏥 Performing health checks...${NC}"
+MAX_ATTEMPTS=30
+ATTEMPT=1
+
+while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
+    if curl -f -s http://localhost/health > /dev/null 2>&1; then
+        print_status "Health check passed"
+        break
     fi
     
-    log "Все требования выполнены ✓"
-}
+    echo "Attempt $ATTEMPT/$MAX_ATTEMPTS - waiting for service..."
+    sleep 2
+    ATTEMPT=$((ATTEMPT + 1))
+done
 
-# Проверка переменных окружения
-check_env_vars() {
-    log "Проверка критических переменных окружения..."
-    
-    source .env
-    
-    # Используем имена переменных из существующего .env файла
-    required_vars=(
-        "DB_PASSWORD"
-        "REDIS_PASSWORD" 
-        "JWT_SECRET"
-        "ANTHROPIC_API_KEY"
-    )
-    
-    # Опциональные переменные (предупреждение, но не ошибка)
-    optional_vars=(
-        "OPENAI_API_KEY"
-        "GOOGLE_API_KEY"
-    )
-    
-    # Проверка обязательных переменных
-    for var in "${required_vars[@]}"; do
-        if [ -z "${!var}" ] || [ "${!var}" = "your_"* ] || [ "${!var}" = "YOUR_"* ]; then
-            error "Переменная $var не установлена или содержит значение по умолчанию"
-            exit 1
-        fi
-    done
-    
-    # Проверка опциональных переменных
-    for var in "${optional_vars[@]}"; do
-        if [ -z "${!var}" ] || [ "${!var}" = "your_"* ] || [ "${!var}" = "YOUR_"* ]; then
-            warn "Переменная $var не настроена (это не критично)"
-        fi
-    done
-    
-    log "Переменные окружения проверены ✓"
-}
+if [ $ATTEMPT -gt $MAX_ATTEMPTS ]; then
+    print_error "Health check failed after $MAX_ATTEMPTS attempts"
+    echo "Check logs: docker logs $CONTAINER_NAME"
+    exit 1
+fi
 
-# Создание бэкапа (если есть запущенные контейнеры)
-create_backup() {
-    if docker-compose -f docker-compose.prod.yml ps | grep -q "Up"; then
-        log "Обнаружены запущенные контейнеры. Создание бэкапа..."
-        
-        BACKUP_DIR="./backups/$(date +%Y%m%d_%H%M%S)"
-        mkdir -p "$BACKUP_DIR"
-        
-        # Бэкап базы данных
-        if docker-compose -f docker-compose.prod.yml ps postgres | grep -q "Up"; then
-            log "Создание бэкапа базы данных..."
-            docker-compose -f docker-compose.prod.yml exec -T postgres pg_dump -U ${DB_USER:-devassist} ${DB_NAME:-devassist_pro} > "$BACKUP_DIR/database.sql"
-        fi
-        
-        # Бэкап файлов
-        cp .env "$BACKUP_DIR/"
-        cp docker-compose.prod.yml "$BACKUP_DIR/"
-        
-        log "Бэкап создан в $BACKUP_DIR ✓"
+# Verify all endpoints
+echo -e "${BLUE}🔍 Verifying endpoints...${NC}"
+ENDPOINTS=(
+    "http://localhost/health"
+    "http://localhost/api/health"
+    "http://localhost/"
+)
+
+for endpoint in "${ENDPOINTS[@]}"; do
+    if curl -f -s "$endpoint" > /dev/null 2>&1; then
+        print_status "✓ $endpoint"
     else
-        log "Запущенные контейнеры не обнаружены, бэкап не требуется"
+        print_warning "✗ $endpoint (may be normal for some endpoints)"
     fi
-}
+done
 
-# Остановка существующих контейнеров
-stop_containers() {
-    log "Остановка существующих контейнеров..."
-    docker-compose -f docker-compose.prod.yml down --remove-orphans
-    log "Контейнеры остановлены ✓"
-}
+# Display status
+echo -e "${BLUE}📊 Deployment Status${NC}"
+echo "=================================================="
+docker ps --filter "name=$PROJECT_NAME"
+echo ""
 
-# Очистка старых образов
-cleanup_images() {
-    log "Очистка старых Docker образов..."
-    docker system prune -f
-    docker image prune -f
-    log "Очистка завершена ✓"
-}
+# Show logs
+echo -e "${BLUE}📋 Recent logs:${NC}"
+docker logs --tail=20 $CONTAINER_NAME
 
-# Сборка образов
-build_images() {
-    log "Сборка Docker образов..."
-    docker-compose -f docker-compose.prod.yml build --no-cache --parallel
-    log "Сборка завершена ✓"
-}
+echo ""
+echo -e "${GREEN}🎉 Deployment completed successfully!${NC}"
+echo "=================================================="
+echo -e "Frontend:      ${BLUE}http://$SERVER_IP/${NC}"
+echo -e "API Docs:      ${BLUE}http://$SERVER_IP/docs${NC}"
+echo -e "Health Check:  ${BLUE}http://$SERVER_IP/health${NC}"
+echo -e "Logs:          ${BLUE}docker logs $CONTAINER_NAME${NC}"
+echo -e "Stop:          ${BLUE}docker stop $CONTAINER_NAME${NC}"
+echo "=================================================="
 
-# Запуск сервисов
-start_services() {
-    log "Запуск production сервисов..."
-    docker-compose -f docker-compose.prod.yml up -d
-    log "Сервисы запущены ✓"
-}
+# Show useful commands
+echo -e "${BLUE}💡 Useful commands:${NC}"
+echo "View logs:       docker logs -f $CONTAINER_NAME"
+echo "Restart:         docker restart $CONTAINER_NAME"
+echo "Shell access:    docker exec -it $CONTAINER_NAME /bin/bash"
+echo "Update:          ./deploy-production.sh"
+echo "Stop all:        $COMPOSE_CMD -f docker-compose.production.yml down"
+echo ""
 
-# Ожидание готовности сервисов
-wait_for_services() {
-    log "Ожидание готовности сервисов..."
-    
-    # Ожидание базы данных
-    for i in {1..30}; do
-        if docker-compose -f docker-compose.prod.yml exec -T postgres pg_isready -U ${DB_USER:-devassist} &>/dev/null; then
-            break
-        fi
-        if [ $i -eq 30 ]; then
-            error "База данных не готова после 30 попыток"
-            exit 1
-        fi
-        sleep 2
-    done
-    
-    # Ожидание API Gateway
-    for i in {1..60}; do
-        if curl -f http://localhost:8000/health &>/dev/null; then
-            break
-        fi
-        if [ $i -eq 60 ]; then
-            error "API Gateway не готов после 60 попыток"
-            exit 1
-        fi
-        sleep 2
-    done
-    
-    log "Все сервисы готовы ✓"
-}
-
-# Применение миграций базы данных
-apply_migrations() {
-    log "Применение миграций базы данных..."
-    
-    # Ожидание готовности API Gateway
-    sleep 10
-    
-    # Применение миграций Alembic
-    if docker-compose -f docker-compose.prod.yml exec api-gateway python -c "import alembic" &>/dev/null; then
-        docker-compose -f docker-compose.prod.yml exec api-gateway python -m alembic upgrade head
-        log "Миграции применены ✓"
-    else
-        warn "Alembic не обнаружен, пропуск миграций"
-    fi
-}
-
-# Проверка работоспособности
-health_check() {
-    log "Проверка работоспособности системы..."
-    
-    # Проверка API Gateway
-    if ! curl -f http://localhost:8000/health &>/dev/null; then
-        error "API Gateway не отвечает на health check"
-        return 1
-    fi
-    
-    # Проверка Frontend
-    if ! curl -f http://localhost:3000/health &>/dev/null; then
-        warn "Frontend health check недоступен (это нормально если health endpoint не реализован)"
-    fi
-    
-    # Проверка базы данных
-    if ! docker-compose -f docker-compose.prod.yml exec -T postgres pg_isready -U ${DB_USER:-devassist} &>/dev/null; then
-        error "База данных недоступна"
-        return 1
-    fi
-    
-    # Проверка Redis
-    if ! docker-compose -f docker-compose.prod.yml exec -T redis redis-cli -a ${REDIS_PASSWORD:-redis_secure_password} ping &>/dev/null; then
-        error "Redis недоступен"
-        return 1
-    fi
-    
-    log "Все компоненты работают корректно ✓"
-}
-
-# Показ статуса сервисов
-show_status() {
-    log "Статус сервисов:"
-    docker-compose -f docker-compose.prod.yml ps
-    
-    echo ""
-    log "Использование ресурсов:"
-    docker stats --no-stream
-    
-    echo ""
-    log "Приложение доступно по адресам:"
-    echo -e "${BLUE}  Frontend: http://localhost:3000${NC}"
-    echo -e "${BLUE}  API: http://localhost:8000${NC}"
-    echo -e "${BLUE}  API Docs: http://localhost:8000/docs${NC}"
-    
-    if [ ! -z "${CORS_ORIGINS}" ] && [ "${CORS_ORIGINS}" != "http://localhost:3000,https://yourdomain.com" ]; then
-        echo -e "${BLUE}  Production URL: ${CORS_ORIGINS}${NC}"
-    fi
-}
-
-# Главная функция
-main() {
-    echo -e "${BLUE}"
-    echo "=============================================="
-    echo "   DevAssist Pro - Production Deployment    "
-    echo "=============================================="
-    echo -e "${NC}"
-    
-    check_requirements
-    check_env_vars
-    create_backup
-    stop_containers
-    cleanup_images
-    build_images
-    start_services
-    wait_for_services
-    apply_migrations
-    
-    if health_check; then
-        echo ""
-        echo -e "${GREEN}🎉 Развертывание успешно завершено!${NC}"
-        show_status
-    else
-        error "Развертывание завершилось с ошибками"
-        echo ""
-        log "Для диагностики используйте:"
-        echo "  docker-compose -f docker-compose.prod.yml logs"
-        exit 1
-    fi
-}
-
-# Обработка сигналов
-trap 'error "Развертывание прервано пользователем"; exit 1' INT TERM
-
-# Запуск основной функции
-main "$@"
+print_status "DevAssist Pro is now running on http://$SERVER_IP/"

@@ -218,7 +218,6 @@ class ApiClient {
   }
 }
 
-// API сервисы (убраны моки, используем только реальные)
 import { realApiService } from './realApiService';
 import { devAssistApi } from './apiWrapper';
 

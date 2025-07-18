@@ -64,7 +64,7 @@ export const LazyContainer: React.FC<{
       className={className}
       style={{ minHeight: height }}
     >
-      {isIntersecting ? children : (fallback || <SkeletonLoader />)}
+      {isIntersecting ? children : (fallback || <Skeleton />)}
     </div>
   );
 };

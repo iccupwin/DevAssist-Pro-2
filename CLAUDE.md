@@ -71,9 +71,18 @@ Critical environment variables include:
 cd frontend
 npm run type-check    # TypeScript compilation check
 npm run lint         # ESLint for code quality
+npm run lint:fix     # Auto-fix ESLint issues
 npm test             # Run React tests
+npm run test:coverage # Run tests with coverage report
 npm run storybook    # Launch Storybook component library
+npm run build-storybook # Build static Storybook
 npm run docs         # Alias for storybook
+npm run validate     # Full validation (type-check, lint, tests)
+
+# End-to-End Testing with Playwright
+npm run test:e2e     # Run Playwright E2E tests
+npm run test:e2e:ui  # Run Playwright tests with UI
+npm run test:e2e:debug # Debug Playwright tests
 
 # Backend testing (Russian-localized commands)
 cd backend
@@ -133,6 +142,8 @@ This is a **multi-tier architecture application** with three main layers:
   - `llm/` - AI model orchestration with provider abstraction (OpenAI, Anthropic, Google)
   - `documents/` - Document processing and text extraction service
   - `dashboard/` - Dashboard data aggregation and statistics
+  - `reports/` - Report generation service (PDF, Excel)
+  - `analytics/` - Analytics processing and metrics calculation
 - **Shared Components** (`backend/shared/`): Common models, schemas, database connections
 - **Infrastructure**: PostgreSQL database, Redis caching, Docker containerization
 - **Development Tools**: Comprehensive Makefile, health checks, logging
@@ -306,6 +317,12 @@ Use environment variables exclusively for API keys in production.
 - **Error Recovery**: Graceful handling of AI service failures
 - **Caching**: Client-side caching of AI responses to reduce costs
 - **Model Selection**: User-configurable model preferences
+- **Service Files**:
+  - `aiClient.ts` - Centralized AI client configuration
+  - `aiService.ts` - Main AI service interface
+  - `realAIService.ts` - Production AI service implementation
+  - `kpAnalysisService.ts` - KP analysis specific logic
+  - `realKpAnalysisService.ts` - Production KP analysis implementation
 
 ### Security Requirements
 
@@ -368,19 +385,41 @@ Current Streamlit app is MVP phase. Future development should:
 - **Other**: pandas, plotly, python-dotenv, pydantic
 
 ### React Frontend Stack (Current Development)
-- **Framework**: React 18.2.0 with TypeScript 4.9.5
+- **Framework**: React 18.3.1 with TypeScript 4.9.5
 - **Build Tool**: Create React App with CRACO for configuration
 - **Styling**: TailwindCSS 3.2.7 with custom glassmorphism design
 - **Icons**: Lucide React 0.323.0 
 - **Animations**: Framer Motion 10.18.0
 - **Forms**: React Hook Form 7.43.2 + Zod 3.20.6 validation
 - **Routing**: React Router DOM 6.8.0
-- **State Management**: React Context, useReducer, Zustand, React Query
-- **File Processing**: React Dropzone, html2canvas, jsPDF, PDF.js
-- **Real-time**: Socket.io client for WebSocket connections
-- **Component Library**: Storybook with accessibility testing
+- **State Management**: React Context, useReducer, Zustand 5.0.6, React Query (TanStack Query 5.82.0)
+- **File Processing**: React Dropzone, html2canvas, jsPDF, PDF.js, ExcelJS 4.4.0, @react-pdf/renderer 4.3.0
+- **Real-time**: Socket.io client 4.8.1 for WebSocket connections
+- **Component Library**: Storybook 8.4.7 with accessibility testing
+- **Testing**: Playwright 1.45.0 for E2E testing, React Testing Library
 - **Utilities**: Class Variance Authority, clsx, tailwind-merge for styling
-- **Development**: ESLint, TypeScript compiler, React Testing Library
+- **Development**: ESLint, TypeScript compiler, Chromatic for visual regression testing
+
+### End-to-End Testing with Playwright
+
+The frontend includes comprehensive E2E testing setup:
+
+**Configuration** (`frontend/playwright.config.ts`):
+- Multiple browser testing (Chrome, Firefox, Safari, Edge)
+- Mobile viewport testing (Pixel 5, iPhone 12)
+- Automatic server startup for tests
+- Video recording and screenshots on failure
+- Trace collection for debugging
+- Parallel test execution
+- HTML and JSON reporting
+
+**Test Commands**:
+```bash
+cd frontend
+npm run test:e2e       # Run all E2E tests
+npm run test:e2e:ui    # Run tests with interactive UI
+npm run test:e2e:debug # Debug tests step-by-step
+```
 
 ### Key Configuration Files
 
@@ -391,6 +430,7 @@ Current Streamlit app is MVP phase. Future development should:
 - **`backend/docker-compose.yml`**: Production microservices configuration
 - **`docker-compose.fullstack.yml`**: Complete full-stack deployment
 - **`docker-compose.quick.yml`**: Fast development startup
+- **`requirements.minimal.txt`**: Minimal production dependencies for optimized Docker builds
 
 **Frontend Configuration:**
 - **`frontend/package.json`**: React dependencies with Storybook integration
@@ -564,12 +604,58 @@ frontend/src/components/
 ### Production Deployment
 
 ```bash
+# Automated production deployment
+./deploy-production.sh  # Complete production deployment with health checks
+
+# Manual production deployment with new config
+docker-compose -f docker-compose.prod.yml up -d
+
 # Production deployment with Nginx
 docker-compose -f docker-compose.fullstack.yml up -d
 
 # Scale specific services
-docker-compose -f docker-compose.yml up --scale api-gateway=3
+docker-compose -f docker-compose.prod.yml up --scale api-gateway=3
 
 # Health monitoring
 docker-compose exec api-gateway curl http://localhost:8000/health
 ```
+
+## Production Deployment Configuration
+
+### Optimized Production Builds
+
+The project includes production-optimized configurations:
+
+```bash
+# Deploy with production-optimized builds
+docker-compose -f docker-compose.prod.yml up -d
+
+# Automated deployment script
+./deploy-production.sh
+```
+
+**Production Configuration Files:**
+- **`docker-compose.prod.yml`**: Production Docker orchestration with optimized services
+- **`Dockerfile.backend.prod`**: Multi-stage backend build with minimal Python image
+- **`Dockerfile.frontend.prod`**: Optimized React build served with Nginx
+- **`nginx.frontend.conf`**: Production Nginx configuration for React SPA
+- **`requirements.minimal.txt`**: Minimal Python dependencies for production
+
+### End-to-End Testing with Playwright
+
+Comprehensive E2E testing is configured using Playwright:
+
+```bash
+cd frontend
+npm run test:e2e        # Run tests headlessly
+npm run test:e2e:ui     # Run tests with UI mode
+npm run test:e2e:debug  # Debug tests step by step
+```
+
+**E2E Test Configuration:**
+- **Multi-browser Support**: Tests run on Chromium, Firefox, and WebKit
+- **Mobile Testing**: Includes mobile viewport testing
+- **Automatic Setup**: Dev server starts automatically before tests
+- **Debugging Tools**: Screenshots and video recordings on test failure
+- **Parallel Execution**: Tests run in parallel for faster feedback
+- **Network Mocking**: API request interception and mocking support

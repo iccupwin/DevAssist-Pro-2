@@ -52,7 +52,7 @@ const DocumentList: React.FC<DocumentListProps> = ({
 
   // Filter and sort documents
   const filteredAndSortedDocuments = React.useMemo(() => {
-    let filtered = documents.filter(doc => {
+    const filtered = documents.filter(doc => {
       const matchesSearch = doc.name.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesType = filterType === 'all' || doc.type === filterType;
       return matchesSearch && matchesType;

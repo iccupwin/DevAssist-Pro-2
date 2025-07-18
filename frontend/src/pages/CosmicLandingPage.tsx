@@ -4,8 +4,6 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
 import { AnimatedHero } from '../components/ui/animated-hero';
 import { Features } from '../components/blocks/features-8';
-const logoLight = '/devent-logo.png';
-const logoDark = '/devent-logo-white1.png';
 import { 
   ChevronDown, 
   ChevronRight, 
@@ -34,6 +32,9 @@ import {
   User,
   LogOut
 } from 'lucide-react';
+
+const logoLight = '/devent-logo.png';
+const logoDark = '/devent-logo-white1.png';
 
 const CosmicLandingPage: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

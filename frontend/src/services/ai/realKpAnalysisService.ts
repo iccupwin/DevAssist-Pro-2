@@ -70,7 +70,7 @@ class RealKpAnalysisService {
 
     try {
       let extractedText = '';
-      let pageCount = 1;
+      const pageCount = 1;
 
       // Определяем тип файла и извлекаем текст соответствующим образом
       if (file.type === 'text/plain' || file.name.endsWith('.txt')) {

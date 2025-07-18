@@ -327,7 +327,7 @@ export const KPAnalyzerMain: React.FC = () => {
   };
 
   const handleDeleteHistory = (id: string) => {
-    if (confirm('Вы уверены, что хотите удалить этот анализ из истории?')) {
+    if (window.confirm('Вы уверены, что хотите удалить этот анализ из истории?')) {
       deleteFromHistory(id);
     }
   };
