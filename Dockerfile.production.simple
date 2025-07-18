@@ -1,22 +1,16 @@
 # =============================================================================
-# DevAssist Pro - Production Dockerfile
-# Combines FastAPI backend + React frontend in a single optimized container
+# DevAssist Pro - Simplified Production Dockerfile
+# Alternative version with npm install instead of npm ci
 # =============================================================================
 
-# Stage 1: Frontend Build
+# Stage 1: Frontend Build (simplified)
 FROM node:18-alpine AS frontend-builder
 
 WORKDIR /app/frontend
 
-# Copy package files and install dependencies
-COPY frontend/package*.json ./
-
-# Debug npm version and node version
-RUN node --version && npm --version
-
-# Clear npm cache and install
-RUN npm cache clean --force
-RUN npm ci --verbose
+# Install dependencies using npm install instead of npm ci
+COPY frontend/package.json ./
+RUN npm install --production=false
 
 # Copy frontend source and build
 COPY frontend/ .
@@ -46,7 +40,7 @@ RUN pip install --no-cache-dir --upgrade pip \
 
 # =============================================================================
 
-# Stage 3: Production Runtime
+# Stage 3: Production Runtime (simplified)
 FROM python:3.11-slim AS production
 
 WORKDIR /app
@@ -54,14 +48,11 @@ WORKDIR /app
 # Install runtime dependencies
 RUN apt-get update && apt-get install -y \
     nginx \
-    postgresql-client \
     curl \
     supervisor \
+    procps \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
-
-# Create non-root user for security
-RUN useradd --create-home --shell /bin/bash appuser
 
 # Copy Python packages from builder stage
 COPY --from=backend-deps /usr/local/lib/python3.11/site-packages/ /usr/local/lib/python3.11/site-packages/
@@ -69,11 +60,9 @@ COPY --from=backend-deps /usr/local/bin/ /usr/local/bin/
 
 # Copy backend application
 COPY backend/ ./backend/
-RUN chown -R appuser:appuser ./backend/
 
 # Copy frontend build
 COPY --from=frontend-builder /app/frontend/build ./frontend/build
-RUN chown -R appuser:appuser ./frontend/
 
 # Copy configuration files
 COPY nginx.production.conf /etc/nginx/nginx.conf
@@ -81,20 +70,15 @@ COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY start-production.sh ./start-production.sh
 RUN chmod +x ./start-production.sh
 
-# Create necessary directories and set permissions
-RUN mkdir -p /var/log/nginx /var/log/supervisor /app/logs /app/data \
-    && chown -R appuser:appuser /var/log/nginx /var/log/supervisor /app/logs /app/data \
-    && chmod 755 /var/log/nginx /var/log/supervisor
+# Create necessary directories
+RUN mkdir -p /var/log/nginx /var/log/supervisor /app/logs /app/data
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-    CMD curl -f http://localhost/api/health || exit 1
+    CMD curl -f http://localhost/health || exit 1
 
 # Expose port
 EXPOSE 80
-
-# Switch to non-root user
-USER appuser
 
 # Environment variables
 ENV ENVIRONMENT=production
