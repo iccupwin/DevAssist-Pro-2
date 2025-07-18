@@ -11,12 +11,8 @@ WORKDIR /app/frontend
 # Copy package files and install dependencies
 COPY frontend/package*.json ./
 
-# Debug npm version and node version
-RUN node --version && npm --version
-
-# Clear npm cache and install
-RUN npm cache clean --force
-RUN npm ci --verbose
+# Install dependencies using npm install (handles version conflicts better)
+RUN npm install --production=false
 
 # Copy frontend source and build
 COPY frontend/ .
