@@ -1,0 +1,346 @@
+# ===========================================
+# DevAssist Pro - Simplified Fullstack Container (Backend Only)
+# ===========================================
+# Упрощенная версия без frontend build для быстрого деплоя
+
+FROM python:3.11-slim AS production
+
+# Устанавливаем labels для метаданных
+LABEL maintainer="DevAssist Pro Team"
+LABEL version="1.0.0"
+LABEL description="DevAssist Pro - Simplified Backend Application"
+
+# Устанавливаем системные зависимости
+RUN apt-get update && apt-get install -y \
+    nginx \
+    supervisor \
+    curl \
+    procps \
+    tzdata \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+# Создаем пользователей и группы
+RUN groupadd -r devassist && useradd -r -g devassist devassist
+
+# Создаем необходимые директории
+RUN mkdir -p \
+    /app \
+    /app/data/uploads \
+    /app/data/reports \
+    /app/data/cache \
+    /var/log/devassist \
+    /var/log/nginx \
+    /var/log/supervisor \
+    /etc/supervisor/conf.d
+
+# ===== BACKEND SETUP =====
+WORKDIR /app
+
+# Копируем requirements и устанавливаем Python зависимости
+COPY backend/requirements-monolith.txt ./
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements-monolith.txt
+
+# Копируем backend код
+COPY backend/app.py ./
+COPY backend/shared/ ./shared/
+
+# ===== ПРОСТОЙ FRONTEND SETUP =====
+# Удаляем дефолтную конфигурацию nginx
+RUN rm -f /etc/nginx/sites-enabled/default /etc/nginx/sites-available/default
+
+# Создаем простую статическую страницу
+RUN mkdir -p /usr/share/nginx/html
+COPY <<EOF /usr/share/nginx/html/index.html
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevAssist Pro</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 0; 
+            padding: 20px; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container { 
+            max-width: 800px; 
+            text-align: center; 
+            background: rgba(255,255,255,0.1);
+            padding: 40px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+        h1 { 
+            color: #fff; 
+            margin-bottom: 20px; 
+            font-size: 3em;
+        }
+        .subtitle {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        .links {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .link {
+            background: rgba(255,255,255,0.2);
+            padding: 15px 25px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: white;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        .link:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+        .status {
+            margin-top: 30px;
+            padding: 15px;
+            background: rgba(0,255,0,0.2);
+            border-radius: 10px;
+            border: 1px solid rgba(0,255,0,0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 DevAssist Pro</h1>
+        <div class="subtitle">AI-powered веб-портал для автоматизации работы девелоперов недвижимости</div>
+        
+        <div class="links">
+            <a href="/api/docs" class="link">📚 API Documentation</a>
+            <a href="/api/health" class="link">🏥 Health Check</a>
+            <a href="/api/kp-analyzer/" class="link">📊 КП Analyzer</a>
+            <a href="/api/analytics/dashboard" class="link">📈 Analytics</a>
+        </div>
+        
+        <div class="status">
+            ✅ Система запущена и готова к работе
+        </div>
+        
+        <p style="margin-top: 30px; opacity: 0.7;">
+            Backend API доступен по адресу <code>/api/</code><br>
+            Frontend в процессе разработки
+        </p>
+    </div>
+    
+    <script>
+        // Проверяем доступность API
+        fetch('/api/health')
+            .then(response => response.ok ? 'OK' : 'ERROR')
+            .then(status => {
+                document.querySelector('.status').innerHTML = 
+                    status === 'OK' ? '✅ API работает корректно' : '⚠️ API недоступен';
+            })
+            .catch(() => {
+                document.querySelector('.status').innerHTML = '⚠️ API недоступен';
+            });
+    </script>
+</body>
+</html>
+EOF
+
+# Копируем nginx конфигурацию для backend-only режима
+COPY <<EOF /etc/nginx/nginx.conf
+events {
+    worker_connections 1024;
+}
+
+http {
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+
+    access_log /var/log/nginx/access.log;
+    error_log /var/log/nginx/error.log warn;
+
+    sendfile on;
+    tcp_nopush on;
+    tcp_nodelay on;
+    keepalive_timeout 65;
+    client_max_body_size 100M;
+
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1024;
+    gzip_types text/plain text/css application/json application/javascript text/xml application/xml;
+
+    upstream backend {
+        server localhost:8000;
+        keepalive 32;
+    }
+
+    server {
+        listen 80;
+        server_name _;
+
+        # Security headers
+        add_header X-Frame-Options "SAMEORIGIN" always;
+        add_header X-Content-Type-Options "nosniff" always;
+        add_header X-XSS-Protection "1; mode=block" always;
+
+        # Frontend static page
+        location / {
+            root /usr/share/nginx/html;
+            index index.html;
+            try_files \$uri \$uri/ /index.html;
+        }
+
+        # API routes
+        location /api/ {
+            proxy_pass http://backend;
+            proxy_set_header Host \$host;
+            proxy_set_header X-Real-IP \$remote_addr;
+            proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto \$scheme;
+            proxy_set_header Connection "";
+            proxy_http_version 1.1;
+            
+            proxy_connect_timeout 30s;
+            proxy_send_timeout 60s;
+            proxy_read_timeout 60s;
+        }
+
+        # WebSocket support
+        location /ws {
+            proxy_pass http://backend;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade \$http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header Host \$host;
+            proxy_set_header X-Real-IP \$remote_addr;
+            proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto \$scheme;
+        }
+
+        # Health check
+        location = /health {
+            proxy_pass http://backend/health;
+            proxy_set_header Host \$host;
+            access_log off;
+        }
+    }
+}
+EOF
+
+# ===== SUPERVISOR CONFIGURATION =====
+COPY <<EOF /etc/supervisor/conf.d/supervisord.conf
+[supervisord]
+nodaemon=true
+user=root
+logfile=/var/log/supervisor/supervisord.log
+pidfile=/var/run/supervisord.pid
+childlogdir=/var/log/supervisor
+
+[program:backend]
+command=python app.py
+directory=/app
+user=devassist
+autostart=true
+autorestart=true
+stderr_logfile=/var/log/devassist/backend.err.log
+stdout_logfile=/var/log/devassist/backend.out.log
+environment=PYTHONUNBUFFERED="1"
+
+[program:nginx]
+command=nginx -g "daemon off;"
+user=root
+autostart=true
+autorestart=true
+stderr_logfile=/var/log/nginx/error.log
+stdout_logfile=/var/log/nginx/access.log
+
+[unix_http_server]
+file=/var/run/supervisor.sock
+chmod=0700
+
+[supervisorctl]
+serverurl=unix:///var/run/supervisor.sock
+
+[rpcinterface:supervisor]
+supervisor.rpcinterface_factory = supervisor.rpcinterface:make_main_rpcinterface
+EOF
+
+# ===== STARTUP SCRIPT =====
+COPY <<EOF /usr/local/bin/startup.sh
+#!/bin/bash
+set -e
+
+echo "🚀 Starting DevAssist Pro Backend Application..."
+
+# Создаем директории с правильными правами
+mkdir -p /app/data/{uploads,reports,cache}
+chown -R devassist:devassist /app/data
+chmod -R 755 /app/data
+
+# Создаем log директории
+mkdir -p /var/log/{devassist,nginx,supervisor}
+chown -R devassist:devassist /var/log/devassist
+chmod -R 755 /var/log
+
+# Устанавливаем права на nginx файлы
+chown -R www-data:www-data /usr/share/nginx/html
+chmod -R 755 /usr/share/nginx/html
+
+# Проверяем конфигурацию nginx
+nginx -t
+
+echo "✅ Configuration validated"
+echo "📊 Available at: http://localhost:80"
+echo "🏥 Health check: http://localhost:80/health"
+echo "📚 API docs: http://localhost:80/api/docs"
+
+# Запускаем supervisor
+exec supervisord -c /etc/supervisor/conf.d/supervisord.conf
+EOF
+
+RUN chmod +x /usr/local/bin/startup.sh
+
+# ===== HEALTH CHECK SCRIPT =====
+COPY <<EOF /usr/local/bin/health-check.sh
+#!/bin/bash
+# Проверяем nginx
+curl -f http://localhost:80/health || exit 1
+
+echo "Backend service healthy"
+EOF
+
+RUN chmod +x /usr/local/bin/health-check.sh
+
+# ===== PERMISSIONS =====
+RUN chown -R devassist:devassist /app \
+    && chown -R www-data:www-data /usr/share/nginx/html \
+    && chown -R devassist:devassist /var/log/devassist
+
+# ===== ENVIRONMENT VARIABLES =====
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV ENVIRONMENT=production
+
+# ===== EXPOSE PORTS =====
+EXPOSE 80
+
+# ===== HEALTH CHECK =====
+HEALTHCHECK --interval=30s --timeout=10s --start-period=20s --retries=3 \
+    CMD /usr/local/bin/health-check.sh
+
+# ===== VOLUMES =====
+VOLUME ["/app/data"]
+
+# ===== STARTUP =====
+CMD ["/usr/local/bin/startup.sh"]
