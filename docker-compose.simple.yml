@@ -1,0 +1,92 @@
+# DevAssist Pro - Simplified deployment без frontend build
+
+services:
+  # База данных PostgreSQL
+  postgres:
+    image: postgres:15-alpine
+    container_name: devassist_postgres_simple
+    environment:
+      POSTGRES_DB: devassist_pro
+      POSTGRES_USER: devassist
+      POSTGRES_PASSWORD: devassist_password
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U devassist"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - devassist_network
+
+  # Кеш Redis
+  redis:
+    image: redis:7-alpine
+    container_name: devassist_redis_simple
+    command: redis-server --requirepass redis_password
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - devassist_network
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.monolith
+    container_name: devassist_backend_simple
+    ports:
+      - "8000:8000"
+    environment:
+      POSTGRES_URL: postgresql://devassist:devassist_password@postgres:5432/devassist_pro
+      REDIS_URL: redis://:redis_password@redis:6379/0
+      DEBUG: false
+      LOG_LEVEL: INFO
+      ENVIRONMENT: production
+      ALLOWED_ORIGINS: http://localhost:3000,http://localhost:8080
+      MAX_FILE_SIZE: 100MB
+      SUPPORTED_FORMATS: pdf,docx,txt
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-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}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-your_openai_api_key_here}
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY:-your_google_api_key_here}
+      USE_REAL_API: true
+      HOST: 0.0.0.0
+      PORT: 8000
+    volumes:
+      - app_data:/app/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - devassist_network
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  app_data:
+    driver: local
+
+networks:
+  devassist_network:
+    driver: bridge

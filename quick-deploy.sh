@@ -45,7 +45,7 @@ services:
       POSTGRES_USER: devassist
       POSTGRES_PASSWORD: devassist_password
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -63,9 +63,9 @@ services:
     container_name: devassist_redis_simple
     command: redis-server --requirepass redis_password
     ports:
-      - "6379:6379"
+      - "6380:6379"
     volumes:
-      - redis_data:/var/lib/postgresql/data
+      - redis_data:/data
     healthcheck:
       test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
       interval: 30s
@@ -116,6 +116,8 @@ services:
 
 volumes:
   postgres_data:
+    driver: local
+  redis_data:
     driver: local
   app_data:
     driver: local
