@@ -1,25 +1,32 @@
-# Frontend Development Dockerfile
 FROM node:18-alpine
 
+# Set working directory
 WORKDIR /app
 
-# Install dependencies for better compatibility
-RUN apk add --no-cache git
+# Install system dependencies
+RUN apk add --no-cache \
+    curl \
+    git
 
-# Copy package files
+# Copy package files first for better caching
 COPY package*.json ./
-
-# Install npm dependencies
-RUN npm install
+RUN npm ci --only=production=false
 
 # Copy source code
 COPY . .
 
-# Create volume mount points
-RUN mkdir -p /app/src /app/public
+# Create environment file with development defaults
+RUN echo "GENERATE_SOURCEMAP=false" >> .env.local && \
+    echo "FAST_REFRESH=true" >> .env.local && \
+    echo "WDS_SOCKET_HOST=localhost" >> .env.local && \
+    echo "CHOKIDAR_USEPOLLING=true" >> .env.local
 
 # Expose port
 EXPOSE 3000
 
-# Development server with hot reload
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:3000 || exit 1
+
+# Start development server
 CMD ["npm", "start"]

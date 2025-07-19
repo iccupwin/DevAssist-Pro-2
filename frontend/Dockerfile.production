@@ -1,0 +1,88 @@
+# ===========================================
+# DevAssist Pro Frontend - Production Build
+# ===========================================
+
+# ============= STAGE 1: Build =============
+FROM node:18-alpine AS builder
+
+# Устанавливаем рабочую директорию
+WORKDIR /app
+
+# Копируем файлы зависимостей
+COPY package*.json ./
+
+# Устанавливаем зависимости с оптимизацией для production
+RUN npm ci --only=production --silent
+
+# Копируем исходный код
+COPY . .
+
+# Устанавливаем переменные окружения для production build
+ENV NODE_ENV=production
+ENV REACT_APP_API_URL=/api
+ENV REACT_APP_WEBSOCKET_URL=/ws
+ENV GENERATE_SOURCEMAP=false
+ENV INLINE_RUNTIME_CHUNK=false
+
+# Собираем production build
+RUN npm run build
+
+# Удаляем source maps и лишние файлы для безопасности
+RUN find /app/build -name "*.map" -delete && \
+    rm -rf /app/src /app/public /app/node_modules
+
+# ============= STAGE 2: Production =============
+FROM nginx:1.25-alpine AS production
+
+# Устанавливаем labels для метаданных
+LABEL maintainer="DevAssist Pro Team"
+LABEL version="1.0.0"
+LABEL description="DevAssist Pro Frontend - Optimized Production Build"
+
+# Устанавливаем дополнительные пакеты для security и monitoring
+RUN apk add --no-cache \
+    curl \
+    tzdata \
+    ca-certificates \
+    && rm -rf /var/cache/apk/*
+
+# Создаем пользователя nginx (если не существует)
+RUN addgroup -g 101 -S nginx || true && \
+    adduser -S -D -H -u 101 -h /var/cache/nginx -s /sbin/nologin -G nginx -g nginx nginx || true
+
+# Копируем собранное приложение из предыдущего stage
+COPY --from=builder /app/build /usr/share/nginx/html
+
+# Копируем кастомную конфигурацию nginx
+COPY nginx.frontend.conf /etc/nginx/conf.d/default.conf
+
+# Удаляем дефолтную конфигурацию nginx
+RUN rm -f /etc/nginx/conf.d/default.conf.bak
+
+# Создаем директории для логов и cache с правильными правами
+RUN mkdir -p /var/log/nginx /var/cache/nginx/client_temp \
+    && chown -R nginx:nginx /var/log/nginx /var/cache/nginx \
+    && chmod -R 755 /var/log/nginx /var/cache/nginx
+
+# Создаем custom error pages
+RUN echo '<!DOCTYPE html><html><head><title>404 - Page Not Found</title></head><body><h1>404 - Page Not Found</h1><p>The requested page could not be found.</p></body></html>' > /usr/share/nginx/html/404.html && \
+    echo '<!DOCTYPE html><html><head><title>50x - Server Error</title></head><body><h1>50x - Server Error</h1><p>Something went wrong on our end.</p></body></html>' > /usr/share/nginx/html/50x.html
+
+# Настраиваем права доступа для статических файлов
+RUN chown -R nginx:nginx /usr/share/nginx/html \
+    && find /usr/share/nginx/html -type d -exec chmod 755 {} \; \
+    && find /usr/share/nginx/html -type f -exec chmod 644 {} \;
+
+# Health check script
+RUN echo '#!/bin/sh\ncurl -f http://localhost:80/health || exit 1' > /usr/local/bin/health-check.sh \
+    && chmod +x /usr/local/bin/health-check.sh
+
+# Добавляем health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD /usr/local/bin/health-check.sh
+
+# Открываем порт 80
+EXPOSE 80
+
+# Запускаем nginx
+CMD ["nginx", "-g", "daemon off;"]

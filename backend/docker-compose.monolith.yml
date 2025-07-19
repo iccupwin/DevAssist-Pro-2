@@ -61,11 +61,11 @@ services:
       MAX_FILE_SIZE: 50MB
       SUPPORTED_FORMATS: pdf,docx,txt
       
-      # AI Provider API Keys - From .env file
-      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      # AI Provider API Keys - Real working keys
+      ANTHROPIC_API_KEY: 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
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       GOOGLE_API_KEY: ${GOOGLE_API_KEY}
-      USE_REAL_API: ${USE_REAL_API}
+      USE_REAL_API: true
       
     volumes:
       - app_data:/app/data

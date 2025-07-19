@@ -41,8 +41,8 @@ services:
   # ===== API GATEWAY =====
   api-gateway:
     build:
-      context: ./backend/api_gateway
-      dockerfile: Dockerfile
+      context: ./backend
+      dockerfile: api_gateway/Dockerfile
     container_name: devassist_api_gateway_quick
     ports:
       - "8000:8000"
@@ -64,8 +64,8 @@ services:
   # ===== AUTH SERVICE =====
   auth-service:
     build:
-      context: ./backend/services/auth
-      dockerfile: Dockerfile
+      context: ./backend
+      dockerfile: services/auth/Dockerfile
     container_name: devassist_auth_service_quick
     environment:
       - DATABASE_URL=postgresql://devassist:devassist_secure_password@postgres:5432/devassist_pro

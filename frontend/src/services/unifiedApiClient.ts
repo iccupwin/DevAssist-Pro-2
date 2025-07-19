@@ -134,6 +134,7 @@ class UnifiedApiClient {
       
       // Отправляем только email и password
       const { email, password } = credentials;
+      console.log('[UnifiedApiClient] CALLING ENDPOINT:', '/api/auth/login');
       const response = await this.request<any>('/api/auth/login', {
         method: 'POST',
         body: JSON.stringify({ email, password }),
@@ -141,13 +142,14 @@ class UnifiedApiClient {
 
       console.log('[UnifiedApiClient] Login successful, response:', response);
 
-      // Извлекаем токен и пользователя из ответа backend (такой же формат как в register)
-      const token = response.token;
+      // Извлекаем токен и пользователя из ответа backend
+      const token = response.access_token || response.token;
+      const refreshToken = response.refresh_token || token;
       const user = response.user;
       
       // Сохраняем токен если получен
       if (token) {
-        this.saveTokens(token, token); // Используем тот же токен как refresh
+        this.saveTokens(token, refreshToken);
         console.log('[UnifiedApiClient] Token saved after login:', token.substring(0, 10) + '...');
       }
 
@@ -155,7 +157,8 @@ class UnifiedApiClient {
         success: true,
         user: user,
         token: token,
-        refreshToken: token, // Используем тот же токен как refresh
+        refreshToken: refreshToken,
+        expiresIn: response.expires_in,
       };
     } catch (error) {
       console.error('[UnifiedApiClient] Login failed:', error);
