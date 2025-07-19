@@ -1618,45 +1618,17 @@ async def ai_analyze(data: dict):
         max_tokens = data.get('max_tokens', 1000)
         temperature = data.get('temperature', 0.1)
         
-        # РЕАЛЬНЫЙ AI АНАЛИЗ - проверяем, включен ли реальный режим
-        use_real_api = os.getenv('USE_REAL_API', 'true').lower() == 'true'  # По умолчанию включен
-        
-        # Логируем для отладки
-        logger.info(f"USE_REAL_API: {os.getenv('USE_REAL_API')}, use_real_api: {use_real_api}")
+        # РЕАЛЬНЫЙ AI АНАЛИЗ - всегда используем только реальные API
         logger.info(f"ANTHROPIC_API_KEY: {os.getenv('ANTHROPIC_API_KEY', 'НЕ УСТАНОВЛЕН')[:20]}...")
         
-        if use_real_api:
-            # Реальный вызов AI API
-            if model.startswith('claude'):
-                return await call_anthropic_api(prompt, model, max_tokens, temperature)
-            elif model.startswith('gpt'):
-                return await call_openai_api(prompt, model, max_tokens, temperature)
-            else:
-                # Fallback на Claude
-                return await call_anthropic_api(prompt, 'claude-3-5-sonnet-20240620', max_tokens, temperature)
-        
-        # Мок-ответ для разработки
-        mock_response = {
-            "content": """{
-                "company_name": "ООО 'Инновационные Решения'",
-                "tech_stack": "React, TypeScript, Node.js, PostgreSQL",
-                "pricing": "2,200,000 руб. включая НДС",
-                "timeline": "4 месяца (16 недель)", 
-                "team_size": "6 специалистов",
-                "experience": "Более 100 проектов в области enterprise разработки",
-                "key_features": [
-                    "Микросервисная архитектура",
-                    "CI/CD пипeline",
-                    "Автоматизированное тестирование",
-                    "Мониторинг и логирование"
-                ],
-                "contact_info": "contacts@innovative-solutions.ru, +7 (812) 987-65-43"
-            }""",
-            "model": model,
-            "tokens_used": max_tokens // 2
-        }
-        
-        return mock_response
+        # Реальный вызов AI API
+        if model.startswith('claude'):
+            return await call_anthropic_api(prompt, model, max_tokens, temperature)
+        elif model.startswith('gpt'):
+            return await call_openai_api(prompt, model, max_tokens, temperature)
+        else:
+            # Fallback на Claude
+            return await call_anthropic_api(prompt, 'claude-3-5-sonnet-20240620', max_tokens, temperature)
     except Exception as e:
         logger.error(f"Ошибка AI анализа: {e}")
         raise HTTPException(status_code=500, detail=str(e))

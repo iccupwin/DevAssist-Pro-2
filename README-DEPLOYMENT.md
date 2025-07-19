@@ -1,317 +1,353 @@
-# 🚀 DevAssist Pro - Production Deployment Guide
+# DevAssist Pro - Production Deployment Guide
 
-Полное руководство по развертыванию DevAssist Pro на сервере одной командой.
+## 🚀 Unified Deployment Configuration
 
-## 📋 Системные требования
+Этот гайд описывает процесс развертывания DevAssist Pro в production с использованием unified Docker конфигурации, которая объединяет backend, frontend и nginx в единое решение.
 
-### Минимальные требования:
-- **OS**: Ubuntu 20.04+ / CentOS 8+ / Debian 11+
-- **RAM**: 4GB (рекомендуется 8GB)
-- **CPU**: 2 cores (рекомендуется 4 cores)
-- **Диск**: 20GB свободного места
-- **Docker**: 20.10+
-- **Docker Compose**: 2.0+
+## 📋 Архитектура Deployment
 
-### Рекомендуемые требования:
-- **RAM**: 16GB
-- **CPU**: 8 cores
-- **Диск**: 100GB SSD
-- **Сеть**: Высокоскоростное подключение для AI API
-
-## 🛠 Быстрое развертывание
-
-### 1. Подготовка сервера
-
-```bash
-# Обновление системы
-sudo apt update && sudo apt upgrade -y
-
-# Установка Docker
-curl -fsSL https://get.docker.com -o get-docker.sh
-sudo sh get-docker.sh
-sudo usermod -aG docker $USER
-
-# Установка Docker Compose
-sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
-
-# Перезагрузка для применения изменений
-sudo reboot
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Nginx Reverse Proxy                      │
+│                         Port 80                             │
+└─────────────┬─────────────────────────────┬─────────────────┘
+              │                             │
+              ▼                             ▼
+    ┌─────────────────┐              ┌─────────────────┐
+    │   Frontend      │              │   Backend API   │
+    │   (React SPA)   │              │   (FastAPI)     │
+    │   Static Files  │              │   Port 8000     │
+    └─────────────────┘              └─────────────────┘
+                                             │
+              ┌──────────────────────────────┼──────────────────────────────┐
+              ▼                             ▼                             ▼
+    ┌─────────────────┐              ┌─────────────────┐       ┌─────────────────┐
+    │   PostgreSQL    │              │     Redis       │       │   File Storage  │
+    │   Database      │              │     Cache       │       │   (Volumes)     │
+    │   Port 5432     │              │   Port 6379     │       │                 │
+    └─────────────────┘              └─────────────────┘       └─────────────────┘
 ```
 
-### 2. Клонирование проекта
+## 🎯 Основные компоненты
 
-```bash
-git clone https://github.com/your-repo/DevAssist-Pro.git
-cd DevAssist-Pro
+### **1. Frontend Service**
+- **Dockerfile**: `frontend/Dockerfile.production`
+- **Build**: Multi-stage build с оптимизацией
+- **Nginx**: Статические файлы + SPA routing
+- **Environment**: Production-ready настройки
+
+### **2. Backend Service**
+- **Base**: Существующий `backend/docker-compose.monolith.yml`
+- **API**: FastAPI с микросервисной архитектурой
+- **Database**: PostgreSQL + Redis
+- **AI Integration**: Anthropic, OpenAI, Google
+
+### **3. Nginx Reverse Proxy**
+- **Config**: `nginx/nginx.conf`
+- **Routing**: `/` → Frontend, `/api/*` → Backend
+- **Features**: CORS, WebSocket, SSL ready, Caching
+- **Security**: Rate limiting, headers
+
+## ⚙️ Файлы конфигурации
+
+### **Созданные файлы:**
+
+```
+DevAssist-Pro/
+├── docker-compose.unified.yml      # Главная конфигурация
+├── .env.production                 # Production environment
+├── deploy.sh                       # Скрипт развертывания
+├── nginx/
+│   └── nginx.conf                  # Nginx reverse proxy
+├── frontend/
+│   ├── Dockerfile.production       # Frontend production build
+│   └── nginx.frontend.conf         # Frontend nginx config
+└── README-DEPLOYMENT.md            # Этот файл
 ```
 
-### 3. Конфигурация окружения
+## 🔧 Настройка Environment
 
+### **1. Скопировать и настроить .env**
 ```bash
-# Копирование файла конфигурации
 cp .env.production .env
+```
 
-# Редактирование конфигурации
+### **2. Критические переменные для настройки:**
+```bash
+# AI API Keys (ОБЯЗАТЕЛЬНО!)
+ANTHROPIC_API_KEY=your_real_anthropic_api_key_here
+OPENAI_API_KEY=your_real_openai_api_key_here
+GOOGLE_API_KEY=your_real_google_api_key_here
+
+# Domain (для production)
+ALLOWED_HOSTS=localhost,127.0.0.1,your-domain.com
+ALLOWED_ORIGINS=http://localhost,https://your-domain.com
+
+# Security
+JWT_SECRET=production-super-secret-jwt-key-change-this
+SECRET_KEY=production-secret-key-change-this
+```
+
+## 🚀 Развертывание
+
+### **Вариант 1: Автоматическое развертывание (Рекомендуется)**
+```bash
+# Полное развертывание с проверками
+./deploy.sh deploy
+
+# Быстрый запуск
+./deploy.sh quick
+```
+
+### **Вариант 2: Ручное развертывание**
+```bash
+# 1. Сборка образов
+docker-compose -f docker-compose.unified.yml build
+
+# 2. Запуск сервисов
+docker-compose -f docker-compose.unified.yml up -d
+
+# 3. Проверка статуса
+docker-compose -f docker-compose.unified.yml ps
+```
+
+## 🔍 Проверка работоспособности
+
+### **Health Checks:**
+```bash
+# Общий health check
+curl http://localhost/health
+
+# Backend API
+curl http://localhost/api/health
+
+# Frontend
+curl http://localhost/
+
+# API Documentation
+curl http://localhost/api/docs
+```
+
+### **Статус сервисов:**
+```bash
+./deploy.sh status
+```
+
+## 📊 Доступные Endpoints
+
+После успешного развертывания:
+
+- **🌐 Frontend**: http://localhost
+- **🚀 Backend API**: http://localhost/api
+- **📖 API Docs**: http://localhost/api/docs
+- **🔍 Health Check**: http://localhost/health
+- **📝 Swagger UI**: http://localhost/api/docs
+- **🔄 WebSocket**: ws://localhost/ws
+
+## 🛠️ Управление сервисами
+
+### **Основные команды:**
+```bash
+# Статус
+./deploy.sh status
+
+# Логи
+./deploy.sh logs
+docker-compose -f docker-compose.unified.yml logs -f
+
+# Перезапуск
+./deploy.sh restart
+
+# Остановка
+./deploy.sh stop
+
+# Полная очистка
+./deploy.sh cleanup
+```
+
+### **Мониторинг:**
+```bash
+# Включить мониторинг (Prometheus metrics)
+./deploy.sh monitoring
+
+# Метрики доступны на порту 9113
+curl http://localhost:9113/metrics
+```
+
+## 💾 Backup и Restore
+
+### **Создание Backup:**
+```bash
+./deploy.sh backup
+# Создаст директорию backup_YYYYMMDD_HHMMSS
+```
+
+### **Восстановление:**
+```bash
+./deploy.sh restore backup_20240119_120000
+```
+
+## 🔧 Troubleshooting
+
+### **Распространенные проблемы:**
+
+#### **1. Порт 80 занят**
+```bash
+# Проверить какой процесс использует порт
+sudo lsof -i :80
+
+# Остановить конфликтующий сервис
+sudo systemctl stop apache2  # или nginx
+```
+
+#### **2. API ключи не настроены**
+```bash
+# Проверить .env файл
+grep "API_KEY" .env
+
+# Настроить реальные ключи
 nano .env
 ```
 
-**Обязательные параметры для настройки:**
-
+#### **3. Backend не отвечает**
 ```bash
-# Безопасные пароли
-POSTGRES_PASSWORD=ваш_безопасный_пароль_postgres
-REDIS_PASSWORD=ваш_безопасный_пароль_redis
-JWT_SECRET=ваш_очень_длинный_секретный_ключ_минимум_32_символа
+# Проверить логи backend
+docker-compose -f docker-compose.unified.yml logs backend
 
-# API ключи для ИИ (ОБЯЗАТЕЛЬНО!)
-ANTHROPIC_API_KEY=ваш_ключ_anthropic
-OPENAI_API_KEY=ваш_ключ_openai
-GOOGLE_API_KEY=ваш_ключ_google
-
-# Домен вашего сервера
-REACT_APP_API_URL=http://ваш-домен.com/api
-CORS_ORIGINS=http://ваш-домен.com,https://ваш-домен.com
+# Проверить подключение к БД
+docker-compose -f docker-compose.unified.yml exec postgres psql -U devassist -d devassist_pro
 ```
 
-### 4. Развертывание одной командой
-
+#### **4. Frontend не загружается**
 ```bash
-# Полное развертывание
-./deploy.sh
+# Проверить логи nginx
+docker-compose -f docker-compose.unified.yml logs nginx
 
-# Развертывание с показом логов
-./deploy.sh --logs
+# Проверить build frontend
+docker-compose -f docker-compose.unified.yml logs frontend
 ```
 
-## 🎯 Доступ к приложению
-
-После успешного развертывания приложение будет доступно по следующим адресам:
-
-- **🌐 React Frontend**: http://ваш-сервер:3000
-- **🔗 API Gateway**: http://ваш-сервер:8000  
-- **📊 API Docs**: http://ваш-сервер:8000/docs
-- **🎯 Streamlit Demo**: http://ваш-сервер:8501
-- **🏥 Health Check**: http://ваш-сервер:8000/health
-
-## 🔧 Управление сервисами
-
-### Основные команды:
-
+### **Логи по сервисам:**
 ```bash
-# Показать статус всех сервисов
-./deploy.sh status
+# Все логи
+docker-compose -f docker-compose.unified.yml logs
 
-# Просмотр логов
-./deploy.sh logs
-
-# Перезапуск сервисов
-./deploy.sh restart
-
-# Остановка сервисов
-./deploy.sh stop
-
-# Обновление до последней версии
-./deploy.sh update
-
-# Создание резервной копии базы данных
-./deploy.sh backup
-
-# Полная очистка (ОСТОРОЖНО!)
-./deploy.sh clean
+# Конкретный сервис
+docker-compose -f docker-compose.unified.yml logs nginx
+docker-compose -f docker-compose.unified.yml logs backend
+docker-compose -f docker-compose.unified.yml logs frontend
+docker-compose -f docker-compose.unified.yml logs postgres
 ```
 
-### Docker Compose команды:
+## 🔒 Security Considerations
 
+### **Production Checklist:**
+
+#### **1. SSL/HTTPS (Рекомендуется для production)**
 ```bash
-# Просмотр статуса
-docker-compose -f docker-compose.production.yml ps
+# Создать SSL сертификаты
+mkdir -p nginx/ssl
+# Добавить cert.pem и key.pem
 
-# Просмотр логов конкретного сервиса
-docker-compose -f docker-compose.production.yml logs -f frontend
-
-# Перезапуск конкретного сервиса
-docker-compose -f docker-compose.production.yml restart api-gateway
-
-# Масштабирование сервиса
-docker-compose -f docker-compose.production.yml up -d --scale api-gateway=3
+# Обновить nginx.conf для HTTPS
+# Раскомментировать SSL настройки в .env.production
 ```
 
-## 🔒 Настройка SSL/HTTPS
-
-### 1. Получение SSL сертификата
-
+#### **2. Firewall настройки**
 ```bash
-# Установка Certbot
-sudo apt install certbot
-
-# Получение сертификата
-sudo certbot certonly --standalone -d ваш-домен.com
+# Открыть только необходимые порты
+ufw allow 80
+ufw allow 443
+ufw deny 5432  # PostgreSQL только для Docker network
+ufw deny 6379  # Redis только для Docker network
 ```
 
-### 2. Настройка Nginx
-
+#### **3. Environment Security**
 ```bash
-# Копирование сертификатов
-sudo cp /etc/letsencrypt/live/ваш-домен.com/fullchain.pem ssl/cert.pem
-sudo cp /etc/letsencrypt/live/ваш-домен.com/privkey.pem ssl/key.pem
+# Ограничить права доступа к .env
+chmod 600 .env
 
-# Редактирование конфигурации Nginx
-nano nginx.production.conf
+# Использовать сильные пароли
+openssl rand -base64 32  # Для JWT_SECRET
+openssl rand -base64 32  # Для SECRET_KEY
 ```
 
-Раскомментируйте строки SSL в `nginx.production.conf` и перезапустите:
+## 📈 Performance Optimization
 
+### **1. Nginx Caching**
+- Статические файлы кэшируются на 1 год
+- HTML файлы кэшируются на 5 минут
+- API responses кэшируются по настройке
+
+### **2. Database Optimization**
 ```bash
-./deploy.sh restart
+# Настройка PostgreSQL для production
+# Редактировать shared/config.py для connection pooling
 ```
 
-## 📊 Мониторинг и логирование
-
-### Просмотр метрик системы:
-
-```bash
-# Использование ресурсов контейнерами
-docker stats
-
-# Использование дискового пространства
-docker system df
-
-# Логи конкретного сервиса
-docker-compose -f docker-compose.production.yml logs -f --tail=100 api-gateway
-```
-
-### Настройка автоматических бэкапов:
-
-```bash
-# Добавление в crontab
-crontab -e
-
-# Ежедневный бэкап в 2:00
-0 2 * * * cd /path/to/DevAssist-Pro && ./deploy.sh backup
-```
-
-## 🚨 Устранение неполадок
-
-### Проверка здоровья сервисов:
-
-```bash
-# Проверка API Gateway
-curl http://localhost:8000/health
-
-# Проверка базы данных
-docker-compose -f docker-compose.production.yml exec postgres pg_isready -U devassist_user
-
-# Проверка Redis
-docker-compose -f docker-compose.production.yml exec redis redis-cli ping
-```
-
-### Общие проблемы:
-
-1. **Сервис не запускается**:
-   ```bash
-   # Проверка логов
-   docker-compose -f docker-compose.production.yml logs сервис-имя
-   
-   # Пересборка образа
-   docker-compose -f docker-compose.production.yml build --no-cache сервис-имя
-   ```
-
-2. **Нет доступа к API**:
-   - Проверьте настройки CORS в `.env`
-   - Убедитесь, что порты открыты в файрволе
-   - Проверьте конфигурацию Nginx
-
-3. **Ошибки AI API**:
-   - Проверьте корректность API ключей в `.env`
-   - Убедитесь, что у вас есть средства на балансе API
-   - Проверьте логи LLM сервиса
-
-4. **Проблемы с базой данных**:
-   ```bash
-   # Восстановление из бэкапа
-   docker-compose -f docker-compose.production.yml exec -T postgres psql -U devassist_user devassist_pro < backups/backup_file.sql
-   ```
-
-## 🔄 Обновление системы
-
-### Обновление до новой версии:
-
-```bash
-# Получение последних изменений
-git pull origin main
-
-# Обновление и перезапуск
-./deploy.sh update
-```
-
-### Откат к предыдущей версии:
-
-```bash
-# Остановка текущих сервисов
-./deploy.sh stop
-
-# Откат к предыдущему коммиту
-git checkout предыдущий-коммит
-
-# Повторное развертывание
-./deploy.sh
-```
-
-## 📈 Масштабирование
-
-### Горизонтальное масштабирование:
-
-```bash
-# Увеличение количества инстансов API Gateway
-docker-compose -f docker-compose.production.yml up -d --scale api-gateway=3
-
-# Увеличение количества LLM сервисов
-docker-compose -f docker-compose.production.yml up -d --scale llm-service=2
-```
-
-### Вертикальное масштабирование:
-
-Отредактируйте `docker-compose.production.yml`, добавив ограничения ресурсов:
-
+### **3. Resource Limits**
 ```yaml
-services:
-  api-gateway:
-    deploy:
-      resources:
-        limits:
-          cpus: '2.0'
-          memory: 4G
-        reservations:
-          cpus: '1.0'
-          memory: 2G
+# Добавить в docker-compose.unified.yml для production
+deploy:
+  resources:
+    limits:
+      memory: 512M
+      cpus: '0.5'
 ```
 
-## 🛡 Безопасность
+## 🌐 Production Server Setup
 
-### Рекомендации по безопасности:
+### **Minimal Server Requirements:**
+- **CPU**: 2+ cores
+- **RAM**: 4+ GB
+- **Storage**: 20+ GB SSD
+- **OS**: Ubuntu 20.04+ или CentOS 8+
+- **Docker**: 20.10+
+- **Docker Compose**: 1.29+
 
-1. **Смените пароли по умолчанию** в `.env`
-2. **Настройте файрвол**:
-   ```bash
-   sudo ufw allow 22/tcp
-   sudo ufw allow 80/tcp
-   sudo ufw allow 443/tcp
-   sudo ufw enable
-   ```
-3. **Регулярно обновляйте систему**
-4. **Настройте мониторинг логов на подозрительную активность**
-5. **Используйте SSL сертификаты**
+### **Server Preparation:**
+```bash
+# 1. Обновить систему
+sudo apt update && sudo apt upgrade -y
 
-## 📞 Поддержка
+# 2. Установить Docker
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+
+# 3. Установить Docker Compose
+sudo curl -L "https://github.com/docker/compose/releases/download/v2.20.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+
+# 4. Клонировать проект
+git clone <repository-url>
+cd DevAssist-Pro
+
+# 5. Развернуть
+./deploy.sh deploy
+```
+
+## 📞 Support
 
 При возникновении проблем:
 
-1. Проверьте логи: `./deploy.sh logs`
-2. Проверьте статус: `./deploy.sh status`
-3. Создайте резервную копию: `./deploy.sh backup`
-4. Обратитесь к разработчикам с полной информацией об ошибке
+1. **Проверить логи**: `./deploy.sh logs`
+2. **Проверить статус**: `./deploy.sh status`
+3. **Запустить health checks**: `./deploy.sh health`
+4. **Обратиться к troubleshooting секции выше**
 
 ---
 
-**🎉 Поздравляем! DevAssist Pro успешно развернут и готов к работе.**
+## ✅ Success Criteria
+
+После успешного развертывания у вас должно быть:
+
+- ✅ Frontend доступен на http://localhost
+- ✅ Backend API отвечает на http://localhost/api
+- ✅ Все health checks проходят
+- ✅ API интеграция работает
+- ✅ WebSocket connections функционируют
+- ✅ Статические файлы загружаются
+- ✅ База данных подключена
+- ✅ AI сервисы работают (при настроенных ключах)
+
+**Production Ready!** 🎉

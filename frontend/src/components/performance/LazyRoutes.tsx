@@ -10,9 +10,8 @@ const ProfilePage = lazy(() => import('../../pages/ProfilePage'));
 const MainPage = lazy(() => import('../../pages/MainPage'));
 
 // Lazy load component groups
-const AuthComponents = lazy(() => import('../auth'));
-const KPComponents = lazy(() => import('../kpAnalyzer'));
-const VisualizationComponents = lazy(() => import('../visualization'));
+const KPAnalyzerMain = lazy(() => import('../kpAnalyzer/KPAnalyzerMain'));
+const ResultsVisualization = lazy(() => import('../visualization/ResultsVisualization'));
 
 // Custom error boundary for lazy loading
 class LazyLoadErrorBoundary extends React.Component<
