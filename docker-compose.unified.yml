@@ -1,8 +1,6 @@
 # DevAssist Pro - Unified Docker Compose для production deployment
 # Объединяет backend, frontend и nginx в единой конфигурации
 
-version: '3.8'
-
 services:
   # База данных PostgreSQL
   postgres:
@@ -125,8 +123,8 @@ services:
     image: nginx:alpine
     container_name: devassist_nginx_unified
     ports:
-      - "80:80"
-      - "443:443"  # Для будущей SSL поддержки
+      - "8080:80"  # Изменен порт чтобы избежать конфликта с существующим веб-сервером
+      - "8443:443"  # Для будущей SSL поддержки
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
       - ./nginx/ssl:/etc/nginx/ssl  # Для SSL сертификатов
