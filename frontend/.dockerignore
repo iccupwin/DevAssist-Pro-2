@@ -8,7 +8,6 @@ npm-debug.log
 .parcel-cache
 .next
 out
-build
 dist
 .DS_Store
 *.log

@@ -44,12 +44,8 @@ services:
     restart: unless-stopped
     networks:
       - frontend_network
-      - backend_network
 
 networks:
   frontend_network:
     driver: bridge
     name: devassist_frontend_network
-  backend_network:
-    external: true
-    name: devassist_backend_network
