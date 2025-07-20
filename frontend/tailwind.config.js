@@ -135,6 +135,8 @@ module.exports = {
     },
   },
   plugins: [
+    require('@tailwindcss/forms'),
+    require('@tailwindcss/typography'),
     function({ addUtilities }) {
       const newUtilities = {
         '.mask-b-from-20\\%': {

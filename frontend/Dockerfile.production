@@ -14,7 +14,8 @@ WORKDIR /app
 COPY package*.json ./
 
 # Устанавливаем зависимости
-RUN npm ci --silent
+# Используем npm install вместо npm ci для большей гибкости с версиями пакетов
+RUN npm install --silent --no-optional
 
 # Копируем исходный код
 COPY . .
