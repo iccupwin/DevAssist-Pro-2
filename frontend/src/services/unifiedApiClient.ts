@@ -233,7 +233,7 @@ class UnifiedApiClient {
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     const mockUser: User = {
-      id: Date.now().toString(),
+      id: Date.now() as any,
       email: userData.email,
       full_name: `${userData.firstName} ${userData.lastName}`,
       firstName: userData.firstName,

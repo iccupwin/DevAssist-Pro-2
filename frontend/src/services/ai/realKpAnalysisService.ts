@@ -605,7 +605,7 @@ ${parsedData.next_steps}`;
         team_expertise: fullAnalysis.team_expertise,
         methodology: fullAnalysis.methodology,
         quality_assurance: fullAnalysis.quality_assurance,
-        post_launch_support: fullAnalysis.post_launch_support,
+        // post_launch_support: fullAnalysis.post_launch_support,
         document_quality: fullAnalysis.document_quality,
         file_format: fullAnalysis.file_format,
         summary: {

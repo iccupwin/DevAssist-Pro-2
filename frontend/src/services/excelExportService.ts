@@ -228,14 +228,14 @@ export class ExcelExportService {
         
         const row = worksheet.addRow([
           result.kpFileName,
-          result.extractedData?.companyName || 'Не указано',
+          (result.extractedData as any)?.company_name || 'Не указано',
           result.score,
           result.analysis.compliance,
           result.analysis.technical,
           result.analysis.commercial,
           result.analysis.experience,
           recommendation,
-          new Date(result.analyzedAt).toLocaleDateString('ru-RU')
+          new Date((result as any).analyzedAt || Date.now()).toLocaleDateString('ru-RU')
         ]);
 
         // Применяем условное форматирование для баллов
@@ -250,7 +250,7 @@ export class ExcelExportService {
       });
 
       // Замораживание заголовков
-      worksheet.views = [{ state: 'frozen', ypane: 1 }];
+      worksheet.views = [{ state: 'frozen', xSplit: 1 } as any];
 
       this.updateProgress('finalizing', 90, 'Создание файла...');
 
@@ -397,7 +397,7 @@ export class ExcelExportService {
         result.analysis.experience,
         result.analysis.detailedAnalysis.substring(0, 200) + '...',
         result.analysis.recommendations.join('; '),
-        new Date(result.analyzedAt).toLocaleDateString('ru-RU')
+        new Date((result as any).analyzedAt || Date.now()).toLocaleDateString('ru-RU')
       ]);
 
       this.applyCellFormatting(row, result.score);
@@ -415,7 +415,7 @@ export class ExcelExportService {
     worksheet.getColumn(9).width = 15; // Дата
 
     // Замораживание заголовков
-    worksheet.views = [{ state: 'frozen', ypane: 1 }];
+    worksheet.views = [{ state: 'frozen', xSplit: 1 } as any];
   }
 
   /**
@@ -494,7 +494,7 @@ export class ExcelExportService {
       
       if (result.extractedData) {
         worksheet.getCell(`A${startRow + 3}`).value = 'Компания:';
-        worksheet.getCell(`B${startRow + 3}`).value = result.extractedData.companyName || 'Не указано';
+        worksheet.getCell(`B${startRow + 3}`).value = (result.extractedData as any).company_name || 'Не указано';
         
         worksheet.getCell(`A${startRow + 4}`).value = 'Стоимость:';
         worksheet.getCell(`B${startRow + 4}`).value = result.extractedData.pricing || 'Не указано';
