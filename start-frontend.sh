@@ -13,8 +13,9 @@ echo "⏳ Ожидание запуска (15 секунд)..."
 sleep 15
 
 echo ""
-echo "📊 Статус сервисов:"
-docker compose -f docker-compose.frontend.yml ps
+echo "📊 Статус frontend сервисов:"
+docker compose -f docker-compose.frontend.yml ps --filter service=frontend
+docker compose -f docker-compose.frontend.yml ps --filter service=nginx
 
 echo ""
 echo "🩺 Проверка доступности:"
