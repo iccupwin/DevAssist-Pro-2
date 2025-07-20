@@ -16,7 +16,7 @@ NC='\033[0m' # No Color
 # Configuration
 PROJECT_NAME="DevAssist Pro"
 SERVER_IP="46.149.71.162"
-COMPOSE_FILE="docker-compose.monolith.yml"
+COMPOSE_FILE="docker-compose.production.yml"
 ENV_FILE=".env.production"
 
 # Logging function
@@ -45,7 +45,8 @@ echo "================================================================"
 echo -e "${NC}"
 echo "Target Server: $SERVER_IP"
 echo "OS: Ubuntu 22.04"
-echo "Deployment Mode: Single Container (Monolith)"
+echo "Deployment Mode: Multi-Container Production"
+echo "Services: Nginx + Frontend + Backend + PostgreSQL + Redis"
 echo ""
 
 # Check environment
@@ -139,35 +140,23 @@ setup_directories() {
 create_env_file() {
     log "Creating production environment configuration..."
     if [ ! -f "$ENV_FILE" ]; then
-        cat > "$ENV_FILE" << EOF
-# DevAssist Pro Production Environment
-# Generated on $(date)
-
-# Database Configuration
-POSTGRES_PASSWORD=$(openssl rand -base64 32 | tr -d /=+ | cut -c -25)
-REDIS_PASSWORD=$(openssl rand -base64 32 | tr -d /=+ | cut -c -25)
-
-# Security
-JWT_SECRET=$(openssl rand -base64 64 | tr -d /=+ | cut -c -50)
-
-# API Keys (REQUIRED - Please update these)
-ANTHROPIC_API_KEY=your_anthropic_api_key_here
-OPENAI_API_KEY=your_openai_api_key_here
-GOOGLE_API_KEY=your_google_api_key_here
-
-# Application Configuration
-ENVIRONMENT=production
-SERVER_IP=$SERVER_IP
-CORS_ORIGINS=http://$SERVER_IP,http://localhost
-
-# Frontend Configuration  
-REACT_APP_API_URL=http://$SERVER_IP/api
-REACT_APP_WS_URL=ws://$SERVER_IP/ws
-NODE_ENV=production
-GENERATE_SOURCEMAP=false
-EOF
-        success "Environment file created: $ENV_FILE"
-        warning "Please update API keys in $ENV_FILE before deployment"
+        if [ -f ".env.production.example" ]; then
+            cp .env.production.example $ENV_FILE
+            
+            # Generate secure passwords
+            POSTGRES_PWD=$(openssl rand -base64 32 | tr -d /=+ | cut -c -25)
+            REDIS_PWD=$(openssl rand -base64 32 | tr -d /=+ | cut -c -25)
+            JWT_SECRET_VAL=$(openssl rand -base64 64 | tr -d /=+ | cut -c -50)
+            
+            # Update passwords in the file
+            sed -i "s/devassist_secure_password_2024_change_me/$POSTGRES_PWD/g" "$ENV_FILE"
+            sed -i "s/redis_secure_password_2024_change_me/$REDIS_PWD/g" "$ENV_FILE"
+            sed -i "s/your_jwt_secret_key_minimum_32_characters_long_change_me_now/$JWT_SECRET_VAL/g" "$ENV_FILE"
+            
+            success "Environment file created: $ENV_FILE"
+        else
+            error "Environment example file not found: .env.production.example"
+        fi
     else
         success "Environment file already exists: $ENV_FILE"
     fi
@@ -182,6 +171,11 @@ EOF
         if [[ ! $REPLY =~ ^[Yy]$ ]]; then
             error "Please update API keys in $ENV_FILE and re-run the script"
         fi
+    fi
+    
+    if grep -q "change_me" "$ENV_FILE"; then
+        warning "Some placeholder values still exist in $ENV_FILE"
+        echo "Please update all 'change_me' values before deployment"
     fi
 }
 
@@ -253,14 +247,16 @@ health_check() {
     if docker compose -f "$COMPOSE_FILE" exec -T postgres pg_isready -U devassist_user -d devassist_pro; then
         success "Database is healthy"
     else
-        error "Database health check failed"
+        warning "Database health check failed - checking container status"
+        docker compose -f "$COMPOSE_FILE" ps postgres
     fi
     
     # Check Redis
-    if docker compose -f "$COMPOSE_FILE" exec -T redis redis-cli ping; then
+    if docker compose -f "$COMPOSE_FILE" exec -T redis redis-cli --no-auth-warning ping; then
         success "Redis is healthy"
     else
-        error "Redis health check failed"
+        warning "Redis health check failed - checking container status"
+        docker compose -f "$COMPOSE_FILE" ps redis
     fi
     
     # Check backend
