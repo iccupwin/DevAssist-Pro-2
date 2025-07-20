@@ -72,11 +72,12 @@ echo "▶️  Запуск React development server..."
 echo "📍 Сервер будет доступен на http://46.149.71.162:3000"
 
 # Запуск npm start в фоне с логированием
-nohup npm start > ../react-frontend.log 2>&1 &
+nohup npm start > react-frontend.log 2>&1 &
 REACT_PID=$!
 
 echo "🆔 Process ID: $REACT_PID"
-echo "$REACT_PID" > ../react-frontend.pid
+echo "$REACT_PID" > react-frontend.pid
+cp react-frontend.pid ../react-frontend.pid 2>/dev/null || true
 
 # Ожидание запуска
 echo "⏳ Ожидание запуска React server (30 секунд)..."
@@ -87,20 +88,43 @@ if ps -p $REACT_PID > /dev/null; then
     echo "✅ React процесс запущен (PID: $REACT_PID)"
 else
     echo "❌ React процесс завершился. Проверьте логи:"
-    tail -20 ../react-frontend.log
+    if [ -f "react-frontend.log" ]; then
+        echo "📋 Последние строки лога:"
+        tail -20 react-frontend.log
+    else
+        echo "📋 Лог файл не найден"
+    fi
     exit 1
 fi
 
 # Проверка доступности
 echo ""
 echo "🩺 Проверка доступности..."
-if curl -f -s --max-time 10 http://localhost:3000 >/dev/null 2>&1; then
-    echo "✅ React frontend работает: http://46.149.71.162:3000"
-    echo "✅ Development server успешно запущен"
-else
-    echo "⚠️  Сервер запущен, но еще не отвечает. Подождите немного."
-    echo "📋 Проверьте логи: tail -f react-frontend.log"
-fi
+
+# Даем дополнительное время для запуска
+for i in {1..6}; do
+    if curl -f -s --max-time 3 http://localhost:3000 >/dev/null 2>&1; then
+        echo "✅ React frontend работает: http://46.149.71.162:3000"
+        echo "✅ Development server успешно запущен"
+        break
+    else
+        if [ $i -eq 6 ]; then
+            echo "❌ React сервер не отвечает после ожидания"
+            echo "📋 Проверьте логи:"
+            if [ -f "react-frontend.log" ]; then
+                echo "📄 Последние строки лога:"
+                tail -15 react-frontend.log
+            else
+                echo "📄 Лог файл не найден"
+            fi
+            echo ""
+            echo "🔍 Для диагностики запустите: ./debug-react-frontend.sh"
+        else
+            echo "⏳ Попытка $i/6 - ожидание ответа сервера..."
+            sleep 5
+        fi
+    fi
+done
 
 echo ""
 echo "🎉 React Frontend запущен!"
@@ -108,14 +132,14 @@ echo ""
 echo "📋 Информация:"
 echo "  URL:           http://46.149.71.162:3000"
 echo "  PID:           $REACT_PID"
-echo "  Логи:          tail -f ../react-frontend.log"
+echo "  Логи:          tail -f frontend/react-frontend.log"
 echo "  Backend API:   http://46.149.71.162:8000"
 echo ""
 echo "📋 Управление:"
 echo "  Остановка:     kill $REACT_PID"
 echo "  Остановка:     pkill -f 'npm start'"
 echo "  Статус:        ps -p $REACT_PID"
-echo "  Логи:          tail -f ../react-frontend.log"
+echo "  Логи:          tail -f frontend/react-frontend.log"
 echo ""
 echo "💡 Для остановки также можно использовать:"
 echo "   ./stop-react-frontend.sh"
