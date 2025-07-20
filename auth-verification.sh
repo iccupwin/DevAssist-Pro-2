@@ -113,13 +113,21 @@ if [ "$LOGIN_HTTP_CODE" = "200" ]; then
     echo "✅ Успешно (HTTP $LOGIN_HTTP_CODE)"
     LOGIN_OK=true
     
-    # Извлекаем токен
+    # Извлекаем токен (проверяем разные форматы)
     ACCESS_TOKEN=$(echo "$LOGIN_BODY" | grep -o '"access_token":"[^"]*"' | cut -d'"' -f4)
+    if [ -z "$ACCESS_TOKEN" ]; then
+        ACCESS_TOKEN=$(echo "$LOGIN_BODY" | grep -o '"token":"[^"]*"' | cut -d'"' -f4)
+    fi
+    if [ -z "$ACCESS_TOKEN" ]; then
+        ACCESS_TOKEN=$(echo "$LOGIN_BODY" | grep -o '"jwt":"[^"]*"' | cut -d'"' -f4)
+    fi
+    
     if [ -n "$ACCESS_TOKEN" ]; then
         echo "    ✅ JWT токен получен"
         TOKEN_OK=true
     else
-        echo "    ❌ JWT токен не найден"
+        echo "    ❌ JWT токен не найден в ответе:"
+        echo "    Response: $LOGIN_BODY"
         TOKEN_OK=false
     fi
 else
