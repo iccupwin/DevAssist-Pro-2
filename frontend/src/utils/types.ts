@@ -115,17 +115,4 @@ export interface AccessibilityCheck {
   score: number;
 }
 
-// Экспорт типов только для использования в других файлах
-export type {
-  ContrastAnalysis,
-  ColorValidationResult,
-  AssetOptimizationOptions,
-  ImageCompressionOptions,
-  DocumentProcessingResult,
-  KPAnalysisConfig,
-  FileUploadConfig,
-  AuthConfig,
-  ValidationResult,
-  PerformanceMetrics,
-  AccessibilityCheck
-};
+// Все типы уже экспортируются через export interface выше
