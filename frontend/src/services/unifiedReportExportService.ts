@@ -222,12 +222,12 @@ export class UnifiedReportExportService {
     options?: Partial<PDFExportOptions>
   ): Promise<PDFExportResult> {
     // Конвертируем данные для PDF экспорта
-    const pdfResults: PDFAnalysisResult[] = report.analysis_results.map(result => ({
+    const pdfResults: any[] = report.analysis_results.map(result => ({
       id: result.id,
-      companyName: result.extractedData?.companyName || 'Неизвестная компания',
+      companyName: (result.extractedData as any)?.company_name || 'Неизвестная компания',
       fileName: result.kpFileName,
-      analyzedAt: result.analyzedAt,
-      model: result.model,
+      analyzedAt: (result as any).analyzedAt || Date.now(),
+      model: (result as any).model || 'unknown',
       overallRating: result.score,
       strengths: result.analysis.recommendations.slice(0, 3), // Используем рекомендации как сильные стороны
       weaknesses: [], // Можно добавить логику для выявления слабых сторон
@@ -239,10 +239,10 @@ export class UnifiedReportExportService {
       recommendations: report.recommendations,
       bestProposal: report.best_proposal ? {
         id: report.best_proposal.id,
-        companyName: report.best_proposal.extractedData?.companyName || 'Неизвестная компания',
+        companyName: (report.best_proposal.extractedData as any)?.company_name || 'Неизвестная компания',
         score: report.best_proposal.score,
         reasons: ['Высший балл среди всех предложений']
-      } : undefined
+      } : undefined as any
     };
 
     if (engine === 'react-pdf') {
@@ -260,12 +260,12 @@ export class UnifiedReportExportService {
     engine: PDFEngine,
     options?: Partial<PDFExportOptions>
   ): Promise<PDFExportResult> {
-    const pdfResults: PDFAnalysisResult[] = analysisResults.map(result => ({
+    const pdfResults: any[] = analysisResults.map(result => ({
       id: result.id,
-      companyName: result.extractedData?.companyName || 'Неизвестная компания',
+      companyName: (result.extractedData as any)?.company_name || 'Неизвестная компания',
       fileName: result.kpFileName,
-      analyzedAt: result.analyzedAt,
-      model: result.model,
+      analyzedAt: (result as any).analyzedAt || Date.now(),
+      model: (result as any).model || 'unknown',
       overallRating: result.score,
       strengths: result.analysis.recommendations.slice(0, 3),
       weaknesses: [],
@@ -282,10 +282,10 @@ export class UnifiedReportExportService {
       recommendations: [`Рекомендуется ${bestResult.kpFileName} как лучшее предложение`],
       bestProposal: {
         id: bestResult.id,
-        companyName: bestResult.extractedData?.companyName || 'Неизвестная компания',
+        companyName: (bestResult.extractedData as any)?.company_name || 'Неизвестная компания',
         score: bestResult.score,
         reasons: ['Высший балл среди всех предложений']
-      }
+      } as any
     };
 
     if (engine === 'react-pdf') {
@@ -366,7 +366,7 @@ export class UnifiedReportExportService {
 
     // Проверка Excel возможностей
     try {
-      if (typeof ExcelJS === 'undefined') {
+      if (!(window as any).ExcelJS) {
         canExportExcel = false;
         errors.push('Excel библиотека не загружена');
       }

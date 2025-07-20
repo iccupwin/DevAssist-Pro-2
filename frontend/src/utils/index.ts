@@ -40,19 +40,19 @@ export const utils = {
   colorValidator: () => import('./colorValidator').then(m => m.default),
   
   // Документы
-  documentProcessor: () => import('./documentProcessor').then(m => m.default),
+  documentProcessor: () => import('./documentProcessor').then(m => (m as any).default || m),
   
   // Файлы
-  fileAdapters: () => import('./fileAdapters').then(m => m.default),
+  fileAdapters: () => import('./fileAdapters').then(m => (m as any).default || m),
   
   // KP анализатор
-  kpAnalyzerUtils: () => import('./kpAnalyzerUtils').then(m => m.default),
+  kpAnalyzerUtils: () => import('./kpAnalyzerUtils').then(m => (m as any).default || m),
   
   // Аутентификация
-  authUtils: () => import('./authUtils').then(m => m.default),
+  authUtils: () => import('./authUtils').then(m => (m as any).default || m),
   
   // Оптимизация
-  assetOptimizer: () => import('./assetOptimizer').then(m => m.default)
+  assetOptimizer: () => import('./assetOptimizer').then(m => (m as any).default || m)
 };
 
 export default utils;
