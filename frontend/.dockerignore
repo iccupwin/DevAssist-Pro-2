@@ -43,3 +43,12 @@ __mocks__
 *.spec.tsx
 *.spec.ts
 *.spec.js
+
+# Development specific
+Dockerfile*
+docker-compose*
+.git
+.gitignore
+README.md
+react-frontend.log
+react-frontend.pid

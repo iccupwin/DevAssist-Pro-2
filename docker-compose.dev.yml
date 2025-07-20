@@ -1,0 +1,80 @@
+# Docker Compose для development режима
+# React Frontend + Backend
+
+services:
+  # React Frontend Development
+  frontend-dev:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: devassist_frontend_dev
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+      - WDS_SOCKET_HOST=0.0.0.0
+      - PORT=3000
+      - HOST=0.0.0.0
+      - GENERATE_SOURCEMAP=false
+      - SKIP_PREFLIGHT_CHECK=true
+      - REACT_APP_API_URL=http://46.149.71.162:8000
+      - REACT_APP_WS_URL=ws://46.149.71.162:8000
+      - REACT_APP_USE_REAL_API=true
+    volumes:
+      # Монтирование исходного кода для hot reload
+      - ./frontend/src:/app/src:ro
+      - ./frontend/public:/app/public:ro
+      - ./frontend/package.json:/app/package.json:ro
+      # Исключение node_modules из монтирования
+      - /app/node_modules
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+    networks:
+      - dev_network
+
+  # Backend API (если нужно запустить вместе)
+  backend-dev:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.monolith
+    container_name: devassist_backend_dev
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=development
+      - DEBUG=true
+      - LOG_LEVEL=INFO
+      - HOST=0.0.0.0
+      - PORT=8000
+      # Подключение к существующим БД сервисам
+      - POSTGRES_URL=postgresql://devassist_user:${POSTGRES_PASSWORD:-devassist_secure_password_2024}@host.docker.internal:5432/devassist_pro
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-redis_secure_password_2024}@host.docker.internal:6379/0
+      - JWT_SECRET=${JWT_SECRET:-your_jwt_secret_key_minimum_32_characters_long}
+      - ALLOWED_ORIGINS=http://46.149.71.162:3000,http://localhost:3000
+      - CORS_ORIGINS=http://46.149.71.162:3000,http://localhost:3000
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+    networks:
+      - dev_network
+
+networks:
+  dev_network:
+    driver: bridge
+    name: devassist_dev_network

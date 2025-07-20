@@ -1,0 +1,52 @@
+# Development Dockerfile для React Frontend
+# Для запуска npm start в Docker контейнере
+
+FROM node:18-alpine
+
+# Установка дополнительных инструментов
+RUN apk add --no-cache \
+    git \
+    curl \
+    bash
+
+# Создание пользователя для безопасности
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S reactuser -u 1001
+
+# Установка рабочей директории
+WORKDIR /app
+
+# Копирование package файлов
+COPY package*.json ./
+
+# Установка зависимостей
+RUN npm ci --silent
+
+# Копирование исходного кода
+COPY . .
+
+# Изменение владельца файлов
+RUN chown -R reactuser:nodejs /app
+
+# Переключение на пользователя
+USER reactuser
+
+# Переменные окружения для development
+ENV NODE_ENV=development
+ENV CHOKIDAR_USEPOLLING=true
+ENV WATCHPACK_POLLING=true
+ENV WDS_SOCKET_HOST=0.0.0.0
+ENV PORT=3000
+ENV HOST=0.0.0.0
+ENV GENERATE_SOURCEMAP=false
+ENV SKIP_PREFLIGHT_CHECK=true
+
+# Открытие порта
+EXPOSE 3000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:3000 || exit 1
+
+# Запуск development сервера
+CMD ["npm", "start"]
