@@ -11,7 +11,8 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install all dependencies (including devDependencies needed for build)
-RUN npm ci --silent
+# Use npm install instead of npm ci for more flexibility with package versions
+RUN npm install --silent --no-optional
 
 # Copy source code
 COPY . .
