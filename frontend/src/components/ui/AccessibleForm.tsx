@@ -166,7 +166,7 @@ export const AccessibleField: React.FC<AccessibleFieldProps> = ({
       <div className="relative">
         {React.Children.map(children, child => {
           if (React.isValidElement(child)) {
-            return React.cloneElement(child, {
+            return React.cloneElement(child as React.ReactElement<any>, {
               id,
               'data-field': id,
               'aria-invalid': error ? 'true' : 'false',

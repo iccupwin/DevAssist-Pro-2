@@ -73,7 +73,7 @@ export const LazyRoutes: React.FC = () => {
     <LazyLoadErrorBoundary>
       <Suspense fallback={<PageLoader />}>
         <Routes>
-          <Route path="/" element={<MainPage />} />
+          <Route path="/" element={<MainPage currentStep="upload" onStepChange={() => {}} />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route 
             path="/kp-analyzer" 
@@ -115,7 +115,7 @@ export const withLazyLoading = <T extends object>(
   return (props: T) => (
     <LazyLoadErrorBoundary>
       <Suspense fallback={fallback || <LoadingSpinner />}>
-        <LazyComponent {...props} />
+        <LazyComponent {...(props as any)} />
       </Suspense>
     </LazyLoadErrorBoundary>
   );
