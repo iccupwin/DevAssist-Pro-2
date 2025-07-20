@@ -27,6 +27,7 @@ services:
   # Nginx Reverse Proxy (объединяет frontend и backend)
   nginx:
     image: nginx:alpine
+    pull_policy: never
     container_name: devassist_nginx_proxy
     ports:
       - "80:80"
