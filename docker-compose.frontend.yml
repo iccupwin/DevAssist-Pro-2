@@ -1,4 +1,4 @@
-version: '3.8'
+# DevAssist Pro Frontend Only Configuration
 
 # DevAssist Pro Frontend Only
 # Только frontend сервисы
@@ -8,7 +8,7 @@ services:
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile.simple
+      dockerfile: Dockerfile.prod
     container_name: devassist_frontend_app
     ports:
       - "3000:80"
