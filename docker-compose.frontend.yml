@@ -1,0 +1,55 @@
+version: '3.8'
+
+# DevAssist Pro Frontend Only
+# Только frontend сервисы
+
+services:
+  # Frontend Application (React SPA)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.simple
+    container_name: devassist_frontend_app
+    ports:
+      - "3000:80"
+    environment:
+      - NODE_ENV=production
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+    networks:
+      - frontend_network
+
+  # Nginx Reverse Proxy (объединяет frontend и backend)
+  nginx:
+    image: nginx:alpine
+    container_name: devassist_nginx_proxy
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.simple.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      frontend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+    networks:
+      - frontend_network
+      - backend_network
+
+networks:
+  frontend_network:
+    driver: bridge
+    name: devassist_frontend_network
+  backend_network:
+    external: true
+    name: devassist_backend_network
