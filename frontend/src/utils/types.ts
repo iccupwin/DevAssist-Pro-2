@@ -116,3 +116,38 @@ export interface AccessibilityCheck {
 }
 
 // Все типы уже экспортируются через export interface выше
+
+// Типы для отчетов и анализа
+export interface ComparisonResult {
+  summary: string;
+  recommendations: string[];
+  bestProposal?: {
+    id: string;
+    companyName: string;
+    score: number;
+    reasons: string[];
+  };
+}
+
+export interface RealAnalysisResult {
+  id: string;
+  tz_name: string;
+  kp_name: string;
+  company_name: any;
+  tech_stack: any;
+  pricing: any;
+  timeline: any;
+  total_cost: any;
+  currency: any;
+  cost_breakdown: any;
+  competitive_advantages: any;
+  team_expertise: any;
+  methodology: any;
+  quality_assurance: any;
+  // Опциональные поля
+  post_launch_support?: any;
+  document_quality?: any;
+  file_format?: any;
+  summary: any;
+  confidence_score: any;
+}
