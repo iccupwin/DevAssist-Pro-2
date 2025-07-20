@@ -1,0 +1,60 @@
+# Multi-stage production Dockerfile for React frontend
+# Optimized for Ubuntu 22.04 deployment
+
+# Build stage
+FROM node:18-alpine AS builder
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies with production optimizations
+RUN npm ci --only=production --silent && \
+    npm cache clean --force
+
+# Copy source code
+COPY . .
+
+# Build environment variables
+ARG REACT_APP_API_URL=http://46.149.71.162/api
+ARG REACT_APP_WS_URL=ws://46.149.71.162/ws
+ARG NODE_ENV=production
+ARG GENERATE_SOURCEMAP=false
+
+# Set environment variables
+ENV REACT_APP_API_URL=$REACT_APP_API_URL
+ENV REACT_APP_WS_URL=$REACT_APP_WS_URL
+ENV NODE_ENV=$NODE_ENV
+ENV GENERATE_SOURCEMAP=$GENERATE_SOURCEMAP
+
+# Build the application
+RUN npm run build
+
+# Production stage
+FROM nginx:1.25-alpine
+
+# Install required packages for health checks
+RUN apk add --no-cache curl
+
+# Copy custom nginx configuration
+COPY nginx.frontend.conf /etc/nginx/nginx.conf
+
+# Copy built application from builder stage
+COPY --from=builder /app/build /usr/share/nginx/html
+
+# Create nginx pid directory
+RUN mkdir -p /var/run/nginx && \
+    chown -R nginx:nginx /var/run/nginx && \
+    chown -R nginx:nginx /usr/share/nginx/html && \
+    chmod -R 755 /usr/share/nginx/html
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD curl -f http://localhost:80/ || exit 1
+
+# Expose port
+EXPOSE 80
+
+# Start nginx
+CMD ["nginx", "-g", "daemon off;"]
