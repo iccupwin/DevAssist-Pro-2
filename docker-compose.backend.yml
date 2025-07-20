@@ -87,6 +87,9 @@ services:
       GOOGLE_API_KEY: ${GOOGLE_API_KEY}
       USE_REAL_API: true
       
+      # Admin Configuration
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin_secure_password_2024}
+      
     volumes:
       - app_data:/app/data
       - app_logs:/app/logs
