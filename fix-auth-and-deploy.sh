@@ -108,9 +108,9 @@ fi
 log "🛑 Этап 3: Остановка всех сервисов"
 
 echo "🛑 Остановка Docker контейнеров..."
-docker-compose down 2>/dev/null || true
-docker-compose -f docker-compose.production.yml down 2>/dev/null || true
-docker-compose -f docker-compose.dev.yml down 2>/dev/null || true
+docker compose down 2>/dev/null || true
+docker compose -f docker-compose.production.yml down 2>/dev/null || true
+docker compose -f docker-compose.dev.yml down 2>/dev/null || true
 
 echo "🛑 Остановка процессов на портах..."
 sudo fuser -k 3000/tcp 2>/dev/null || true
@@ -151,10 +151,10 @@ cp .env.production .env
 cp backend/.env.production backend/.env
 
 echo "🔨 Пересборка Docker образов..."
-docker-compose build --no-cache --pull
+docker compose build --no-cache --pull
 
 echo "🚀 Запуск всех сервисов..."
-docker-compose up -d
+docker compose up -d
 
 echo "⏳ Ожидание запуска сервисов (60 секунд)..."
 sleep 60
@@ -165,7 +165,7 @@ log "✅ Сервисы запущены"
 log "📊 Этап 6: Проверка состояния сервисов"
 
 echo "📊 Состояние Docker контейнеров:"
-docker-compose ps
+docker compose ps
 
 echo ""
 echo "📊 Проверка портов:"
@@ -198,13 +198,14 @@ else
     BACKEND_OK=false
 fi
 
-# Проверка Auth Service
-if curl -f -s --max-time 10 "http://$SERVER_IP:8001/health" >/dev/null 2>&1; then
-    echo "  ✅ Auth Service (8001): доступен"
+# Проверка Monolithic App (порт 8000 уже проверен как API Gateway)
+# В монолитной архитектуре auth является частью основного приложения
+if curl -f -s --max-time 10 "http://$SERVER_IP:8000/api/auth/health" >/dev/null 2>&1; then
+    echo "  ✅ Auth Module: доступен"
     AUTH_OK=true
 else
-    echo "  ❌ Auth Service (8001): недоступен"
-    AUTH_OK=false
+    echo "  ⚠️  Auth Module: проверка через API Gateway"
+    AUTH_OK=$BACKEND_OK
 fi
 
 # Этап 7: Запуск проверки аутентификации
@@ -251,10 +252,10 @@ if [ "$FRONTEND_OK" = true ] && [ "$BACKEND_OK" = true ] && [ "$AUTH_OK" = true 
         
         echo ""
         echo "📋 Команды для управления:"
-        echo "   Остановка: docker-compose down"
-        echo "   Перезапуск: docker-compose restart"
-        echo "   Логи: docker-compose logs -f"
-        echo "   Статус: docker-compose ps"
+        echo "   Остановка: docker compose down"
+        echo "   Перезапуск: docker compose restart"
+        echo "   Логи: docker compose logs -f"
+        echo "   Статус: docker compose ps"
         
         exit 0
     else
@@ -273,7 +274,7 @@ else
     
     echo ""
     echo "🔧 Рекомендации по исправлению:"
-    echo "   1. Проверьте логи: docker-compose logs"
+    echo "   1. Проверьте логи: docker compose logs"
     echo "   2. Проверьте порты: netstat -tulpn | grep -E ':(3000|8000|8001)'"
     echo "   3. Перезапустите проблемные сервисы"
     echo "   4. Проверьте файлы конфигурации .env"

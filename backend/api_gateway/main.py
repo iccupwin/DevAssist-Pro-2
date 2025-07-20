@@ -38,7 +38,7 @@ app.add_middleware(
 # Trusted host middleware
 app.add_middleware(
     TrustedHostMiddleware,
-    allowed_hosts=["localhost", "127.0.0.1", "*.devassist.pro"]
+    allowed_hosts=["localhost", "127.0.0.1", "46.149.71.162", "*.devassist.pro", "*"]
 )
 
 # Конфигурация микросервисов
