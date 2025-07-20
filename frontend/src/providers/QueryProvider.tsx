@@ -21,8 +21,7 @@ export const QueryProvider: React.FC<QueryProviderProps> = ({ children }) => {
       {process.env.NODE_ENV === 'development' && (
         <Suspense fallback={null}>
           <ReactQueryDevtools 
-            initialIsOpen={false}
-            buttonPosition={"bottom-right" as any}
+            {...({ initialIsOpen: false, buttonPosition: "bottom-right" } as any)}
           />
         </Suspense>
       )}

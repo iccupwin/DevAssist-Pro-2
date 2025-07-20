@@ -121,7 +121,7 @@ export const InteractiveButton: React.FC<InteractiveButtonProps> = ({
       onMouseDown={() => setIsPressed(true)}
       onMouseUp={() => setIsPressed(false)}
       onMouseLeave={() => setIsPressed(false)}
-      {...animations[animation]}
+      {...(animations[animation] as any)}
       {...props}
     >
       {/* Ripple эффект */}
@@ -240,8 +240,8 @@ export const FloatingLabelInput: React.FC<FloatingLabelInputProps> = ({
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         whileFocus={{ scale: 1.01 }}
-        transition={{ duration: 0.2 }}
-        {...props}
+        transition={{ duration: 0.2 } as any}
+        {...(props as any)}
       />
       
       <motion.label

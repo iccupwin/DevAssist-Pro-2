@@ -3,15 +3,18 @@ import React from 'react';
 interface SkeletonProps {
   className?: string;
   animate?: boolean;
+  style?: React.CSSProperties;
 }
 
 export const Skeleton: React.FC<SkeletonProps> = ({ 
   className = '', 
-  animate = true 
+  animate = true,
+  style 
 }) => {
   return (
     <div 
       className={`bg-gray-200 rounded ${animate ? 'animate-pulse' : ''} ${className}`}
+      style={style}
     />
   );
 };

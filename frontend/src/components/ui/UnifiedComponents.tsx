@@ -12,7 +12,7 @@ interface UnifiedButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   rightIcon?: React.ReactNode;
 }
 
-interface UnifiedInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+interface UnifiedInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'> {
   variant?: 'default' | 'error' | 'success';
   size?: 'sm' | 'md' | 'lg';
   leftIcon?: React.ReactNode;
@@ -281,7 +281,7 @@ export const UnifiedText: React.FC<UnifiedTextProps> = ({
         truncate && 'truncate',
         className
       )}
-      {...props}
+      {...(props as any)}
     >
       {children}
     </Component>
