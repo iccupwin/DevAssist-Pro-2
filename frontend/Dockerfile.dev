@@ -16,11 +16,17 @@ RUN addgroup -g 1001 -S nodejs && \
 # Установка рабочей директории
 WORKDIR /app
 
-# Копирование package файлов
-COPY package*.json ./
+# Настройка npm
+RUN npm config set fund false && \
+    npm config set audit-level moderate && \
+    npm config set legacy-peer-deps true
 
-# Установка зависимостей
-RUN npm ci --silent
+# Копирование package файлов
+COPY package*.json .npmrc* ./
+
+# Очистка npm кэша и установка зависимостей
+RUN npm cache clean --force && \
+    npm install --force --silent
 
 # Копирование исходного кода
 COPY . .
