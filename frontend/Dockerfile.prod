@@ -10,7 +10,6 @@ WORKDIR /app
 
 # Копирование package files
 COPY package*.json ./
-COPY package.minimal.json ./
 
 # Установка зависимостей
 RUN npm ci --only=production --silent
@@ -32,9 +31,6 @@ ENV GENERATE_SOURCEMAP=false
 # Оптимизированная сборка
 RUN npm run build
 
-# Очистка node_modules и временных файлов
-RUN rm -rf node_modules src public
-
 # Production stage - только статические файлы
 FROM nginx:alpine AS production
 
@@ -48,7 +44,7 @@ RUN rm -rf /usr/share/nginx/html/*
 COPY --from=builder /app/build /usr/share/nginx/html
 
 # Создание nginx конфигурации для SPA
-COPY <<EOF /etc/nginx/conf.d/default.conf
+RUN cat > /etc/nginx/conf.d/default.conf << 'EOF'
 server {
     listen 80;
     server_name localhost;
@@ -85,7 +81,7 @@ server {
 
     # SPA routing - все запросы отправляем на index.html
     location / {
-        try_files \$uri \$uri/ /index.html;
+        try_files $uri $uri/ /index.html;
         
         # No caching for index.html
         add_header Cache-Control "no-cache, no-store, must-revalidate";
@@ -102,24 +98,10 @@ server {
 }
 EOF
 
-# Создание entrypoint script
-COPY <<EOF /docker-entrypoint.sh
-#!/bin/sh
-set -e
-
-# Обеспечиваем правильные права доступа
-chmod -R 755 /usr/share/nginx/html
-
-# Запуск nginx
-exec nginx -g "daemon off;"
-EOF
-
-RUN chmod +x /docker-entrypoint.sh
-
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD curl -f http://localhost/frontend-health || exit 1
 
 EXPOSE 80
 
-ENTRYPOINT ["/docker-entrypoint.sh"]
+CMD ["nginx", "-g", "daemon off;"]
