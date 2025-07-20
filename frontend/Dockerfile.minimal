@@ -1,0 +1,31 @@
+# Minimal Frontend Dockerfile - максимально простая сборка
+FROM node:18-alpine AS builder
+
+WORKDIR /app
+
+# Ограничиваем память для Node.js
+ENV NODE_OPTIONS="--max-old-space-size=512"
+ENV CI=true
+ENV NODE_ENV=production
+
+# Копируем package.json и устанавливаем только необходимые зависимости
+COPY package*.json ./
+RUN npm ci --only=production --silent --no-audit --no-fund
+
+# Копируем исходники
+COPY . .
+
+# Простые переменные окружения
+ENV GENERATE_SOURCEMAP=false
+ENV REACT_APP_API_URL=/api
+ENV REACT_APP_WS_URL=/ws
+
+# Собираем с минимальными настройками
+RUN npm run build
+
+# Production stage - простой nginx
+FROM nginx:1.25-alpine
+COPY --from=builder /app/build /usr/share/nginx/html
+COPY nginx.frontend.conf /etc/nginx/conf.d/default.conf
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]

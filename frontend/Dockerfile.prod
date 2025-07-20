@@ -7,12 +7,15 @@ FROM node:18-alpine AS builder
 # Set working directory
 WORKDIR /app
 
+# Set memory limits to prevent OOM kills
+ENV NODE_OPTIONS="--max-old-space-size=1024"
+
 # Copy package files for dependency installation
 COPY package*.json ./
 
 # Install all dependencies (including devDependencies needed for build)
 # Use npm install instead of npm ci for more flexibility with package versions
-RUN npm install --silent --no-optional
+RUN npm install --silent --no-optional --legacy-peer-deps
 
 # Copy source code
 COPY . .
@@ -23,8 +26,9 @@ ENV GENERATE_SOURCEMAP=false
 ENV REACT_APP_API_URL=http://46.149.71.162/api
 ENV REACT_APP_WS_URL=ws://46.149.71.162/ws
 
-# Build React application for production
-RUN npm run build
+# Build React application for production with memory optimization
+RUN npm run build || (echo "Build failed, retrying with reduced memory..." && \
+    NODE_OPTIONS="--max-old-space-size=512" npm run build)
 
 # Stage 2: Production server with Nginx
 FROM nginx:1.25-alpine AS production
