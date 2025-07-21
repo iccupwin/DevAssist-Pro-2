@@ -10,7 +10,12 @@ import { DEV_TEST_USERS } from '../../config/development';
 
 export const AuthDebug: React.FC = () => {
   const { user, isAuthenticated, login, logout } = useAuth();
-  const [localStorageData, setLocalStorageData] = useState<any>({});
+  const [localStorageData, setLocalStorageData] = useState<{
+    user: string | null;
+    token: string | null;
+    refreshToken: string | null;
+    tokenExpiresAt: string | null;
+  }>({});
 
   const refreshLocalStorage = () => {
     const data = {
@@ -30,24 +35,24 @@ export const AuthDebug: React.FC = () => {
 
   const handleTestLogin = async () => {
     try {
-      console.log('[AuthDebug] Starting test login...');
+      // [AuthDebug] Starting test login...
       const adminUser = DEV_TEST_USERS.find(user => user.role === 'admin');
       if (adminUser) {
         const result = await login({
           email: adminUser.email,
           password: adminUser.password
         });
-        console.log('[AuthDebug] Login result:', result);
+        // [AuthDebug] Login result processed
       } else {
-        console.error('[AuthDebug] No admin test user found');
+        // [AuthDebug] No admin test user found
       }
     } catch (error) {
-      console.error('[AuthDebug] Login error:', error);
+      // [AuthDebug] Login error occurred
     }
   };
 
   const handleForceLogin = () => {
-    console.log('[AuthDebug] Force login - clearing localStorage and setting admin user...');
+    // [AuthDebug] Force login - clearing localStorage and setting admin user...
     
     // Очищаем все
     localStorage.removeItem(AUTH_CONFIG.USER_STORAGE_KEY);
@@ -72,16 +77,16 @@ export const AuthDebug: React.FC = () => {
     localStorage.setItem(AUTH_CONFIG.REFRESH_TOKEN_STORAGE_KEY, refreshToken);
     localStorage.setItem(AUTH_CONFIG.TOKEN_EXPIRES_AT_KEY, tokenExpiresAt.toString());
 
-    console.log('[AuthDebug] Force login completed, refreshing page...');
+    // [AuthDebug] Force login completed, refreshing page...
     setTimeout(() => window.location.reload(), 500);
   };
 
   const handleTestLogout = async () => {
     try {
       await logout();
-      console.log('Logout completed');
+      // Logout completed
     } catch (error) {
-      console.error('Logout error:', error);
+      // Logout error occurred
     }
   };
 

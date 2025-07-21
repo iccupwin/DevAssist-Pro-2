@@ -10,7 +10,7 @@ interface RequestConfig {
   url: string;
   method: string;
   headers?: Record<string, string>;
-  body?: any;
+  body?: unknown;
   requiresAuth?: boolean;
   retryCount?: number;
 }
@@ -19,7 +19,7 @@ interface ResponseData {
   ok: boolean;
   status: number;
   statusText: string;
-  data: any;
+  data: unknown;
   headers: Headers;
 }
 
@@ -37,8 +37,8 @@ export class HTTPInterceptor {
   private retryDelay: number;
   private isRefreshing: boolean = false;
   private failedQueue: Array<{
-    resolve: (value: any) => void;
-    reject: (reason: any) => void;
+    resolve: (value: unknown) => void;
+    reject: (reason: unknown) => void;
     config: RequestConfig;
   }> = [];
 
@@ -62,7 +62,7 @@ export class HTTPInterceptor {
   /**
    * Основной метод для выполнения HTTP запросов
    */
-  async request<T = any>(config: RequestConfig): Promise<T> {
+  async request<T = unknown>(config: RequestConfig): Promise<T> {
     // Применяем request interceptor
     const processedConfig = await this.requestInterceptor(config);
     
@@ -137,7 +137,7 @@ export class HTTPInterceptor {
   /**
    * Error Interceptor - обрабатывает ошибки и автоматически обновляет токены
    */
-  private async errorInterceptor(error: any, config: RequestConfig): Promise<any> {
+  private async errorInterceptor(error: unknown, config: RequestConfig): Promise<unknown> {
     const originalRequest = config;
 
     console.error('[HTTPInterceptor] Request failed:', {
@@ -165,7 +165,7 @@ export class HTTPInterceptor {
   /**
    * Обработка 401 ошибок с автоматическим обновлением токенов
    */
-  private async handle401Error(config: RequestConfig): Promise<any> {
+  private async handle401Error(config: RequestConfig): Promise<unknown> {
     // Проверяем, не является ли это запросом на обновление токена
     if (config.url.includes('/auth/refresh')) {
       console.log('[HTTPInterceptor] Refresh token request failed, redirecting to login');
@@ -213,7 +213,7 @@ export class HTTPInterceptor {
   /**
    * Обработка очереди неудачных запросов
    */
-  private processFailedQueue(error: any): void {
+  private processFailedQueue(error: unknown): void {
     this.failedQueue.forEach(({ resolve, reject, config }) => {
       if (error) {
         reject(error);
@@ -228,7 +228,7 @@ export class HTTPInterceptor {
   /**
    * Retry логика для сетевых ошибок
    */
-  private async retryRequest(config: RequestConfig): Promise<any> {
+  private async retryRequest(config: RequestConfig): Promise<unknown> {
     const retryCount = (config.retryCount || 0) + 1;
     const delay = this.retryDelay * Math.pow(2, retryCount - 1); // Exponential backoff
     
@@ -345,7 +345,7 @@ export class HTTPInterceptor {
         headers: response.headers
       };
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       clearTimeout(timeoutId);
       
       // Обрабатываем различные типы ошибок
@@ -360,7 +360,7 @@ export class HTTPInterceptor {
   /**
    * Проверка сетевых ошибок
    */
-  private isNetworkError(error: any): boolean {
+  private isNetworkError(error: unknown): boolean {
     return (
       error.name === 'TypeError' ||
       error.message === 'Failed to fetch' ||
@@ -372,15 +372,17 @@ export class HTTPInterceptor {
   /**
    * Создание стандартизированной ошибки API
    */
-  private createAPIError(error: any, config: RequestConfig): Error {
+  private createAPIError(error: unknown, config: RequestConfig): Error {
     const apiError = new Error(error.message || 'API request failed');
     
     // Добавляем дополнительную информацию об ошибке
-    (apiError as any).status = error.status;
-    (apiError as any).statusText = error.statusText;
-    (apiError as any).url = config.url;
-    (apiError as any).method = config.method;
-    (apiError as any).timestamp = new Date().toISOString();
+    Object.assign(apiError, {
+      status: (error as { status?: number })?.status,
+      statusText: (error as { statusText?: string })?.statusText,
+      url: config.url,
+      method: config.method,
+      timestamp: new Date().toISOString()
+    });
     
     return apiError;
   }
@@ -397,7 +399,7 @@ export class HTTPInterceptor {
       const currentPath = window.location.pathname;
       const loginUrl = `/auth/login?redirect=${encodeURIComponent(currentPath)}`;
       
-      console.log('[HTTPInterceptor] Redirecting to login:', loginUrl);
+      // Redirecting to login page
       window.location.href = loginUrl;
     }
   }
@@ -405,23 +407,23 @@ export class HTTPInterceptor {
   /**
    * Удобные методы для HTTP запросов
    */
-  async get<T = any>(url: string, config: Partial<RequestConfig> = {}): Promise<T> {
+  async get<T = unknown>(url: string, config: Partial<RequestConfig> = {}): Promise<T> {
     return this.request<T>({ method: 'GET', url, ...config });
   }
 
-  async post<T = any>(url: string, data?: any, config: Partial<RequestConfig> = {}): Promise<T> {
+  async post<T = unknown>(url: string, data?: unknown, config: Partial<RequestConfig> = {}): Promise<T> {
     return this.request<T>({ method: 'POST', url, body: data, ...config });
   }
 
-  async put<T = any>(url: string, data?: any, config: Partial<RequestConfig> = {}): Promise<T> {
+  async put<T = unknown>(url: string, data?: unknown, config: Partial<RequestConfig> = {}): Promise<T> {
     return this.request<T>({ method: 'PUT', url, body: data, ...config });
   }
 
-  async patch<T = any>(url: string, data?: any, config: Partial<RequestConfig> = {}): Promise<T> {
+  async patch<T = unknown>(url: string, data?: unknown, config: Partial<RequestConfig> = {}): Promise<T> {
     return this.request<T>({ method: 'PATCH', url, body: data, ...config });
   }
 
-  async delete<T = any>(url: string, config: Partial<RequestConfig> = {}): Promise<T> {
+  async delete<T = unknown>(url: string, config: Partial<RequestConfig> = {}): Promise<T> {
     return this.request<T>({ method: 'DELETE', url, ...config });
   }
 }
@@ -433,11 +435,7 @@ const apiUrl = process.env.REACT_APP_API_URL || process.env.REACT_APP_API_BASE_U
     ? 'https://your-api-domain.com' 
     : 'http://localhost:8000'
 );
-console.log('[HTTPInterceptor] Environment variables:', {
-  REACT_APP_API_URL: process.env.REACT_APP_API_URL,
-  REACT_APP_API_BASE_URL: process.env.REACT_APP_API_BASE_URL,
-  resolvedApiUrl: apiUrl
-});
+// Environment configuration resolved
 
 export const httpClient = new HTTPInterceptor({
   baseURL: apiUrl,

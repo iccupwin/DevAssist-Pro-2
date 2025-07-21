@@ -51,21 +51,18 @@ export const useKPAnalyzer = () => {
         { id: 'gpt-4o', name: 'GPT-4o', provider: 'openai', model: 'gpt-4o', temperature: 0.1, maxTokens: 4000, available: true },
         { id: 'gpt-4-turbo', name: 'GPT-4 Turbo', provider: 'openai', model: 'gpt-4-turbo', temperature: 0.1, maxTokens: 4000, available: true },
       ];
-      setAvailableModels(staticModels as any);
+      setAvailableModels(staticModels as AIModelConfig[]);
     } catch (error) {
-      console.error('[useKPAnalyzer] Failed to load models:', error);
+      // Failed to load models
     }
   }, []);
 
   // Внутренняя функция для запуска анализа
   const startAnalysisInternal = useCallback(async (currentState: KPAnalyzerState) => {
-    console.log('🔍 Запуск внутреннего анализа', { 
-      hasTS: !!currentState.technicalSpec, 
-      kpCount: currentState.commercialProposals.length 
-    });
+    // Starting internal analysis
 
     if (!currentState.technicalSpec || currentState.commercialProposals.length === 0) {
-      console.log('❌ Недостаточно данных для анализа');
+      // Insufficient data for analysis
       return;
     }
 
@@ -98,10 +95,7 @@ export const useKPAnalyzer = () => {
         new File([kp.content], kp.title, { type: 'text/plain' })
       );
 
-      console.log('📄 Файлы подготовлены для анализа:', { 
-        tzFile: tzFile.name, 
-        kpFiles: kpFiles.map(f => f.name) 
-      });
+      // Files prepared for analysis
 
       // Обновляем прогресс: запуск AI анализа
       setState(prev => ({
@@ -119,7 +113,7 @@ export const useKPAnalyzer = () => {
         kpFiles,
         currentState.selectedModels.analysis,
         (overallProgress, currentMessage) => {
-          console.log(`📊 Прогресс анализа: ${overallProgress}% - ${currentMessage}`);
+          // Analysis progress update
           setState(prev => ({
             ...prev,
             progress: {
@@ -131,7 +125,7 @@ export const useKPAnalyzer = () => {
         }
       );
 
-      console.log('✅ Анализ завершен, результатов:', results.length);
+      // Analysis completed
 
       // Преобразуем результаты в формат AnalysisResult
       const convertedResults: AnalysisResult[] = results.map(result => ({
@@ -194,7 +188,7 @@ export const useKPAnalyzer = () => {
         model: currentState.selectedModels.comparison
       };
 
-      console.log('📊 Отчет сформирован, сразу переходим к результатам');
+      // Report generated, transitioning to results
 
       setState(prev => ({
         ...prev,
@@ -206,7 +200,7 @@ export const useKPAnalyzer = () => {
       }));
 
     } catch (error) {
-      console.error('[startAnalysisInternal] Analysis failed:', error);
+      // Analysis failed
       setState(prev => ({
         ...prev,
         isProcessing: false,
@@ -219,7 +213,7 @@ export const useKPAnalyzer = () => {
   const uploadDocument = useCallback(async (file: File, role: 'tz' | 'kp') => {
     const fileId = `${role}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     
-    console.log(`📄 Загрузка ${role.toUpperCase()} файла: ${file.name}`);
+    // Uploading file
     setState(prev => ({ ...prev, isProcessing: true, error: null }));
     setUploadProgress(prev => ({ ...prev, [fileId]: 0 }));
 
@@ -250,7 +244,7 @@ export const useKPAnalyzer = () => {
         
         if (role === 'tz') {
           // Заменяем ТЗ (может быть только одно)
-          console.log(`📝 Замена ТЗ: ${file.name}`);
+          // Replacing technical specification
           newState.technicalSpec = {
             id: fileId,
             name: file.name,
@@ -266,10 +260,10 @@ export const useKPAnalyzer = () => {
           // Добавляем КП, проверяя на дубликаты по имени файла
           const existingKP = prev.commercialProposals.find(kp => kp.name === file.name);
           if (existingKP) {
-            console.log(`⚠️ КП "${file.name}" уже загружено, пропускаем`);
+            // Commercial proposal already loaded, skipping
             newState.commercialProposals = prev.commercialProposals;
           } else {
-            console.log(`📋 Добавление КП: ${file.name}`);
+            // Adding commercial proposal
             const newKP: CommercialProposal = {
               id: fileId,
               name: file.name,
@@ -304,7 +298,7 @@ export const useKPAnalyzer = () => {
       }, 1000);
 
     } catch (error) {
-      console.error('[useKPAnalyzer] Upload failed:', error);
+      // Upload failed
       setState(prev => ({ 
         ...prev, 
         isProcessing: false,
@@ -471,7 +465,7 @@ export const useKPAnalyzer = () => {
       }));
 
     } catch (error) {
-      console.error('[useKPAnalyzer] Analysis failed:', error);
+      // Analysis failed
       setState(prev => ({
         ...prev,
         isProcessing: false,
@@ -482,7 +476,7 @@ export const useKPAnalyzer = () => {
   }, [state.technicalSpec, state.commercialProposals, state.selectedModels]);
 
   const resetAnalyzer = useCallback(() => {
-    console.log('🔄 Полный сброс анализатора');
+    // Full analyzer reset
     // Полностью очищаем состояние
     setState({
       technicalSpec: null,
@@ -502,8 +496,7 @@ export const useKPAnalyzer = () => {
     
     // Очищаем кэш в сервисе анализа
     if (realKpAnalysisService && typeof realKpAnalysisService.clearCache === 'function') {
-      const cacheSize = realKpAnalysisService.getCacheSize?.() || 0;
-      console.log(`📊 Очищаем кэш (было ${cacheSize} элементов)`);
+      // Clearing cache
       realKpAnalysisService.clearCache();
     }
   }, []);

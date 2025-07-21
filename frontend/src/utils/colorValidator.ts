@@ -287,7 +287,7 @@ export const adjustColorForContrast = (
   return `#${newR.toString(16).padStart(2, '0')}${newG.toString(16).padStart(2, '0')}${newB.toString(16).padStart(2, '0')}`;
 };
 
-export default {
+const colorValidatorUtils = {
   baseColors,
   colorCombinations,
   validateColorSystem,
@@ -298,3 +298,5 @@ export default {
   validateSingleColor,
   adjustColorForContrast
 };
+
+export default colorValidatorUtils;

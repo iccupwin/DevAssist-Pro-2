@@ -42,7 +42,7 @@ class WebSocketBridge {
         this.ws = new WebSocket(wsUrl);
 
         this.ws.onopen = () => {
-          console.log('WebSocket connected');
+          // WebSocket connected successfully
           this.reconnectAttempts = 0;
           this.setupHeartbeat();
           resolve();
@@ -53,12 +53,12 @@ class WebSocketBridge {
             const message: WebSocketMessage = JSON.parse(event.data);
             this.handleMessage(message);
           } catch (error) {
-            console.error('Error parsing WebSocket message:', error);
+            // Error parsing WebSocket message
           }
         };
 
         this.ws.onclose = (event) => {
-          console.log('WebSocket disconnected:', event.code, event.reason);
+          // WebSocket disconnected with code and reason
           this.cleanup();
           
           if (event.code !== 1000 && this.reconnectAttempts < this.options.maxReconnectAttempts) {
@@ -67,7 +67,7 @@ class WebSocketBridge {
         };
 
         this.ws.onerror = (error) => {
-          console.error('WebSocket error:', error);
+          // WebSocket connection error occurred
           reject(error);
         };
       } catch (error) {
@@ -85,11 +85,11 @@ class WebSocketBridge {
 
   private scheduleReconnect(): void {
     this.reconnectAttempts++;
-    console.log(`Reconnecting WebSocket (attempt ${this.reconnectAttempts}/${this.options.maxReconnectAttempts})...`);
+    // Attempting WebSocket reconnection
     
     setTimeout(() => {
       this.connect().catch(error => {
-        console.error('Reconnection failed:', error);
+        // WebSocket reconnection failed
       });
     }, this.options.reconnectDelay);
   }
@@ -127,7 +127,7 @@ class WebSocketBridge {
         break;
       
       case 'error':
-        console.error('WebSocket error:', message.data);
+        // WebSocket error received from server
         this.emit('error', message as WebSocketEvent);
         break;
       
@@ -142,7 +142,7 @@ class WebSocketBridge {
       try {
         listener(event);
       } catch (error) {
-        console.error('Error in WebSocket event listener:', error);
+        // Error occurred in WebSocket event listener
       }
     });
   }
@@ -178,7 +178,7 @@ class WebSocketBridge {
         this.ws.send(JSON.stringify(message));
         return true;
       } catch (error) {
-        console.error('Error sending WebSocket message:', error);
+        // Error sending WebSocket message
         return false;
       }
     }
@@ -264,7 +264,7 @@ class WebSocketBridge {
   // ===== PROJECT UPDATES =====
   subscribeToProjectUpdates(projectId: number, callback: (update: {
     type: string;
-    data: any;
+    data: Record<string, unknown>;
     timestamp: string;
   }) => void): void {
     const listener = (event: WebSocketEvent) => {
@@ -349,7 +349,7 @@ class WebSocketBridge {
     progress: number;
     completed: number;
     total: number;
-    errors: any[];
+    errors: Error[];
   }) => void): void {
     const listener = (event: WebSocketEvent) => {
       if (event.data.operation_id === operationId) {

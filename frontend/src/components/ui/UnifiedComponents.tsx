@@ -404,7 +404,7 @@ export const UnifiedFlex: React.FC<{
 UnifiedButton.displayName = 'UnifiedButton';
 UnifiedInput.displayName = 'UnifiedInput';
 
-export default {
+const unifiedComponents = {
   UnifiedButton,
   UnifiedInput,
   UnifiedCard,
@@ -412,3 +412,5 @@ export default {
   UnifiedGrid,
   UnifiedFlex
 };
+
+export default unifiedComponents;

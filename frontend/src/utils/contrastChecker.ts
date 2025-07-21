@@ -290,7 +290,7 @@ export const appColorPalette = {
   }
 };
 
-export default {
+const contrastCheckerUtils = {
   hexToRgb,
   getLuminance,
   getContrastRatio,
@@ -301,3 +301,5 @@ export default {
   suggestBetterColors,
   appColorPalette
 };
+
+export default contrastCheckerUtils;

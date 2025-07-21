@@ -20,7 +20,7 @@ import {
   Server
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
-import { Button } from '../ui/Button';
+// Button component import removed - not used in current implementation
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -74,7 +74,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
     try {
       await logout();
     } catch (error) {
-      console.error('Logout failed:', error);
+      // Logout failed
     }
   };
 

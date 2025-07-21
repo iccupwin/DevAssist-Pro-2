@@ -354,9 +354,11 @@ export const DecorativeImage: React.FC<{
   );
 };
 
-export default {
+const accessibleMediaComponents = {
   AccessibleImage,
   AccessibleVideo,
   AccessibleAudio,
   DecorativeImage
 };
+
+export default accessibleMediaComponents;

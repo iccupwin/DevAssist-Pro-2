@@ -1,4 +1,4 @@
-import React, { useState, Suspense, useEffect } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { AuthPage } from './pages/AuthPage';
 import LandingPage from './pages/LandingPage';
@@ -24,11 +24,6 @@ import ColorSystemValidator from './components/debug/ColorSystemValidator';
 import DesignConsistencyAuditor from './components/debug/DesignConsistencyAuditor';
 
 const App: React.FC = () => {
-  const [currentStep, setCurrentStep] = useState<string>('dashboard');
-
-  const handleStepChange = (step: string) => {
-    setCurrentStep(step);
-  };
 
   // Предзагружаем критические компоненты
   useEffect(() => {
@@ -43,8 +38,8 @@ const App: React.FC = () => {
           <GlobalHotkeyProvider
             onNewAnalysis={() => window.location.href = '/kp-analyzer'}
             onOpenProfile={() => window.location.href = '/profile'}
-            onSearch={() => console.log('Search not implemented')}
-            onToggleTheme={() => console.log('Theme toggle not implemented')}
+            onSearch={() => { /* TODO: Implement search functionality */ }}
+            onToggleTheme={() => { /* TODO: Implement theme toggle */ }}
           >
             <div className="App">
               <SkipToContent targetId="main-content" />

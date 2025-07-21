@@ -305,7 +305,7 @@ export const performanceMonitor = {
   }
 };
 
-export default {
+const assetOptimizerUtils = {
   generateOptimizedImageUrl,
   compressImage,
   preloadImages,
@@ -314,3 +314,5 @@ export default {
   resourceCache,
   performanceMonitor
 };
+
+export default assetOptimizerUtils;

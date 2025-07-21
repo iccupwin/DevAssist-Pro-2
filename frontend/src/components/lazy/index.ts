@@ -46,7 +46,7 @@ export const preloadVisualizationComponents = async () => {
   ]);
 };
 
-export default {
+const lazyComponents = {
   LazyDashboard,
   LazyKPAnalyzer,
   LazyAdminPage,
@@ -62,3 +62,5 @@ export default {
   preloadAdminComponents,
   preloadVisualizationComponents
 };
+
+export default lazyComponents;

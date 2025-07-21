@@ -26,8 +26,6 @@ import { ModernSidebar } from '../components/ui/ModernSidebar';
 import { useAIConfig } from '../hooks/useAIConfig';
 import type { AIProvider } from '../types/aiConfig';
 import { kpAnalyzerService } from '../services/ai/kpAnalyzerService';
-const logoLight = '/devent-logo.png';
-const logoDark = '/devent-logo-white1.png';
 
 interface DashboardModule {
   id: string;
@@ -41,9 +39,9 @@ interface DashboardModule {
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const { isDarkMode, toggleTheme } = useTheme();
-  const { isAuthenticated, user, isLoading, logout } = useAuth();
+  const { isAuthenticated, isLoading, logout } = useAuth();
   const [activeTab, setActiveTab] = useState<'modules' | 'visualization' | 'comparison'>('modules');
-  const { config, isLoading: aiConfigLoading } = useAIConfig();
+  useAIConfig(); // Using hook for configuration
   const [aiStatus, setAIStatus] = useState<{ openai: boolean | null; anthropic: boolean | null }>({ openai: null, anthropic: null });
   const [aiStatusDetails, setAIStatusDetails] = useState<
     Map<AIProvider, { ok: boolean; error?: { code: string; status?: number; message?: string } }>
@@ -54,13 +52,13 @@ const Dashboard: React.FC = () => {
   // Security check - redirect to login if not authenticated
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      console.warn('[Dashboard] User not authenticated, redirecting to login');
+      // User not authenticated, redirecting to login
       navigate('/auth/login', { replace: true });
       return;
     }
   }, [isAuthenticated, isLoading, navigate]);
 
-  // Отладочное логирование для Dashboard
+  // Dashboard lifecycle tracking
   useEffect(() => {
     // Component mounted
     
@@ -69,7 +67,7 @@ const Dashboard: React.FC = () => {
     };
   }, []);
 
-  // Логируем изменения темы
+  // Theme change tracking
   useEffect(() => {
     // Theme changed
   }, [isDarkMode]);
@@ -154,7 +152,7 @@ const Dashboard: React.FC = () => {
         setAIStatusDetails(statusDetails);
         
       } catch (error) {
-        console.error('Failed to check AI providers via backend:', error);
+        // Failed to check AI providers via backend
         
         // Безопасное извлечение сообщения об ошибке
         const errorMessage = error instanceof Error ? error.message : 'Неизвестная ошибка';
@@ -224,7 +222,7 @@ const Dashboard: React.FC = () => {
       
       setAnalysisResults(transformedResults);
     } catch (error) {
-      console.error('Ошибка загрузки данных анализа:', error);
+      // Error loading analysis data
       setAnalysisResults([]);
     } finally {
       setIsLoadingResults(false);
@@ -471,7 +469,7 @@ const Dashboard: React.FC = () => {
                 showExportOptions={true}
                 onExport={(type) => {
                   // Export functionality
-                  console.log('Export as:', type);
+                  // Export as: ${type}
                 }}
                 onRefresh={() => {
                   // Data refresh functionality - перезагружаем реальные данные

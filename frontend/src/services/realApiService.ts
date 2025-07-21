@@ -3,7 +3,7 @@
  */
 
 import { AnalysisResult } from './apiClient';
-import { httpClient, ApiResponse } from './httpClient';
+import { httpClient } from './httpClient';
 import { API_CONFIG } from '../config/api';
 
 const API_BASE_URL = API_CONFIG.BASE_URL;
@@ -64,9 +64,9 @@ class RealApiService {
       return {
         success: true,
         data: {
-          tz_file: (response.data as any).tz_file || null,
-          kp_files: (response.data as any).kp_files || [],
-          additional_files: (response.data as any).additional_files || []
+          tz_file: (response.data as { tz_file?: unknown })?.tz_file || null,
+          kp_files: (response.data as { kp_files?: unknown[] })?.kp_files || [],
+          additional_files: (response.data as { additional_files?: unknown[] })?.additional_files || []
         }
       };
     } else {

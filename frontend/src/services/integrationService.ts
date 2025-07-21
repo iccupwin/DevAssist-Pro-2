@@ -11,10 +11,8 @@ import {
   Analysis,
   KPAnalysisRequest,
   KPAnalysisResult,
-  DocumentUploadResponse,
   DashboardStats,
   PaginationParams,
-  APIResponse,
   WebSocketMessage,
   WebSocketEvent
 } from '../types/shared';
@@ -24,10 +22,7 @@ class IntegrationService {
   private wsConnection: WebSocket | null = null;
   private eventListeners: Map<string, ((event: WebSocketEvent) => void)[]> = new Map();
 
-  constructor() {
-    // Отключаем WebSocket для КП анализатора - используем только прямые API вызовы
-    // this.setupWebSocket();
-  }
+  // WebSocket setup removed - using direct API calls for KP analyzer
 
   // ===== AUTHENTICATION BRIDGE =====
   async authenticateUser(credentials: LoginFormData): Promise<AuthResponse> {
@@ -71,7 +66,7 @@ class IntegrationService {
       await unifiedApiClient.logout();
       this.closeWebSocket();
     } catch (error) {
-      console.error('Logout error:', error);
+      // Logout error occurred
     }
   }
 
@@ -113,7 +108,7 @@ class IntegrationService {
       
       return projectsWithDocuments;
     } catch (error) {
-      console.error('Error fetching projects with documents:', error);
+      // Error fetching projects with documents
       return [];
     }
   }
@@ -136,7 +131,7 @@ class IntegrationService {
       
       return project;
     } catch (error) {
-      console.error('Error creating project:', error);
+      // Error creating project
       return null;
     }
   }
@@ -169,7 +164,7 @@ class IntegrationService {
       
       return document;
     } catch (error) {
-      console.error('Error uploading document:', error);
+      // Error uploading document
       return null;
     }
   }
@@ -202,7 +197,7 @@ class IntegrationService {
           onProgress?.({ file: file.name, status: 'error', progress: 0 });
         }
       } catch (error) {
-        console.error(`Error uploading ${file.name}:`, error);
+        // Error uploading file
         onProgress?.({ file: file.name, status: 'error', progress: 0 });
       }
     }
@@ -241,7 +236,7 @@ class IntegrationService {
       
       return analysis;
     } catch (error) {
-      console.error('Error starting KP analysis:', error);
+      // Error starting KP analysis
       return null;
     }
   }
@@ -265,7 +260,7 @@ class IntegrationService {
       
       return null;
     } catch (error) {
-      console.error('Error getting KP analysis results:', error);
+      // Error getting KP analysis results
       return null;
     }
   }
@@ -276,7 +271,7 @@ class IntegrationService {
       const stats = await unifiedApiClient.getDashboardStats();
       return stats;
     } catch (error) {
-      console.error('Error getting dashboard data:', error);
+      // Error getting dashboard data
       return null;
     }
   }
@@ -286,7 +281,7 @@ class IntegrationService {
       const user = await unifiedApiClient.getCurrentUser();
       return user;
     } catch (error) {
-      console.error('Error getting user profile:', error);
+      // Error getting user profile
       return null;
     }
   }
@@ -302,7 +297,7 @@ class IntegrationService {
       
       return user;
     } catch (error) {
-      console.error('Error updating user profile:', error);
+      // Error updating user profile
       return null;
     }
   }
@@ -318,7 +313,7 @@ class IntegrationService {
       
       // Если нет токена, WebSocket не подключится
       if (!this.wsConnection) {
-        console.log('[IntegrationService] WebSocket not connected - no token available');
+        // WebSocket not connected - no token available
         return;
       }
       
@@ -327,21 +322,21 @@ class IntegrationService {
           const message: WebSocketMessage = JSON.parse(event.data);
           this.handleWebSocketMessage(message);
         } catch (error) {
-          console.error('Error parsing WebSocket message:', error);
+          // Error parsing WebSocket message
         }
       };
       
       this.wsConnection.onclose = () => {
-        console.log('WebSocket connection closed');
+        // WebSocket connection closed
         // Попытка переподключения через 5 секунд
         setTimeout(() => this.setupWebSocket(), 5000);
       };
       
       this.wsConnection.onerror = (error) => {
-        console.error('WebSocket error:', error);
+        // WebSocket error occurred
       };
     } catch (error) {
-      console.error('Error setting up WebSocket:', error);
+      // Error setting up WebSocket
     }
   }
 
@@ -358,7 +353,7 @@ class IntegrationService {
       try {
         listener(message as WebSocketEvent);
       } catch (error) {
-        console.error('Error in WebSocket event listener:', error);
+        // Error in WebSocket event listener
       }
     });
   }
@@ -384,7 +379,7 @@ class IntegrationService {
     description: string;
     project_id?: number;
     document_id?: number;
-    metadata?: Record<string, any>;
+    metadata?: Record<string, unknown>;
   }): Promise<void> {
     try {
       // Отправляем через WebSocket для real-time обновлений
@@ -395,15 +390,15 @@ class IntegrationService {
         }));
       }
     } catch (error) {
-      console.error('Error tracking activity:', error);
+      // Error tracking activity
     }
   }
 
   // ===== ERROR HANDLING =====
-  handleError(error: any, context?: string): void {
+  handleError(error: unknown, context?: string): void {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     
-    console.error(`Error in ${context}:`, error);
+    // Error occurred in service method
     
     // Отправляем ошибку через WebSocket для мониторинга
     if (this.wsConnection && this.wsConnection.readyState === WebSocket.OPEN) {
@@ -424,7 +419,7 @@ class IntegrationService {
       const health = await unifiedApiClient.healthCheck();
       return health.status === 'healthy';
     } catch (error) {
-      console.error('Health check failed:', error);
+      // Health check failed
       return false;
     }
   }

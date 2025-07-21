@@ -18,7 +18,7 @@ import {
   RotateCcw,
   Eye,
   FileText,
-  Settings,
+  // Settings, // Removed unused import
   Monitor,
   Zap,
   Cloud
@@ -92,7 +92,7 @@ const BackendManagement: React.FC = () => {
         setDatabases(databasesResponse.data);
       }
     } catch (error) {
-      console.error('Failed to load backend data:', error);
+      // Failed to load backend data
       // Показываем ошибку вместо моков
       setServices([]);
       setLogs([]);
@@ -106,7 +106,7 @@ const BackendManagement: React.FC = () => {
 
     const interval = setInterval(() => {
       // Здесь бы был реальный API вызов для обновления данных
-      console.log('Refreshing backend data...');
+      // Refreshing backend data...
     }, 5000);
 
     return () => clearInterval(interval);

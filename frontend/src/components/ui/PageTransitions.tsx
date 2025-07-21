@@ -384,7 +384,7 @@ export const TypingText: React.FC<{
   );
 };
 
-export default {
+const pageTransitionComponents = {
   PageTransition,
   StaggerContainer,
   RevealText,
@@ -394,3 +394,5 @@ export default {
   AnimatedBorder,
   TypingText
 };
+
+export default pageTransitionComponents;

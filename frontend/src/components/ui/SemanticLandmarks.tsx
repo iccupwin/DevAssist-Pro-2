@@ -241,7 +241,7 @@ export const HeadingStructure: React.FC<{
   );
 };
 
-export default {
+const semanticLandmarkComponents = {
   MainLandmark,
   NavigationLandmark,
   ComplementaryLandmark,
@@ -252,3 +252,5 @@ export default {
   BreadcrumbNavigation,
   HeadingStructure
 };
+
+export default semanticLandmarkComponents;

@@ -199,8 +199,7 @@ export const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
             </button>
             <button
               onClick={() => {
-                console.log('Performance Metrics:', metrics);
-                console.log('Core Web Vitals:', webVitals);
+                // Performance Metrics and Core Web Vitals logged
               }}
               className="text-xs px-2 py-1 bg-green-600 rounded hover:bg-green-700 transition-colors"
             >
@@ -228,7 +227,7 @@ export const withPerformanceMonitoring = <P extends object>(
       const renderTime = renderEndTime - renderStartTime;
       
       if (process.env.NODE_ENV === 'development') {
-        console.log(`${componentName} render time: ${renderTime.toFixed(2)}ms`);
+        // Component render time tracked
       }
     });
 

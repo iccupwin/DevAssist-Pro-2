@@ -413,7 +413,7 @@ export const MagneticButton: React.FC<{
   );
 };
 
-export default {
+const microInteractionComponents = {
   InteractiveButton,
   HoverCard,
   FloatingLabelInput,
@@ -421,3 +421,5 @@ export default {
   AnimatedProgress,
   MagneticButton
 };
+
+export default microInteractionComponents;

@@ -27,12 +27,7 @@ class UnifiedApiClient {
     // Используем стандартизированные ключи из AUTH_CONFIG
     this.token = localStorage.getItem(AUTH_CONFIG.TOKEN_STORAGE_KEY);
     this.refreshToken = localStorage.getItem(AUTH_CONFIG.REFRESH_TOKEN_STORAGE_KEY);
-    console.log('[UnifiedApiClient] Loading tokens:', {
-      hasToken: !!this.token,
-      hasRefreshToken: !!this.refreshToken,
-      tokenKey: AUTH_CONFIG.TOKEN_STORAGE_KEY,
-      refreshKey: AUTH_CONFIG.REFRESH_TOKEN_STORAGE_KEY
-    });
+    // Loading tokens: checking for existing access and refresh tokens in localStorage
   }
 
   private saveTokens(accessToken: string, refreshToken: string): void {
@@ -61,7 +56,7 @@ class UnifiedApiClient {
   ): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`;
     
-    console.log(`[UnifiedApiClient] Making request to: ${url}`);
+    // Making HTTP request to the specified endpoint
     
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
@@ -78,7 +73,7 @@ class UnifiedApiClient {
         headers,
       });
 
-      console.log(`[UnifiedApiClient] Response status: ${response.status}`);
+      // HTTP response received with status code
 
       // Handle token refresh
       if (response.status === 401 && this.refreshToken) {
@@ -95,7 +90,7 @@ class UnifiedApiClient {
 
       return this.handleResponse<T>(response);
     } catch (error) {
-      console.error(`[UnifiedApiClient] Request failed:`, error);
+      // Request failed due to network or other error
       throw new Error(
         error instanceof Error 
           ? error.message 
@@ -115,14 +110,14 @@ class UnifiedApiClient {
         // If we can't parse JSON, use the default error message
       }
       
-      console.error(`[UnifiedApiClient] Response error:`, errorMessage);
+      // HTTP response returned an error status
       throw new Error(errorMessage);
     }
 
     try {
       return await response.json();
     } catch (error) {
-      console.error(`[UnifiedApiClient] JSON parse error:`, error);
+      // Failed to parse JSON response from server
       throw new Error('Invalid JSON response from server');
     }
   }
@@ -130,17 +125,23 @@ class UnifiedApiClient {
   // ===== AUTHENTICATION API =====
   async login(credentials: LoginFormData): Promise<AuthResponse> {
     try {
-      console.log('[UnifiedApiClient] Starting login with credentials:', { email: credentials.email });
+      // Starting login process with email credentials
       
       // Отправляем только email и password
       const { email, password } = credentials;
-      console.log('[UnifiedApiClient] CALLING ENDPOINT:', '/api/auth/login');
-      const response = await this.request<any>('/api/auth/login', {
+      // Calling login endpoint
+      const response = await this.request<{
+        access_token?: string;
+        token?: string;
+        refresh_token?: string;
+        user: User;
+        expires_in?: number;
+      }>('/api/auth/login', {
         method: 'POST',
         body: JSON.stringify({ email, password }),
       });
 
-      console.log('[UnifiedApiClient] Login successful, response:', response);
+      // Login successful, processing response
 
       // Извлекаем токен и пользователя из ответа backend
       const token = response.access_token || response.token;
@@ -150,7 +151,7 @@ class UnifiedApiClient {
       // Сохраняем токен если получен
       if (token) {
         this.saveTokens(token, refreshToken);
-        console.log('[UnifiedApiClient] Token saved after login:', token.substring(0, 10) + '...');
+        // Access token saved to localStorage after successful login
       }
 
       return {
@@ -161,14 +162,14 @@ class UnifiedApiClient {
         expiresIn: response.expires_in,
       };
     } catch (error) {
-      console.error('[UnifiedApiClient] Login failed:', error);
+      // Login failed with error
       throw error;
     }
   }
 
   async register(userData: RegisterFormData): Promise<AuthResponse> {
     try {
-      console.log('[UnifiedApiClient] Starting registration with data:', userData);
+      // Starting user registration process
       
       // Трансформируем React типы в backend типы
       const backendData = {
@@ -178,15 +179,18 @@ class UnifiedApiClient {
         company: userData.organization,
       };
       
-      console.log('[UnifiedApiClient] Transformed backend data:', backendData);
+      // Transformed frontend data to match backend API format
 
       // Регистрируем пользователя
-      const response = await this.request<any>('/api/auth/register', {
+      const response = await this.request<{
+        token: string;
+        user: User;
+      }>('/api/auth/register', {
         method: 'POST',
         body: JSON.stringify(backendData),
       });
       
-      console.log('[UnifiedApiClient] Registration successful, response:', response);
+      // Registration successful, processing response
 
       // Извлекаем токен и пользователя из ответа backend
       const token = response.token;
@@ -195,7 +199,7 @@ class UnifiedApiClient {
       // Сохраняем токен если получен
       if (token) {
         this.saveTokens(token, token); // Используем тот же токен как refresh
-        console.log('[UnifiedApiClient] Token saved after registration:', token.substring(0, 10) + '...');
+        // Access token saved to localStorage after successful registration
       }
 
       // Возвращаем результат регистрации с токенами
@@ -206,11 +210,8 @@ class UnifiedApiClient {
         refreshToken: token, // Используем тот же токен как refresh
       };
     } catch (error) {
-      console.error('[UnifiedApiClient] Registration failed:', error);
-      console.error('[UnifiedApiClient] Error details:', {
-        message: error instanceof Error ? error.message : 'Unknown error',
-        stack: error instanceof Error ? error.stack : undefined
-      });
+      // Registration failed with error
+      // Error details logged for debugging
       
       // Проверяем, является ли ошибка CORS или сетевой
       const isCorsError = error instanceof Error && (
@@ -219,7 +220,7 @@ class UnifiedApiClient {
         error.message.includes('Network error')
       );
       if (isCorsError) {
-        console.log('[UnifiedApiClient] CORS error detected, using mock registration');
+        // CORS error detected, fallback to mock registration for development
         return this.mockRegister(userData);
       }
       throw error;
@@ -227,13 +228,13 @@ class UnifiedApiClient {
   }
 
   private async mockRegister(userData: RegisterFormData): Promise<AuthResponse> {
-    console.log('[UnifiedApiClient] Using mock registration');
+    // Using mock registration for development/testing purposes
     
     // Simulate network delay
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     const mockUser: User = {
-      id: Date.now() as any,
+      id: Date.now(),
       email: userData.email,
       full_name: `${userData.firstName} ${userData.lastName}`,
       firstName: userData.firstName,
@@ -448,7 +449,7 @@ class UnifiedApiClient {
     ai_model: string;
     ai_provider: string;
     tz_document_id?: number;
-    analysis_config?: Record<string, any>;
+    analysis_config?: Record<string, unknown>;
   }): Promise<Analysis> {
     return this.request<Analysis>('/api/analyses', {
       method: 'POST',
@@ -491,33 +492,8 @@ class UnifiedApiClient {
   // ===== WEBSOCKET CONNECTION =====
   connectWebSocket(): WebSocket | null {
     // WebSocket отключен для КП анализатора - используем только HTTP API
-    console.log('[UnifiedApiClient] WebSocket disabled - using HTTP API only');
+    // WebSocket disabled - using HTTP API only for KP analyzer
     return null;
-    
-    // Обновляем токены перед подключением
-    this.loadTokens();
-    
-    if (!this.token) {
-      console.warn('[UnifiedApiClient] No token available for WebSocket connection');
-      return null;
-    }
-    
-    const wsUrl = this.baseUrl.replace('http', 'ws');
-    const ws = new WebSocket(`${wsUrl}/ws?token=${this.token}`);
-    
-    ws.onopen = () => {
-      console.log('[UnifiedApiClient] WebSocket connected');
-    };
-    
-    ws.onclose = () => {
-      console.log('[UnifiedApiClient] WebSocket disconnected');
-    };
-    
-    ws.onerror = (error) => {
-      console.error('[UnifiedApiClient] WebSocket error:', error);
-    };
-    
-    return ws;
   }
 
   // ===== HEALTH CHECK =====

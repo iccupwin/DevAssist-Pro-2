@@ -9,17 +9,12 @@ import {
   Settings,
   BarChart3,
   DollarSign,
-  Zap,
   AlertTriangle,
   CheckCircle,
   Clock,
-  TrendingUp,
-  TrendingDown,
   Minus,
-  RefreshCw,
   Eye,
-  Edit,
-  Power,
+  RefreshCw,
   PieChart,
   Activity,
   Brain
@@ -40,10 +35,10 @@ export const AIManagement: React.FC<AIManagementProps> = ({
   className = ''
 }) => {
   const [providers, setProviders] = useState<AIProvider[]>([]);
-  const [selectedProvider, setSelectedProvider] = useState<AIProvider | null>(null);
+  // const [selectedProvider, setSelectedProvider] = useState<AIProvider | null>(null); // Reserved for future use
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isConfigPanelOpen, setIsConfigPanelOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // Currently used for loading state
   
   // Интеграция с unified AI config
   const { config, saveConfig } = useAIConfig();
@@ -61,11 +56,11 @@ export const AIManagement: React.FC<AIManagementProps> = ({
         setProviders(response.data);
       } else {
         // Показываем ошибку вместо моков
-        console.error('Failed to load AI providers: API error');
+        // Failed to load AI providers: API error
         setProviders([]);
       }
     } catch (error) {
-      console.error('Failed to load AI providers:', error);
+      // Failed to load AI providers
       // Показываем ошибку вместо моков
       setProviders([]);
     } finally {
@@ -78,7 +73,7 @@ export const AIManagement: React.FC<AIManagementProps> = ({
     try {
       await loadProviders();
     } catch (error) {
-      console.error('Failed to refresh AI data:', error);
+      // Failed to refresh AI data
     } finally {
       setIsRefreshing(false);
     }

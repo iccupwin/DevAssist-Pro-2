@@ -136,7 +136,7 @@ export const KPAnalyzerMain: React.FC = () => {
     try {
       await startAnalysis();
     } catch (error) {
-      console.error('Analysis failed:', error);
+      // Analysis failed
     }
   };
 
@@ -146,7 +146,7 @@ export const KPAnalyzerMain: React.FC = () => {
   };
 
   const handleNewAnalysis = () => {
-    console.log('🔄 Запуск нового анализа - полная очистка состояния');
+    // Starting new analysis - full state cleanup
     
     // Сначала сбрасываем хук (включая кэш)
     resetAnalyzer();
@@ -163,7 +163,7 @@ export const KPAnalyzerMain: React.FC = () => {
     // Очищаем текущий анализ в истории
     setCurrentAnalysisId(null);
     
-    console.log('✅ Состояние полностью очищено, готов к новому анализу');
+    // State fully cleared, ready for new analysis
   };
 
   const handleGenerateReport = () => {
@@ -177,7 +177,7 @@ export const KPAnalyzerMain: React.FC = () => {
         return;
       }
 
-      console.log('🔄 Начинаем генерацию PDF отчета...');
+      // Starting PDF report generation
 
       // Конвертируем результаты в правильный формат для PDF
       const convertedResults: KPAnalysisResult[] = analysisResults.map(result => ({
@@ -196,7 +196,7 @@ export const KPAnalyzerMain: React.FC = () => {
         analysisDate: result.analyzedAt || new Date().toISOString()
       }));
 
-      console.log('📋 Формирование структуры отчета...');
+      // Forming report structure
 
       // Генерируем PDF
       await kpPdfExportService.exportAnalysisReport(
@@ -210,11 +210,11 @@ export const KPAnalyzerMain: React.FC = () => {
         }
       );
 
-      console.log('✅ PDF отчет успешно сгенерирован');
+      // PDF report successfully generated
       alert('PDF отчет успешно сгенерирован и сохранен!');
 
     } catch (error) {
-      console.error('❌ Ошибка экспорта PDF:', error);
+      // PDF export error
       alert(`Ошибка экспорта PDF: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`);
     }
   };
@@ -241,33 +241,18 @@ export const KPAnalyzerMain: React.FC = () => {
     analysisDate: result.analyzedAt
   }));
 
-  // Логирование переходов для отладки
+  // State checking for transitions
   React.useEffect(() => {
-    console.log('🔄 Проверка состояния:', { 
-      hasResults, 
-      currentStep, 
-      resultsCount: analysisResults.length,
-      isProcessing 
-    });
+    // State check for component transitions
   }, [hasResults, currentStep, analysisResults.length, isProcessing]);
 
   // Синхронизируем состояние с хуком и автоматически переходим к результатам
   React.useEffect(() => {
-    console.log('📊 Состояние КП анализатора:', {
-      currentStep,
-      isProcessing,
-      hasResults,
-      resultsCount: analysisResults.length,
-      hasComparisonResult: !!comparisonResult,
-      comparisonResult,
-      tzLoaded: !!technicalSpec,
-      kpCount: commercialProposals.length,
-      progress: progress?.currentTask
-    });
+    // KP analyzer state tracking
 
     // Автоматический переход к результатам после завершения анализа
     if (hasResults && !isProcessing && currentStep !== 'results') {
-      console.log('🎯 Анализ завершен, автоматически переходим к результатам');
+      // Analysis completed, automatically transitioning to results
       setCurrentStep('results');
     }
   }, [currentStep, isProcessing, hasResults, analysisResults.length, comparisonResult, technicalSpec, commercialProposals.length, progress]);
@@ -283,7 +268,7 @@ export const KPAnalyzerMain: React.FC = () => {
         selectedModels
       );
       
-      console.log('📚 Анализ автоматически сохранен в историю:', analysisId);
+      // Analysis automatically saved to history
     }
   }, [hasResults, isProcessing, analysisResults.length, currentAnalysisId, convertedResults, comparisonResult, technicalSpec, commercialProposals, selectedModels, addToHistory]);
 
@@ -296,8 +281,13 @@ export const KPAnalyzerMain: React.FC = () => {
     setIsSidebarCollapsed(!isSidebarCollapsed);
   };
 
-  const handleLoadHistory = async (historyItem: any) => {
-    console.log('📖 Загружаем анализ из истории:', historyItem.id);
+  const handleLoadHistory = async (historyItem: {
+    id: string;
+    name: string;
+    results: KPAnalysisResult[];
+    comparisonResult: any;
+  }) => {
+    // Loading analysis from history
     
     setIsLoadingFromHistory(true);
     
@@ -314,14 +304,11 @@ export const KPAnalyzerMain: React.FC = () => {
         setIsLoadingFromHistory(false);
         setIsSidebarOpen(false);
         
-        console.log('✅ Исторический анализ загружен:', {
-          results: loadedData.results.length,
-          hasComparison: !!loadedData.comparisonResult
-        });
+        // Historical analysis loaded successfully
       }, 100); // Минимальная задержка для UX
       
     } catch (error) {
-      console.error('❌ Ошибка загрузки из истории:', error);
+      // Error loading from history
       setIsLoadingFromHistory(false);
     }
   };
@@ -336,7 +323,7 @@ export const KPAnalyzerMain: React.FC = () => {
     const historyItem = history.find(item => item.id === id);
     if (historyItem) {
       try {
-        console.log('📄 Экспорт PDF для анализа:', id);
+        // PDF export for historical analysis
         
         // Используем данные из истории
         await kpPdfExportService.exportAnalysisReport(
@@ -350,11 +337,11 @@ export const KPAnalyzerMain: React.FC = () => {
           }
         );
         
-        console.log('✅ PDF для исторического анализа успешно сгенерирован');
+        // PDF for historical analysis successfully generated
         alert('Исторический отчет успешно экспортирован!');
         
       } catch (error) {
-        console.error('❌ Ошибка экспорта исторического PDF:', error);
+        // Historical PDF export error
         alert(`Ошибка экспорта PDF: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`);
       }
     }

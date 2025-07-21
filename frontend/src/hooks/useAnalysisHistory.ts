@@ -46,7 +46,7 @@ export const useAnalysisHistory = () => {
         setHistory(parsedHistory);
       }
     } catch (error) {
-      console.error('Error loading analysis history:', error);
+      // Error loading analysis history
     }
   }, []);
 
@@ -56,7 +56,7 @@ export const useAnalysisHistory = () => {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(newHistory));
       setHistory(newHistory);
     } catch (error) {
-      console.error('Error saving analysis history:', error);
+      // Error saving analysis history
     }
   }, []);
 
@@ -64,8 +64,16 @@ export const useAnalysisHistory = () => {
   const addToHistory = useCallback((
     results: KPAnalysisResult[],
     comparisonResult: ComparisonResult | null,
-    technicalSpec: any,
-    commercialProposals: any[],
+    technicalSpec: {
+      name: string;
+      title: string;
+      content: string;
+    } | null,
+    commercialProposals: Array<{
+      name: string;
+      title: string;
+      content: string;
+    }>,
     selectedModels: { analysis: string; comparison: string },
     name?: string
   ) => {
@@ -102,12 +110,7 @@ export const useAnalysisHistory = () => {
     saveHistory(newHistory);
     setCurrentAnalysisId(analysisId);
     
-    console.log('📚 Анализ добавлен в историю:', {
-      id: analysisId,
-      name: newItem.name,
-      kpCount: newItem.kpCount,
-      avgScore: newItem.avgScore
-    });
+    // Analysis added to history
 
     return analysisId;
   }, [history, saveHistory]);
@@ -116,11 +119,7 @@ export const useAnalysisHistory = () => {
   const loadFromHistory = useCallback((historyItem: AnalysisHistoryItem) => {
     setCurrentAnalysisId(historyItem.id);
     
-    console.log('📖 Загружен анализ из истории:', {
-      id: historyItem.id,
-      name: historyItem.name,
-      kpCount: historyItem.kpCount
-    });
+    // Analysis loaded from history
 
     return {
       results: historyItem.results,
@@ -140,7 +139,7 @@ export const useAnalysisHistory = () => {
       setCurrentAnalysisId(null);
     }
     
-    console.log('🗑️ Анализ удален из истории:', id);
+    // Analysis deleted from history
   }, [history, saveHistory, currentAnalysisId]);
 
   // Обновление статуса анализа
@@ -155,7 +154,7 @@ export const useAnalysisHistory = () => {
   const clearHistory = useCallback(() => {
     saveHistory([]);
     setCurrentAnalysisId(null);
-    console.log('🧹 История анализов очищена');
+    // Analysis history cleared
   }, [saveHistory]);
 
   // Получение текущего анализа

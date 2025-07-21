@@ -41,7 +41,7 @@ class KPPdfExportService {
   /**
    * Безопасное добавление текста с поддержкой кириллицы
    */
-  private addText(text: string, x: number, y: number, options?: any): void {
+  private addText(text: string, x: number, y: number, options?: { fontSize?: number; fontStyle?: string; align?: string }): void {
     if (!this.doc) return;
     
     try {
@@ -49,7 +49,7 @@ class KPPdfExportService {
       this.doc.text(text, x, y, options);
     } catch (error) {
       // Если не получается, используем транслитерацию
-      console.warn('Cyrillic text detected, using transliteration');
+      // Cyrillic text detected, using transliteration
       this.doc.text(this.toAscii(text), x, y, options);
     }
   }
@@ -64,20 +64,20 @@ class KPPdfExportService {
     options: ExportOptions = {}
   ): Promise<void> {
     try {
-      console.log('🔄 Начинаем генерацию PDF с поддержкой кириллицы...');
+      // Starting PDF generation with Cyrillic support
       
       // Попробуем простой метод с jsPDF
       await this.exportSimplePDF(analysisResults, comparisonResult, tzName, options);
 
     } catch (error) {
-      console.error('❌ Ошибка генерации PDF:', error);
+      // PDF generation error occurred
       
       // Fallback к HTML методу
       try {
-        console.log('🔄 Пробуем альтернативный метод...');
+        // Trying alternative PDF generation method
         await this.exportHtmlBasedPDF(analysisResults, comparisonResult, tzName, options);
       } catch (fallbackError) {
-        console.error('❌ Ошибка альтернативного метода:', fallbackError);
+        // Alternative PDF generation method failed
         throw new Error('Не удалось сгенерировать PDF отчет');
       }
     }
@@ -92,7 +92,7 @@ class KPPdfExportService {
     tzName: string,
     options: ExportOptions = {}
   ): Promise<void> {
-    console.log('🔄 Создаем простой PDF отчет...');
+    // Creating simple PDF report
     
     // Используем HTML метод для корректной кириллицы
     return this.exportHtmlBasedPDF(analysisResults, comparisonResult, tzName, options);
@@ -165,15 +165,7 @@ class KPPdfExportService {
       const imgWidth = pdfWidth;
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
       
-      console.log('📊 PDF размеры:', {
-        pdfWidth,
-        pdfHeight,
-        canvasWidth: canvas.width,
-        canvasHeight: canvas.height,
-        imgWidth,
-        imgHeight,
-        fitsOnePage: imgHeight <= pdfHeight
-      });
+      // PDF dimensions configured with width, height, and fit calculation
       
       // Проверяем, что контент не пустой
       if (imgHeight < 50) {
@@ -189,7 +181,7 @@ class KPPdfExportService {
           pdf.addPage();
         }
         
-        console.log(`📄 Добавляем страницу ${pageNumber}, позиция: ${position}`);
+        // Adding PDF page
         
         // Добавляем изображение
         pdf.addImage(imgData, 'PNG', 0, -position, imgWidth, imgHeight);
@@ -198,13 +190,13 @@ class KPPdfExportService {
         pageNumber++;
       }
       
-      console.log(`✅ Создано ${pageNumber - 1} страниц`);
+      // PDF pages created successfully
 
       // Сохраняем файл
       const fileName = `KP_Full_Analysis_Report_${new Date().toISOString().slice(0, 10)}.pdf`;
       pdf.save(fileName);
 
-      console.log(`✅ PDF отчет успешно сохранен: ${fileName}`);
+      // PDF report saved successfully
 
     } finally {
       // Удаляем временный div
@@ -222,7 +214,7 @@ class KPPdfExportService {
     options: ExportOptions = {}
   ): string {
     const sortedResults = [...analysisResults].sort((a, b) => (b.complianceScore || 0) - (a.complianceScore || 0));
-    const bestResult = sortedResults[0];
+    // Best result determined by compliance score
     const avgScore = Math.round(analysisResults.reduce((acc, r) => acc + (r.complianceScore || 0), 0) / analysisResults.length);
 
     // Функции для извлечения данных (аналогично KPDetailedAnalysisResults)
@@ -258,7 +250,7 @@ class KPPdfExportService {
     };
     const getStrengths = (result: KPAnalysisResult) => result.strengths || [];
     const getWeaknesses = (result: KPAnalysisResult) => result.weaknesses || [];
-    const getMissingRequirements = (result: KPAnalysisResult) => result.missingRequirements || [];
+    // Missing requirements extraction utility available if needed
 
     const generateComplianceTable = (result: KPAnalysisResult) => {
       const score = getComplianceScore(result);

@@ -14,10 +14,10 @@ import {
   Edit,
   Ban,
   CheckCircle,
-  XCircle,
+  // XCircle, // Removed unused import
   Crown,
   User,
-  Calendar,
+  // Calendar, // Removed unused import
   Activity,
   DollarSign,
   MoreVertical,
@@ -166,7 +166,7 @@ export const UserManagement: React.FC<UserManagementProps> = ({
         setUsers(mockUsers);
       }
     } catch (error) {
-      console.error('Failed to load users:', error);
+      // Failed to load users - using fallback mock data
       // Fallback к mock данным
       setUsers(mockUsers);
     } finally {
@@ -205,8 +205,8 @@ export const UserManagement: React.FC<UserManagementProps> = ({
 
     // Сортировка
     result.sort((a, b) => {
-      let aValue: any = a[sortBy];
-      let bValue: any = b[sortBy];
+      let aValue: string | number | boolean | Date = a[sortBy] as string | number | boolean | Date;
+      let bValue: string | number | boolean | Date = b[sortBy] as string | number | boolean | Date;
 
       if (aValue === undefined) aValue = '';
       if (bValue === undefined) bValue = '';

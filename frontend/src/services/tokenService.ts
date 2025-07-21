@@ -68,14 +68,9 @@ export class TokenService {
       localStorage.setItem(this.REFRESH_TOKEN_KEY, refreshToken);
       localStorage.setItem(this.TOKEN_METADATA_KEY, JSON.stringify(metadata));
 
-      // Log security event
-      console.log('[TokenService] Tokens saved successfully', {
-        userId: payload.sub,
-        expiresAt: new Date(metadata.expiresAt).toISOString(),
-        sessionId: payload.jti
-      });
+      // Security event: Tokens saved successfully with user ID, expiration time, and session ID
     } catch (error) {
-      console.error('[TokenService] Failed to save tokens:', error);
+      // Error: Failed to save tokens - authentication token storage operation failed
       throw new Error('Failed to save authentication tokens');
     }
   }
@@ -93,14 +88,14 @@ export class TokenService {
 
       // Validate token format and expiration
       if (!this.isTokenValid(token)) {
-        console.warn('[TokenService] Access token is invalid or expired');
+        // Warning: Access token is invalid or expired - clearing stored tokens
         this.clearTokens();
         return null;
       }
 
       return token;
     } catch (error) {
-      console.error('[TokenService] Error getting access token:', error);
+      // Error: Failed to retrieve access token from storage
       return null;
     }
   }
@@ -112,7 +107,7 @@ export class TokenService {
     try {
       return localStorage.getItem(this.REFRESH_TOKEN_KEY);
     } catch (error) {
-      console.error('[TokenService] Error getting refresh token:', error);
+      // Error: Failed to retrieve refresh token from storage
       return null;
     }
   }
@@ -133,7 +128,7 @@ export class TokenService {
       const metadata = localStorage.getItem(this.TOKEN_METADATA_KEY);
       return metadata ? JSON.parse(metadata) : null;
     } catch (error) {
-      console.error('[TokenService] Error getting token metadata:', error);
+      // Error: Failed to retrieve or parse token metadata from storage
       return null;
     }
   }
@@ -158,17 +153,13 @@ export class TokenService {
       
       // Check if token is expired
       if (payload.exp <= now) {
-        console.warn('[TokenService] Token is expired', {
-          exp: payload.exp,
-          now: now,
-          expiredBy: now - payload.exp
-        });
+        // Warning: Token is expired - expiration time, current time, and expired duration logged for debugging
         return false;
       }
 
       return true;
     } catch (error) {
-      console.error('[TokenService] Error validating token:', error);
+      // Error: Token validation failed due to parsing or verification error
       return false;
     }
   }
@@ -190,7 +181,7 @@ export class TokenService {
       // Refresh if token expires within buffer time
       return timeUntilExpiration <= this.REFRESH_BUFFER_TIME && timeUntilExpiration > 0;
     } catch (error) {
-      console.error('[TokenService] Error checking refresh need:', error);
+      // Error: Failed to determine if token refresh is needed
       return false;
     }
   }
@@ -209,7 +200,7 @@ export class TokenService {
       const now = Date.now();
       return now >= metadata.refreshExpiresAt;
     } catch (error) {
-      console.error('[TokenService] Error checking refresh token expiration:', error);
+      // Error: Failed to check refresh token expiration - assuming expired for security
       return true;
     }
   }
@@ -245,11 +236,11 @@ export class TokenService {
       this.refreshCallbacks.forEach(callback => callback(true));
       this.refreshCallbacks = [];
       
-      console.log('[TokenService] Tokens refreshed successfully');
+      // Success: Tokens refreshed successfully and callbacks notified
       
       return newTokens;
     } catch (error) {
-      console.error('[TokenService] Token refresh failed:', error);
+      // Error: Token refresh operation failed - clearing invalid tokens
       
       // Clear invalid tokens
       TokenService.clearTokens();
@@ -302,7 +293,7 @@ export class TokenService {
         scope: tokenData.scope
       };
     } catch (error) {
-      console.error('[TokenService] Token refresh request failed:', error);
+      // Error: HTTP request for token refresh failed
       throw error;
     }
   }
@@ -330,7 +321,7 @@ export class TokenService {
       
       return JSON.parse(decoded) as TokenPayload;
     } catch (error) {
-      console.error('[TokenService] Failed to decode token:', error);
+      // Error: JWT token decoding failed due to invalid format or parsing error
       return null;
     }
   }
@@ -359,7 +350,7 @@ export class TokenService {
         permissions: payload.permissions || []
       };
     } catch (error) {
-      console.error('[TokenService] Error getting user from token:', error);
+      // Error: Failed to extract user information from token
       return null;
     }
   }
@@ -377,7 +368,7 @@ export class TokenService {
 
       return user.permissions.includes(permission) || user.role === 'admin';
     } catch (error) {
-      console.error('[TokenService] Error checking permission:', error);
+      // Error: Permission check failed - denying access for security
       return false;
     }
   }
@@ -398,7 +389,7 @@ export class TokenService {
       
       return Math.max(0, timeLeft);
     } catch (error) {
-      console.error('[TokenService] Error getting time until expiration:', error);
+      // Error: Failed to calculate time until token expiration
       return null;
     }
   }
@@ -412,9 +403,9 @@ export class TokenService {
       localStorage.removeItem(this.REFRESH_TOKEN_KEY);
       localStorage.removeItem(this.TOKEN_METADATA_KEY);
       
-      console.log('[TokenService] Tokens cleared successfully');
+      // Success: All authentication tokens and metadata cleared from storage
     } catch (error) {
-      console.error('[TokenService] Error clearing tokens:', error);
+      // Error: Failed to clear tokens from storage
     }
   }
 
@@ -447,16 +438,16 @@ export class TokenService {
             })
           });
         } catch (error) {
-          console.warn('[TokenService] Failed to notify server about logout:', error);
+          // Warning: Failed to notify server about logout - proceeding with local cleanup
         }
       }
       
       // Clear tokens regardless of server response
       this.clearTokens();
       
-      console.log('[TokenService] Logout completed');
+      // Success: Logout completed - tokens cleared and server notified
     } catch (error) {
-      console.error('[TokenService] Error during logout:', error);
+      // Error: Logout process encountered an error - still clearing tokens for security
       // Still clear tokens even if server notification fails
       this.clearTokens();
     }
