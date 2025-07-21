@@ -57,6 +57,9 @@ services:
       # CORS
       ALLOWED_ORIGINS: http://localhost:3000,http://localhost:3001
       
+      # Authentication
+      ADMIN_PASSWORD: admin123
+      
       # Файлы
       MAX_FILE_SIZE: 50MB
       SUPPORTED_FORMATS: pdf,docx,txt
