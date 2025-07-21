@@ -1046,7 +1046,8 @@ async def register_user(user_data: UserRegisterRequest):
     """Регистрация нового пользователя"""
     try:
         response = await auth_manager.register_user(user_data)
-        logger.info(f"Регистрация пользователя {user_data.email}: {'успешно' if response.get('success', False) else 'неудача'}")
+        success = response.get('success', False) if isinstance(response, dict) else getattr(response, 'success', False)
+        logger.info(f"Регистрация пользователя {user_data.email}: {'успешно' if success else 'неудача'}")
         return response
     except Exception as e:
         logger.error(f"Ошибка регистрации пользователя: {e}")
@@ -1060,7 +1061,8 @@ async def login_user(login_data: UserLoginRequest):
     """Вход пользователя в систему"""
     try:
         response = await auth_manager.login_user(login_data)
-        logger.info(f"Вход пользователя {login_data.email}: {'успешно' if response.get('success', False) else 'неудача'}")
+        success = response.get('success', False) if isinstance(response, dict) else getattr(response, 'success', False)
+        logger.info(f"Вход пользователя {login_data.email}: {'успешно' if success else 'неудача'}")
         return response
     except Exception as e:
         logger.error(f"Ошибка входа пользователя: {e}")
