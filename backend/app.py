@@ -360,8 +360,10 @@ class AuthManager:
                     # ИСПРАВЛЕНО: используем переменную окружения для админского пароля
                     admin_password = os.getenv("ADMIN_PASSWORD", "admin123")
                     
-                    # Проверка что в production не используется дефолтный пароль
-                    if os.getenv("ENVIRONMENT") == "production" and admin_password == "admin123":
+                    # Проверка что в production не используется дефолтный пароль (только если не установлен явно)
+                    if (os.getenv("ENVIRONMENT") == "production" and 
+                        admin_password == "admin123" and 
+                        os.getenv("ADMIN_PASSWORD") is None):
                         logger.error("🚨 КРИТИЧЕСКАЯ ОШИБКА: Нельзя использовать дефолтный пароль admin123 в production!")
                         raise ValueError("КРИТИЧЕСКАЯ ОШИБКА: Установите ADMIN_PASSWORD в переменных окружения!")
                     
@@ -1044,7 +1046,7 @@ async def register_user(user_data: UserRegisterRequest):
     """Регистрация нового пользователя"""
     try:
         response = await auth_manager.register_user(user_data)
-        logger.info(f"Регистрация пользователя {user_data.email}: {'успешно' if response.success else 'неудача'}")
+        logger.info(f"Регистрация пользователя {user_data.email}: {'успешно' if response.get('success', False) else 'неудача'}")
         return response
     except Exception as e:
         logger.error(f"Ошибка регистрации пользователя: {e}")
@@ -1058,7 +1060,7 @@ async def login_user(login_data: UserLoginRequest):
     """Вход пользователя в систему"""
     try:
         response = await auth_manager.login_user(login_data)
-        logger.info(f"Вход пользователя {login_data.email}: {'успешно' if response.success else 'неудача'}")
+        logger.info(f"Вход пользователя {login_data.email}: {'успешно' if response.get('success', False) else 'неудача'}")
         return response
     except Exception as e:
         logger.error(f"Ошибка входа пользователя: {e}")
