@@ -1,0 +1,21 @@
+# Simple Dockerfile for backend only
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install Python dependencies
+COPY requirements-monolith.txt ./
+RUN pip install --no-cache-dir -r requirements-monolith.txt
+
+# Create data directories
+RUN mkdir -p data/reports data/uploads data/cache
+
+# Copy application code
+COPY app.py ./
+COPY shared/ ./shared/
+
+# Expose port
+EXPOSE 8000
+
+# Run the application
+CMD ["python", "app.py"]
