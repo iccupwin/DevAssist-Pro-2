@@ -15,9 +15,12 @@ COPY . .
 # Expose port
 EXPOSE 3000
 
-# Set environment variables
-ENV REACT_APP_API_URL=http://localhost:8000
-ENV REACT_APP_WS_URL=ws://localhost:8000
+# Set environment variables for Docker
+ENV REACT_APP_API_URL=http://46.149.71.162:8000
+ENV REACT_APP_WS_URL=ws://46.149.71.162:8000
+ENV HOST=0.0.0.0
+ENV PORT=3000
+ENV WATCHPACK_POLLING=true
 
 # Start development server
 CMD ["npm", "start"]
