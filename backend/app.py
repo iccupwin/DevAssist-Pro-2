@@ -458,11 +458,13 @@ class AuthManager:
                 
                 logger.info(f"Пользователь зарегистрирован в БД: {user_data.email}")
                 
-                return AuthResponse(
-                    success=True,
-                    user=user_response,
-                    token=token
-                )
+                return {
+                    "success": True,
+                    "user": user_response,
+                    "token": token,
+                    "access_token": token,  # Для совместимости с frontend
+                    "refresh_token": token
+                }
                 
         except Exception as e:
             logger.error(f"Ошибка регистрации в БД: {e}")
@@ -520,11 +522,13 @@ class AuthManager:
                 
                 logger.info(f"Пользователь вошел в систему через БД: {login_data.email}")
                 
-                return AuthResponse(
-                    success=True,
-                    user=user_response,
-                    token=token
-                )
+                return {
+                    "success": True,
+                    "user": user_response,
+                    "token": token,
+                    "access_token": token,  # Для совместимости с frontend
+                    "refresh_token": token
+                }
             
         except Exception as e:
             logger.error(f"Ошибка входа в БД: {e}")
