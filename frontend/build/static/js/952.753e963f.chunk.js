@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkdevassist_pro_frontend=self.webpackChunkdevassist_pro_frontend||[]).push([[952],{4952:(e,n,t)=>{t.r(n),t.d(n,{ReactQueryDevtools:()=>r,ReactQueryDevtoolsPanel:()=>s});var r=function(){return null},s=function(){return null}}}]);
