@@ -37,7 +37,7 @@ if grep -q "http://46.149.71.162:3000" backend/docker-compose.monolith.yml; then
     echo "   ✅ CORS уже настроен для сервера"
 else
     echo "   🔧 Обновление CORS для IP сервера..."
-    sed -i 's|ALLOWED_ORIGINS: .*|ALLOWED_ORIGINS: http://46.149.71.162:3000,http://46.149.71.162,http://localhost:3000|' backend/docker-compose.monolith.yml
+    sed -i 's|ALLOWED_ORIGINS: .*|ALLOWED_ORIGINS: http://46.149.71.162:3000,http://46.149.71.162,http://localhost:3000,http://localhost:3001|' backend/docker-compose.monolith.yml
 fi
 
 echo ""

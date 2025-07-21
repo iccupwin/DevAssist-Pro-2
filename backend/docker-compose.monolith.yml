@@ -55,7 +55,7 @@ services:
       ENVIRONMENT: production
       
       # CORS
-      ALLOWED_ORIGINS: http://localhost:3000,http://localhost:3001
+      ALLOWED_ORIGINS: http://46.149.71.162:3000,http://46.149.71.162,http://localhost:3000,http://localhost:3001
       
       # Authentication
       ADMIN_PASSWORD: admin123
