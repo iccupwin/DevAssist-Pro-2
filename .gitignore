@@ -1,0 +1,503 @@
+# DevAssist Pro - .gitignore
+
+# ===== PYTHON =====
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+/frontend/node_modules/
+# PyBuilder
+
+.claude/
+
+.pybuilder/
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# poetry
+poetry.lock
+
+# pdm
+.pdm.toml
+
+# PEP 582
+__pypackages__/
+
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
+
+# Cython debug symbols
+cython_debug/
+
+# ===== NODE.JS / REACT =====
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+
+# nyc test coverage
+.nyc_output
+
+# Grunt intermediate storage
+.grunt
+
+# Bower dependency directory
+bower_components
+
+# node-waf configuration
+.lock-wscript
+
+# Compiled binary addons
+build/Release
+
+# Dependency directories
+jspm_packages/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Microbundle cache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# dotenv environment variables file
+.env
+.env.test
+.env.production
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# parcel-bundler cache
+.cache
+.parcel-cache
+
+# Next.js build output
+.next
+
+# Nuxt.js build / generate output
+.nuxt
+dist
+
+# Gatsby files
+.cache/
+public
+
+# Vuepress build output
+.vuepress/dist
+
+# Serverless directories
+.serverless/
+
+# FuseBox cache
+.fusebox/
+
+# DynamoDB Local files
+.dynamodb/
+
+# TernJS port file
+.tern-port
+
+# Stores VSCode versions used for testing VSCode extensions
+.vscode-test
+
+# yarn v2
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+
+# ===== DOCKER =====
+.dockerignore
+Dockerfile*
+docker-compose*.yml
+!docker-compose.yml
+!docker-compose.dev.yml
+!docker-compose.microservices.yml
+!docker-compose.monolith.yml
+
+# ===== IDE / EDITORS =====
+# VSCode
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# Cursor
+.cursor/
+
+# JetBrains IDEs
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# ===== OS =====
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.tmp
+*.temp
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# ===== PROJECT SPECIFIC =====
+# DevAssist Pro specific files
+analysis_results/
+*.7z
+*.zip
+*.tar.gz
+*.rar
+
+# Backup files
+*.backup
+*.bak
+*.old
+*.orig
+
+# Log files
+*.log
+logs/
+log/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Temporary files
+tmp/
+temp/
+.tmp/
+
+# Build artifacts
+build/
+dist/
+out/
+
+# Test results
+test-results/
+coverage/
+.nyc_output/
+
+# Environment files
+.env*
+!.env.example
+
+# API keys and secrets
+secrets/
+keys/
+*.key
+*.pem
+*.p12
+
+# Upload directories
+uploads/
+data/uploads/
+data/reports/
+
+# Cache directories
+.cache/
+cache/
+
+# Storybook
+storybook-static/
+
+# ===== PYTHON VIRTUAL ENVIRONMENTS =====
+# Virtual environments
+venv/
+env/
+.venv/
+.env/
+ENV/
+
+# ===== NODE MODULES =====
+# Node modules (already covered above, but being explicit)
+node_modules/
+
+# ===== DOCKER VOLUMES =====
+# Docker volumes and data
+docker-data/
+postgres-data/
+redis-data/
+
+# ===== SSL CERTIFICATES =====
+*.crt
+*.csr
+*.key
+*.pem
+*.p12
+*.pfx
+
+# ===== BACKUP AND ARCHIVE =====
+# Archive files
+*.7z
+*.zip
+*.tar
+*.tar.gz
+*.rar
+*.bz2
+
+# ===== MONITORING AND LOGS =====
+# Application logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ===== TESTING =====
+# Test coverage
+coverage/
+.nyc_output/
+.coverage
+
+# ===== DEPLOYMENT =====
+# Deployment artifacts
+deploy/
+dist/
+build/
+
+# ===== CUSTOM PROJECT FILES =====
+# DevAssist Pro specific exclusions
+._*
+.DS_Store
+Thumbs.db
+
+# Temporary script files
+*.tmp
+*.temp
+
+# ===== AI/ML MODELS =====
+# Large model files
+*.model
+*.pkl
+*.pickle
+*.h5
+*.hdf5
+*.onnx
+*.pb
+
+# ===== DOCUMENTATION BUILD =====
+# Documentation build artifacts
+docs/_build/
+docs/build/
+
+# ===== PACKAGE MANAGER LOCK FILES =====
+# Keep lock files for reproducible builds
+# package-lock.json
+# yarn.lock
+# poetry.lock
+# Pipfile.lock
+
+# ===== GIT =====
+# Git hooks
+.git/hooks/
+
+# ===== MISCELLANEOUS =====
+# Editor backup files
+*~
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db 

@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   # База данных PostgreSQL
   postgres:
@@ -50,25 +52,25 @@ services:
       REDIS_URL: redis://:redis_password@redis:6379/0
       
       # Настройки приложения
-      DEBUG: false
-      LOG_LEVEL: INFO
-      ENVIRONMENT: production
+      DEBUG: "false"
+      LOG_LEVEL: "INFO"
+      ENVIRONMENT: "production"
       
       # CORS
-      ALLOWED_ORIGINS: http://46.149.71.162:3000,http://46.149.71.162,http://localhost:3000,http://localhost:3001
+      ALLOWED_ORIGINS: "http://46.149.71.162:3000,http://46.149.71.162,http://localhost:3000,http://localhost:3001"
       
       # Authentication
-      ADMIN_PASSWORD: admin123
+      ADMIN_PASSWORD: "admin123"
       
       # Файлы
-      MAX_FILE_SIZE: 50MB
-      SUPPORTED_FORMATS: pdf,docx,txt
+      MAX_FILE_SIZE: "50MB"
+      SUPPORTED_FORMATS: "pdf,docx,txt"
       
       # AI Provider API Keys - Real working keys
-      ANTHROPIC_API_KEY: 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
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
-      GOOGLE_API_KEY: ${GOOGLE_API_KEY}
-      USE_REAL_API: true
+      ANTHROPIC_API_KEY: "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"
+      OPENAI_API_KEY: "${OPENAI_API_KEY}"
+      GOOGLE_API_KEY: "${GOOGLE_API_KEY}"
+      USE_REAL_API: "true"
       
     volumes:
       - app_data:/app/data

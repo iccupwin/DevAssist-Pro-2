@@ -53,7 +53,9 @@ class BaseServiceSettings(BaseSettings):
     
     class Config:
         env_file = ".env"
+        extra = "ignore"
         case_sensitive = False
+        extra = "ignore"  # Игнорировать дополнительные поля из переменных окружения
     
     def __post_init__(self):
         """Валидация настроек после инициализации"""
@@ -80,6 +82,7 @@ class DatabaseSettings(BaseSettings):
     
     class Config:
         env_file = ".env"
+        extra = "ignore"
 
 class RedisSettings(BaseSettings):
     """Настройки Redis"""
@@ -90,6 +93,7 @@ class RedisSettings(BaseSettings):
     
     class Config:
         env_file = ".env"
+        extra = "ignore"
 
 class AISettings(BaseSettings):
     """Настройки для AI провайдеров"""
@@ -120,6 +124,7 @@ class AISettings(BaseSettings):
     
     class Config:
         env_file = ".env"
+        extra = "ignore"
 
 class S3Settings(BaseSettings):
     """Настройки S3 хранилища"""
@@ -132,6 +137,7 @@ class S3Settings(BaseSettings):
     
     class Config:
         env_file = ".env"
+        extra = "ignore"
 
 # Глобальные настройки
 settings = BaseServiceSettings()

@@ -40,7 +40,7 @@ make health                   # Check service health
 make clean                    # Clean all data (DANGEROUS)
 
 # Direct commands
-python tests/run_all_tests.py            # Run all tests
+python tests/run_all_tests.py            # Run ALL system tests (comprehensive)
 python tests/integration/test_*.py       # Run specific integration tests
 python backend/api_gateway/main.py       # Start API Gateway directly
 python backend/services/llm/main.py      # Start LLM service directly
@@ -68,6 +68,7 @@ docker-compose -f backend/docker-compose.dev.yml down
 - **Analytics Service** (`:8004`) - Data analytics and metrics
 - **Reports Service** (`:8005`) - Report generation (PDF, Excel)
 - **Dashboard Service** (`:8006`) - Dashboard data aggregation
+- **Admin Service** (`:8007`) - Admin panel and user management
 
 ### Frontend Architecture (React SPA)
 - **Modular structure** with lazy-loaded modules
@@ -211,6 +212,16 @@ MAX_FILE_SIZE=50MB
 ALLOWED_ORIGINS=http://localhost:3000
 ```
 
+### Complete Environment Configuration
+The `.env.example` file provides comprehensive configuration options including:
+- **OAuth Providers**: Google, Yandex, Microsoft client credentials
+- **Email Configuration**: SMTP settings for notifications  
+- **Monitoring**: Sentry DSN, metrics endpoints, health check configuration
+- **Security**: JWT secrets, rate limiting, CORS origins, webhook secrets
+- **Backup**: Automated backup scheduling and retention policies
+- **Cache**: Redis caching with TTL and size limits
+- **Analytics**: Data retention and analytics toggles
+
 ### Development Setup
 1. Copy `.env.example` to `.env`
 2. Configure database and Redis connections
@@ -219,7 +230,33 @@ ALLOWED_ORIGINS=http://localhost:3000
 
 ## Deployment
 
-### Production Deployment
+### Multiple Docker Compose Configurations
+The project includes several Docker Compose configurations for different deployment scenarios:
+- `docker-compose.yml` - Base configuration
+- `docker-compose.dev.yml` - Development environment  
+- `docker-compose.production.yml` - Production deployment
+- `docker-compose.monolith.yml` - Monolith deployment option
+- `docker-compose.final.yml` - Final production configuration
+- `docker-compose.microservices.yml` - Full microservices with admin service
+
+### Production Deployment Commands
+```bash
+# Microservices deployment (recommended for admin panel)
+docker-compose -f docker-compose.microservices.yml up -d
+
+# Production deployment
+docker-compose -f docker-compose.production.yml up -d
+docker-compose -f docker-compose.final.yml up -d
+
+# Monolith deployment (single container)
+docker-compose -f docker-compose.monolith.yml up -d
+make -f backend/Makefile.monolith start
+
+# Automated deployment and restart
+./deploy-and-restart.sh
+```
+
+### Production Stack
 - **Docker Compose** for container orchestration
 - **Nginx** for reverse proxy and static file serving
 - **PostgreSQL** for primary database
@@ -230,6 +267,32 @@ ALLOWED_ORIGINS=http://localhost:3000
 - **Frontend**: Port 80 (via Nginx)
 - **API Gateway**: Port 8000
 - **Backend Services**: Internal network only
+
+### Operational Scripts
+The project includes numerous operational scripts for common development and deployment tasks:
+
+**Frontend Operations:**
+```bash
+./start-react-frontend.sh          # Start React frontend
+./fix-frontend-build.sh            # Fix frontend build issues
+./build-production-frontend.sh     # Build production frontend
+./fix-typescript-errors.sh         # Fix TypeScript compilation errors
+```
+
+**Backend Operations:**
+```bash
+./start-backend-simple.sh          # Start simplified backend
+./test-backend.sh                  # Test backend connectivity
+./restart-backend-only.sh          # Restart only backend services
+```
+
+**Development & Debugging:**
+```bash
+./quick-fix.sh                     # Quick development fixes
+./diagnose-build.sh                # Diagnose build issues
+./debug-container.sh               # Debug Docker containers
+./test-docker-build.sh             # Test Docker build process
+```
 
 ## Performance Considerations
 
@@ -305,3 +368,9 @@ make shell-redis
 - **Pull requests** for code review
 - **Conventional commits** for clear history
 - **No direct commits** to main branch
+
+# important-instruction-reminders
+Do what has been asked; nothing more, nothing less.
+NEVER create files unless they're absolutely necessary for achieving your goal.
+ALWAYS prefer editing an existing file to creating a new one.
+NEVER proactively create documentation files (*.md) or README files. Only create documentation files if explicitly requested by the User.

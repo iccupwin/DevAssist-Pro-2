@@ -49,6 +49,7 @@ SERVICES = {
     "documents": os.getenv("DOCUMENTS_SERVICE_URL", "http://localhost:8003"),
     "analytics": os.getenv("ANALYTICS_SERVICE_URL", "http://localhost:8004"),
     "reports": os.getenv("REPORTS_SERVICE_URL", "http://localhost:8005"),
+    "admin": os.getenv("ADMIN_SERVICE_URL", "http://localhost:8007"),
 }
 
 # HTTP клиент для проксирования запросов
@@ -196,6 +197,12 @@ async def reports_service(path: str, request: Request):
 async def auth_service_proxy(path: str, request: Request):
     """Проксирование запросов к сервису авторизации"""
     return await proxy_request("auth", f"/{path}", request)
+
+# Admin service proxy
+@app.api_route("/api/admin/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH"])
+async def admin_service_proxy(path: str, request: Request):
+    """Проксирование запросов к сервису администрирования"""
+    return await proxy_request("admin", f"/{path}", request)
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):

@@ -1,0 +1,103 @@
+# КОМАНДЫ ДЛЯ СЕРВЕРА 46.149.71.162
+
+# ============================================
+# БЫСТРОЕ ИСПРАВЛЕНИЕ И ЗАПУСК
+# ============================================
+
+# 1. Перейти в проект
+cd ~/project
+
+# 2. Остановить текущие процессы
+pkill -f "python.*app" || true
+pkill -f uvicorn || true
+
+# 3. Перейти в backend и исправить docker-compose.monolith.yml
+cd backend
+
+# 4. Создать резервную копию
+cp docker-compose.monolith.yml docker-compose.monolith.yml.backup
+
+# 5. Исправить файл (ВЫПОЛНИТЬ КАЖДУЮ КОМАНДУ ОТДЕЛЬНО):
+
+# Добавить version в начало
+sed -i '1i version: '"'"'3.8'"'"'\n' docker-compose.monolith.yml
+
+# Исправить булевые значения
+sed -i 's/DEBUG: false/DEBUG: "false"/g' docker-compose.monolith.yml
+sed -i 's/DEBUG: true/DEBUG: "true"/g' docker-compose.monolith.yml
+sed -i 's/LOG_LEVEL: INFO/LOG_LEVEL: "INFO"/g' docker-compose.monolith.yml
+sed -i 's/LOG_LEVEL: DEBUG/LOG_LEVEL: "DEBUG"/g' docker-compose.monolith.yml
+sed -i 's/ENVIRONMENT: production/ENVIRONMENT: "production"/g' docker-compose.monolith.yml
+sed -i 's/ENVIRONMENT: development/ENVIRONMENT: "development"/g' docker-compose.monolith.yml
+sed -i 's/USE_REAL_API: true/USE_REAL_API: "true"/g' docker-compose.monolith.yml
+sed -i 's/USE_REAL_API: false/USE_REAL_API: "false"/g' docker-compose.monolith.yml
+sed -i 's/ADMIN_PASSWORD: admin123/ADMIN_PASSWORD: "admin123"/g' docker-compose.monolith.yml
+sed -i 's/MAX_FILE_SIZE: 50MB/MAX_FILE_SIZE: "50MB"/g' docker-compose.monolith.yml
+sed -i 's/SUPPORTED_FORMATS: pdf,docx,txt/SUPPORTED_FORMATS: "pdf,docx,txt"/g' docker-compose.monolith.yml
+
+# Исправить ALLOWED_ORIGINS
+sed -i 's/ALLOWED_ORIGINS: http:/ALLOWED_ORIGINS: "http:/g' docker-compose.monolith.yml
+sed -i 's/localhost:3001$/localhost:3001"/g' docker-compose.monolith.yml
+
+# Исправить API ключи
+sed -i 's/ANTHROPIC_API_KEY: sk-ant/ANTHROPIC_API_KEY: "sk-ant/g' docker-compose.monolith.yml
+sed -i 's/-shXPyAAA$/-shXPyAAA"/g' docker-compose.monolith.yml
+
+# 6. Проверить конфигурацию
+docker-compose -f docker-compose.monolith.yml config
+
+# 7. Если конфигурация валидна, запустить полный монолит
+cd ..
+./deploy-full-monolith.sh
+
+# 8. Проверить результат
+curl http://localhost:8000/health
+
+# ============================================
+# ПРОВЕРКА РЕЗУЛЬТАТА
+# ============================================
+
+# Должно быть:
+# {"status":"healthy","service":"devassist-pro-monolith","timestamp":"...","version":"1.0.0"}
+
+# Проверить API endpoints:
+curl http://localhost:8000/api
+curl http://localhost:8000/api/admin/status
+curl http://localhost:8000/api/analytics/dashboard
+
+# ============================================
+# В СЛУЧАЕ ПРОБЛЕМ
+# ============================================
+
+# Восстановить из резервной копии:
+cd ~/project/backend
+mv docker-compose.monolith.yml.backup docker-compose.monolith.yml
+
+# Показать ошибки конфигурации:
+docker-compose -f docker-compose.monolith.yml config
+
+# Показать логи контейнеров:
+docker-compose -f docker-compose.monolith.yml logs
+
+# ============================================
+# АЛЬТЕРНАТИВНЫЙ СПОСОБ - РУЧНОЕ РЕДАКТИРОВАНИЕ
+# ============================================
+
+# Отредактировать файл вручную:
+nano ~/project/backend/docker-compose.monolith.yml
+
+# Убедиться что файл начинается с:
+# version: '3.8'
+# 
+# services:
+
+# И все переменные окружения в кавычках:
+# DEBUG: "false"
+# LOG_LEVEL: "INFO"
+# ENVIRONMENT: "production"
+# ADMIN_PASSWORD: "admin123"
+# MAX_FILE_SIZE: "50MB"
+# SUPPORTED_FORMATS: "pdf,docx,txt"
+# USE_REAL_API: "true"
+# ALLOWED_ORIGINS: "http://46.149.71.162:3000,http://46.149.71.162,http://localhost:3000,http://localhost:3001"
+# ANTHROPIC_API_KEY: "sk-ant-api03-..."

@@ -432,6 +432,80 @@ async def list_providers():
     
     return {"providers": providers_info}
 
+@app.get("/api/llm/providers/status")
+async def get_providers_status():
+    """Получение статуса AI провайдеров для админ панели"""
+    if not orchestrator:
+        raise HTTPException(status_code=503, detail="Service not initialized")
+    
+    status_info = {}
+    
+    # Check OpenAI
+    if "openai" in orchestrator.providers:
+        try:
+            # Simple health check - try to list models
+            provider = orchestrator.providers["openai"]
+            status_info["openai"] = {
+                "status": "healthy",
+                "available": True,
+                "models": list(provider.models.keys())
+            }
+        except Exception as e:
+            status_info["openai"] = {
+                "status": "unhealthy",
+                "available": False,
+                "error": str(e)
+            }
+    else:
+        status_info["openai"] = {
+            "status": "not_configured",
+            "available": False
+        }
+    
+    # Check Anthropic
+    if "anthropic" in orchestrator.providers:
+        try:
+            provider = orchestrator.providers["anthropic"]
+            status_info["anthropic"] = {
+                "status": "healthy",
+                "available": True,
+                "models": list(provider.models.keys())
+            }
+        except Exception as e:
+            status_info["anthropic"] = {
+                "status": "unhealthy",
+                "available": False,
+                "error": str(e)
+            }
+    else:
+        status_info["anthropic"] = {
+            "status": "not_configured",
+            "available": False
+        }
+    
+    # Check Google
+    if "google" in orchestrator.providers:
+        try:
+            provider = orchestrator.providers["google"]
+            status_info["google"] = {
+                "status": "healthy",
+                "available": True,
+                "models": list(provider.models.keys())
+            }
+        except Exception as e:
+            status_info["google"] = {
+                "status": "unhealthy",
+                "available": False,
+                "error": str(e)
+            }
+    else:
+        status_info["google"] = {
+            "status": "not_configured",
+            "available": False
+        }
+    
+    return status_info
+
 @app.get("/models")
 async def list_models():
     """Получение списка всех доступных моделей"""
