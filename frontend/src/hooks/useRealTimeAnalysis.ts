@@ -326,11 +326,11 @@ export const useRealTimeAnalysis = (): [UseRealTimeAnalysisState, UseRealTimeAna
         documentId: primaryDocument.id,
         tzContent: tzDocument?.extractedText,
         analysisOptions: {
-          aiModel: options.aiModel || 'claude-3-5-sonnet',
-          detailLevel: options.detailLevel || 'comprehensive',
-          includeFinancialAnalysis: options.includeFinancialAnalysis !== false,
-          includeTechnicalDeepDive: options.includeTechnicalDeepDive !== false,
-          includeRiskAssessment: options.includeRiskAssessment !== false
+          aiModel: (options as any).aiModel || 'claude-3-5-sonnet',
+          detailLevel: (options as any).detailLevel || 'comprehensive',
+          includeFinancialAnalysis: (options as any).includeFinancialAnalysis !== false,
+          includeTechnicalDeepDive: (options as any).includeTechnicalDeepDive !== false,
+          includeRiskAssessment: (options as any).includeRiskAssessment !== false
         }
       };
 
@@ -359,7 +359,7 @@ export const useRealTimeAnalysis = (): [UseRealTimeAnalysisState, UseRealTimeAna
         analysisResult: {
           ...result,
           processingDuration: elapsed,
-          aiModel: analysisRequest.analysisOptions.aiModel || 'claude-3-5-sonnet'
+          aiModel: (analysisRequest.analysisOptions as any).aiModel || 'claude-3-5-sonnet'
         },
         isAnalyzing: false,
         progress: {
@@ -400,7 +400,7 @@ export const useRealTimeAnalysis = (): [UseRealTimeAnalysisState, UseRealTimeAna
 
   const retryAnalysis = useCallback(async () => {
     if (lastAnalysisRequestRef.current) {
-      await startAnalysis(lastAnalysisRequestRef.current.analysisOptions);
+      await startAnalysis(lastAnalysisRequestRef.current.analysisOptions as any);
     }
   }, [startAnalysis]);
 
