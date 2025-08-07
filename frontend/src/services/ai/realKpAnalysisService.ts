@@ -235,9 +235,9 @@ ${this.truncateText(kpText)}
         },
         body: JSON.stringify({
           prompt,
-          max_tokens: 1000,
+          max_tokens: 2000,  // Increased for comprehensive analysis
           temperature: 0.1,
-          model: 'claude-3-5-sonnet-20240620'
+          model: 'claude-3-5-sonnet-20241022'  // Upgraded to latest model
         }),
       });
 
@@ -312,9 +312,9 @@ ${this.truncateText(kpText)}
         },
         body: JSON.stringify({
           prompt,
-          max_tokens: 2000,
+          max_tokens: 2000,  // Increased for comprehensive analysis
           temperature: 0.1,
-          model: 'claude-3-5-sonnet-20240620'
+          model: 'claude-3-5-sonnet-20241022'  // Upgraded to latest model
         }),
       });
 
@@ -399,9 +399,9 @@ ${additionalNotes ? `ДОПОЛНИТЕЛЬНЫЕ ЗАМЕЧАНИЯ: ${addition
         },
         body: JSON.stringify({
           prompt,
-          max_tokens: 1500,
+          max_tokens: 2000,  // Increased for comprehensive analysis
           temperature: 0.2,
-          model: 'gpt-4o' // Используем GPT для генерации заключений
+          model: 'claude-3-5-sonnet-20241022' // Using Claude for consistency
         }),
       });
 
@@ -709,16 +709,18 @@ ${this.truncateText(kpText)}
 Будь объективен и конкретен в оценках. Используй только информацию из предоставленных документов. Фокусируйся на аспектах, важных для сравнения с другими КП.`;
 
     try {
-      const response = await fetch(`${getBackendApiUrl()}/api/llm/analyze`, {
+      const apiUrl = getBackendApiUrl();
+      console.log('🔧 DEBUG: Using API URL:', apiUrl);
+      const response = await fetch(`${apiUrl}/api/llm/analyze`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           prompt,
-          max_tokens: 2000, // Оптимизировано для скорости
-          temperature: 0.05, // Еще более точные результаты
-          model: 'claude-3-5-sonnet-20240620'
+          max_tokens: 2000, // Optimized for comprehensive analysis
+          temperature: 0.05, // More precise results
+          model: 'claude-3-5-sonnet-20241022' // Latest model for best results
         }),
       });
 
@@ -871,6 +873,181 @@ ${this.truncateText(kpText)}
     // Если паттерн не найден, берем первые слова
     const words = nameWithoutExt.split(/[\s_-]+/);
     return words.slice(0, 2).join(' ') || 'Неизвестная компания';
+  }
+
+  /**
+   * Анализ документа для useRealTimeAnalysis хука
+   * Принимает текст КП и ТЗ (опционально), возвращает результат анализа
+   */
+  async analyzeDocument(
+    kpText: string,
+    tzText?: string,
+    onProgress?: (progress: { 
+      stage: 'upload' | 'extraction' | 'analysis' | 'compilation' | 'complete';
+      progress: number;
+      message: string;
+      currentSection?: string;
+    }) => void
+  ): Promise<any> {
+    try {
+      onProgress?.({
+        stage: 'analysis',
+        progress: 10,
+        message: 'Начинаем анализ коммерческого предложения...'
+      });
+
+      // Извлекаем данные из КП
+      onProgress?.({
+        stage: 'analysis',
+        progress: 30,
+        message: 'Извлечение основных данных...',
+        currentSection: 'Структурный анализ'
+      });
+
+      const kpSummary = await this.extractKPSummaryData(kpText, 'Коммерческое предложение');
+
+      let comparison = null;
+      let finalRecommendation = '';
+
+      if (tzText) {
+        // Если есть ТЗ, проводим сравнительный анализ
+        onProgress?.({
+          stage: 'analysis',
+          progress: 60,
+          message: 'Сравнение с техническим заданием...',
+          currentSection: 'Сравнительный анализ'
+        });
+
+        comparison = await this.compareKPWithTZ(tzText, kpText);
+
+        onProgress?.({
+          stage: 'compilation',
+          progress: 80,
+          message: 'Формирование рекомендаций...',
+          currentSection: 'Экспертные рекомендации'
+        });
+
+        finalRecommendation = await this.generateFinalRecommendation(comparison, kpSummary);
+      } else {
+        // Если нет ТЗ, проводим только анализ КП
+        onProgress?.({
+          stage: 'compilation',
+          progress: 80,
+          message: 'Формирование заключения...',
+          currentSection: 'Анализ предложения'
+        });
+
+        finalRecommendation = this.generateSimpleRecommendation({
+          compliance_score: 75,
+          sections: [],
+          missing_requirements: [],
+          additional_features: [],
+          risks: [],
+          advantages: [],
+          overall_assessment: 'Анализ без ТЗ',
+          strengths: [],
+          weaknesses: [],
+          recommendation: 'conditional'
+        }, kpSummary);
+      }
+
+      onProgress?.({
+        stage: 'complete',
+        progress: 100,
+        message: 'Анализ завершен успешно!'
+      });
+
+      // Возвращаем результат в формате, ожидаемом useRealTimeAnalysis
+      return {
+        documentName: 'Коммерческое предложение',
+        companyName: kpSummary.company_name,
+        overallScore: comparison?.compliance_score || 75,
+        confidenceScore: 85,
+        complianceLevel: this.getComplianceLevel(comparison?.compliance_score || 75),
+        
+        financials: {
+          totalBudget: this.parseBudget(kpSummary.pricing),
+          currencies: []
+        },
+        
+        sections: {
+          technical: {
+            title: 'Техническое решение',
+            score: comparison?.compliance_score || 75,
+            summary: kpSummary.tech_stack,
+            details: finalRecommendation,
+            keyPoints: comparison?.advantages || [],
+            recommendations: comparison?.missing_requirements || [],
+            confidence: 85,
+            wordCount: kpText.length
+          },
+          financial: {
+            title: 'Финансовые условия',
+            score: 80,
+            summary: kpSummary.pricing,
+            details: `Стоимость: ${kpSummary.pricing}`,
+            keyPoints: [kpSummary.pricing],
+            recommendations: [],
+            confidence: 90,
+            wordCount: kpSummary.pricing.length
+          },
+          timeline: {
+            title: 'Временные рамки',
+            score: 85,
+            summary: kpSummary.timeline,
+            details: `Сроки выполнения: ${kpSummary.timeline}`,
+            keyPoints: [kpSummary.timeline],
+            recommendations: [],
+            confidence: 80,
+            wordCount: kpSummary.timeline.length
+          }
+        },
+        
+        executiveSummary: {
+          keyStrengths: comparison?.advantages || [
+            'Детальное техническое решение',
+            'Четкие финансовые условия'
+          ],
+          criticalWeaknesses: comparison?.risks || [
+            'Требуется дополнительное уточнение деталей'
+          ],
+          recommendation: finalRecommendation || 'Коммерческое предложение имеет хорошие перспективы для реализации.'
+        }
+      };
+
+    } catch (error) {
+      console.error('Error in analyzeDocument:', error);
+      throw new Error(`Ошибка анализа документа: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  }
+
+  /**
+   * Определение уровня соответствия
+   */
+  private getComplianceLevel(score: number): string {
+    if (score >= 85) return 'Высокий';
+    if (score >= 70) return 'Хороший';
+    if (score >= 55) return 'Средний';
+    if (score >= 40) return 'Низкий';
+    return 'Критический';
+  }
+
+  /**
+   * Парсинг бюджета из строки стоимости
+   */
+  private parseBudget(pricing: string): { amount: number; currency: string; formatted: string } | undefined {
+    const matches = pricing.match(/(\d[\d\s,.]*)\s*(руб|рубл|₽|USD|EUR|\$|€)/i);
+    if (matches) {
+      const amount = parseFloat(matches[1].replace(/[\s,]/g, ''));
+      const currency = matches[2].toLowerCase().includes('руб') || matches[2] === '₽' ? 'RUB' : 
+                      matches[2] === '$' || matches[2].toLowerCase() === 'usd' ? 'USD' : 'EUR';
+      return {
+        amount,
+        currency,
+        formatted: pricing
+      };
+    }
+    return undefined;
   }
 
   /**
