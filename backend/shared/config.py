@@ -2,7 +2,7 @@
 Общие настройки конфигурации для всех микросервисов
 """
 from pydantic_settings import BaseSettings
-from typing import List, Optional
+from typing import List, Optional, Any
 import os
 
 class BaseServiceSettings(BaseSettings):
@@ -57,8 +57,9 @@ class BaseServiceSettings(BaseSettings):
         case_sensitive = False
         extra = "ignore"  # Игнорировать дополнительные поля из переменных окружения
     
-    def __post_init__(self):
+    def model_post_init(self, __context: Any) -> None:
         """Валидация настроек после инициализации"""
+        super().model_post_init(__context)
         # КРИТИЧНО: Проверка что в production не используются дефолтные значения
         if self.environment == 'production':
             if self.jwt_secret_key == 'your_jwt_secret_key_change_in_production':
