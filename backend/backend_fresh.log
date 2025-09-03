@@ -1,0 +1,169 @@
+INFO:__main__:Database modules loaded successfully
+INFO:shared.database:Database tables created successfully
+INFO:__main__:Database tables created/verified
+INFO:__main__:Admin user already exists
+INFO:prompt_manager:PromptManager initialized with directory: F:\DevAssitPro\DevAssist-Pro\backend\prompts
+INFO:services.documents.core.enhanced_ai_analyzer:Enhanced AI Analyzer initialized: use_real_api=True, fallback_mode=False
+INFO:services.reports.core.pdf_generator:ReportLab successfully imported - PDF generation available
+INFO:services.documents.core.enhanced_ai_analyzer:Enhanced AI Analyzer initialized: use_real_api=True, fallback_mode=False
+INFO:     Will watch for changes in these directories: ['F:\\DevAssitPro\\DevAssist-Pro\\backend']
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [42876] using WatchFiles
+INFO:__mp_main__:Database modules loaded successfully
+INFO:shared.database:Database tables created successfully
+INFO:__mp_main__:Database tables created/verified
+INFO:__mp_main__:Admin user already exists
+INFO:prompt_manager:PromptManager initialized with directory: F:\DevAssitPro\DevAssist-Pro\backend\prompts
+INFO:services.documents.core.enhanced_ai_analyzer:Enhanced AI Analyzer initialized: use_real_api=True, fallback_mode=False
+INFO:services.reports.core.pdf_generator:ReportLab successfully imported - PDF generation available
+INFO:services.documents.core.enhanced_ai_analyzer:Enhanced AI Analyzer initialized: use_real_api=True, fallback_mode=False
+INFO:app:Database modules loaded successfully
+INFO:shared.database:Database tables created successfully
+INFO:app:Database tables created/verified
+INFO:app:Admin user already exists
+INFO:     Started server process [31688]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:watchfiles.main:5 changes detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:5 changes detected
+WARNING:  WatchFiles detected changes in 'app.py'. Reloading...
+Starting DevAssist Pro - Monolith Application
+==================================================
+Available APIs:
+   - Health Check:     http://localhost:8000/health
+   - API Docs:         http://localhost:8000/docs
+   - Documents API:    http://localhost:8000/api/documents/
+   - Analytics API:    http://localhost:8000/api/analytics/
+   - Reports API:      http://localhost:8000/api/reports/
+   - KP Analyzer:      http://localhost:8000/api/kp-analyzer/
+   - Admin Panel:      http://localhost:8000/api/admin/
+==================================================
+ INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [31688]
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    from multiprocessing.spawn import spawn_main; spawn_main(parent_pid=42876, pipe_handle=676)
+                                                  ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Alienrhapsody\AppData\Local\Programs\Python\Python313\Lib\multiprocessing\spawn.py", line 122, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\Alienrhapsody\AppData\Local\Programs\Python\Python313\Lib\multiprocessing\spawn.py", line 131, in _main
+    prepare(preparation_data)
+    ~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Alienrhapsody\AppData\Local\Programs\Python\Python313\Lib\multiprocessing\spawn.py", line 246, in prepare
+    _fixup_main_from_path(data['init_main_from_path'])
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Alienrhapsody\AppData\Local\Programs\Python\Python313\Lib\multiprocessing\spawn.py", line 297, in _fixup_main_from_path
+    main_content = runpy.run_path(main_path,
+                                  run_name="__mp_main__")
+  File "<frozen runpy>", line 286, in run_path
+  File "<frozen runpy>", line 259, in _get_code_from_file
+  File "F:\DevAssitPro\DevAssist-Pro\backend\app.py", line 3311
+    """Полный анализ КП: загрузка \u2192 анализ \u2192 отчет"""
+                                  ^
+SyntaxError: invalid character '\u2192' (U+2192)
+INFO:watchfiles.main:15 changes detected
+WARNING:  WatchFiles detected changes in 'app.py'. Reloading...
+ Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    from multiprocessing.spawn import spawn_main; spawn_main(parent_pid=42876, pipe_handle=928)
+                                                  ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Alienrhapsody\AppData\Local\Programs\Python\Python313\Lib\multiprocessing\spawn.py", line 122, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\Alienrhapsody\AppData\Local\Programs\Python\Python313\Lib\multiprocessing\spawn.py", line 131, in _main
+    prepare(preparation_data)
+    ~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Alienrhapsody\AppData\Local\Programs\Python\Python313\Lib\multiprocessing\spawn.py", line 246, in prepare
+    _fixup_main_from_path(data['init_main_from_path'])
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Alienrhapsody\AppData\Local\Programs\Python\Python313\Lib\multiprocessing\spawn.py", line 297, in _fixup_main_from_path
+    main_content = runpy.run_path(main_path,
+                                  run_name="__mp_main__")
+  File "<frozen runpy>", line 286, in run_path
+  File "<frozen runpy>", line 259, in _get_code_from_file
+  File "F:\DevAssitPro\DevAssist-Pro\backend\app.py", line 3311
+    """Полный анализ КП: загрузка \u2192 анализ \u2192 отчет"""
+                                  ^
+SyntaxError: invalid character '\u2192' (U+2192)
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:5 changes detected
+WARNING:  WatchFiles detected changes in 'app.py'. Reloading...
+ Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    from multiprocessing.spawn import spawn_main; spawn_main(parent_pid=42876, pipe_handle=928)
+                                                  ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Alienrhapsody\AppData\Local\Programs\Python\Python313\Lib\multiprocessing\spawn.py", line 122, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\Alienrhapsody\AppData\Local\Programs\Python\Python313\Lib\multiprocessing\spawn.py", line 131, in _main
+    prepare(preparation_data)
+    ~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Alienrhapsody\AppData\Local\Programs\Python\Python313\Lib\multiprocessing\spawn.py", line 246, in prepare
+    _fixup_main_from_path(data['init_main_from_path'])
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Alienrhapsody\AppData\Local\Programs\Python\Python313\Lib\multiprocessing\spawn.py", line 297, in _fixup_main_from_path
+    main_content = runpy.run_path(main_path,
+                                  run_name="__mp_main__")
+  File "<frozen runpy>", line 286, in run_path
+  File "<frozen runpy>", line 259, in _get_code_from_file
+  File "F:\DevAssitPro\DevAssist-Pro\backend\app.py", line 3319
+    """Полный анализ КП: загрузка \u2192 анализ \u2192 отчет"""
+                                  ^
+SyntaxError: invalid character '\u2192' (U+2192)
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:5 changes detected
+ WARNING:  WatchFiles detected changes in 'app.py'. Reloading...
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    from multiprocessing.spawn import spawn_main; spawn_main(parent_pid=42876, pipe_handle=928)
+                                                  ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Alienrhapsody\AppData\Local\Programs\Python\Python313\Lib\multiprocessing\spawn.py", line 122, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\Alienrhapsody\AppData\Local\Programs\Python\Python313\Lib\multiprocessing\spawn.py", line 131, in _main
+    prepare(preparation_data)
+    ~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Alienrhapsody\AppData\Local\Programs\Python\Python313\Lib\multiprocessing\spawn.py", line 246, in prepare
+    _fixup_main_from_path(data['init_main_from_path'])
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Alienrhapsody\AppData\Local\Programs\Python\Python313\Lib\multiprocessing\spawn.py", line 297, in _fixup_main_from_path
+    main_content = runpy.run_path(main_path,
+                                  run_name="__mp_main__")
+  File "<frozen runpy>", line 286, in run_path
+  File "<frozen runpy>", line 259, in _get_code_from_file
+  File "F:\DevAssitPro\DevAssist-Pro\backend\app.py", line 3319
+    """Полный анализ КП: загрузка \u2192 анализ \u2192 отчет"""
+                                  ^
+SyntaxError: invalid character '\u2192' (U+2192)
+INFO:watchfiles.main:5 changes detected
+WARNING:  WatchFiles detected changes in 'app.py'. Reloading...
+ Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    from multiprocessing.spawn import spawn_main; spawn_main(parent_pid=42876, pipe_handle=928)
+                                                  ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Alienrhapsody\AppData\Local\Programs\Python\Python313\Lib\multiprocessing\spawn.py", line 122, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\Alienrhapsody\AppData\Local\Programs\Python\Python313\Lib\multiprocessing\spawn.py", line 131, in _main
+    prepare(preparation_data)
+    ~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Alienrhapsody\AppData\Local\Programs\Python\Python313\Lib\multiprocessing\spawn.py", line 246, in prepare
+    _fixup_main_from_path(data['init_main_from_path'])
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Alienrhapsody\AppData\Local\Programs\Python\Python313\Lib\multiprocessing\spawn.py", line 297, in _fixup_main_from_path
+    main_content = runpy.run_path(main_path,
+                                  run_name="__mp_main__")
+  File "<frozen runpy>", line 286, in run_path
+  File "<frozen runpy>", line 259, in _get_code_from_file
+  File "F:\DevAssitPro\DevAssist-Pro\backend\app.py", line 4354
+    """Generate TZ compliance analysis"""
+                                      ^
+SyntaxError: unterminated triple-quoted string literal (detected at line 4400)
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected

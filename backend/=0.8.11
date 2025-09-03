@@ -1,0 +1,32 @@
+Collecting reportlab
+  Downloading reportlab-4.4.3-py3-none-any.whl.metadata (1.7 kB)
+Collecting openpyxl
+  Downloading openpyxl-3.1.5-py2.py3-none-any.whl.metadata (2.5 kB)
+Collecting PyPDF2
+  Using cached pypdf2-3.0.1-py3-none-any.whl.metadata (6.8 kB)
+Collecting pymupdf
+  Downloading pymupdf-1.26.3-cp39-abi3-win_amd64.whl.metadata (3.4 kB)
+Collecting python-docx
+  Downloading python_docx-1.2.0-py3-none-any.whl.metadata (2.0 kB)
+Collecting pillow>=9.0.0 (from reportlab)
+  Downloading pillow-11.3.0-cp313-cp313-win_amd64.whl.metadata (9.2 kB)
+Requirement already satisfied: charset-normalizer in c:\users\alienrhapsody\appdata\local\programs\python\python313\lib\site-packages (from reportlab) (3.4.2)
+Collecting et-xmlfile (from openpyxl)
+  Downloading et_xmlfile-2.0.0-py3-none-any.whl.metadata (2.7 kB)
+Collecting lxml>=3.1.0 (from python-docx)
+  Downloading lxml-6.0.0-cp313-cp313-win_amd64.whl.metadata (6.8 kB)
+Requirement already satisfied: typing_extensions>=4.9.0 in c:\users\alienrhapsody\appdata\local\programs\python\python313\lib\site-packages (from python-docx) (4.14.1)
+Downloading reportlab-4.4.3-py3-none-any.whl (2.0 MB)
+   ---------------------------------------- 2.0/2.0 MB 3.3 MB/s eta 0:00:00
+Downloading openpyxl-3.1.5-py2.py3-none-any.whl (250 kB)
+Downloading pypdf2-3.0.1-py3-none-any.whl (232 kB)
+Downloading pymupdf-1.26.3-cp39-abi3-win_amd64.whl (18.7 MB)
+   ---------------------------------------- 18.7/18.7 MB 6.6 MB/s eta 0:00:00
+Using cached python_docx-1.2.0-py3-none-any.whl (252 kB)
+Downloading lxml-6.0.0-cp313-cp313-win_amd64.whl (4.0 MB)
+   ---------------------------------------- 4.0/4.0 MB 7.2 MB/s eta 0:00:00
+Downloading pillow-11.3.0-cp313-cp313-win_amd64.whl (7.0 MB)
+   ---------------------------------------- 7.0/7.0 MB 7.3 MB/s eta 0:00:00
+Downloading et_xmlfile-2.0.0-py3-none-any.whl (18 kB)
+Installing collected packages: PyPDF2, pymupdf, pillow, lxml, et-xmlfile, reportlab, python-docx, openpyxl
+Successfully installed PyPDF2-3.0.1 et-xmlfile-2.0.0 lxml-6.0.0 openpyxl-3.1.5 pillow-11.3.0 pymupdf-1.26.3 python-docx-1.2.0 reportlab-4.4.3

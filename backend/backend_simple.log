@@ -1,0 +1,18 @@
+INFO:     Started server process [20768]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+Starting DevAssist Pro - Simple version
+==================================================
+API:
+   - Health:      http://localhost:8000/health
+   - API Docs:    http://localhost:8000/docs
+   - Auth:        http://localhost:8000/api/auth/
+
+Test users:
+   - test@example.com / testpass123
+   - admin@devassist.pro / admin123
+==================================================
+INFO:     127.0.0.1:54340 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54340 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54340 - "GET /health HTTP/1.1" 200 OK
