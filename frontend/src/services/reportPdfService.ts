@@ -26,7 +26,8 @@ const initializePDFLibraries = async () => {
 class ReportPDFService {
   private readonly pageWidth = 210; // A4 width in mm
   private readonly pageHeight = 297; // A4 height in mm
-  private readonly margin = 20;
+  private readonly margin = 25;
+  private readonly bottomMargin = 40; // Увеличенное нижнее поле
   private readonly contentWidth = this.pageWidth - (this.margin * 2);
 
   /**
@@ -173,7 +174,7 @@ class ReportPDFService {
     
     const summaryLines = this.splitText(pdf, report.executive_summary, this.contentWidth);
     summaryLines.forEach((line: string) => {
-      if (y > this.pageHeight - this.margin - 10) {
+      if (y > this.pageHeight - this.bottomMargin - 10) {
         pdf.addPage();
         y = this.margin;
       }
@@ -253,7 +254,7 @@ class ReportPDFService {
     // Table rows
     pdf.setFont('helvetica', 'normal');
     results.forEach((result) => {
-      if (y > this.pageHeight - this.margin - 15) {
+      if (y > this.pageHeight - this.bottomMargin - 15) {
         pdf.addPage();
         y = this.margin;
       }
@@ -333,7 +334,7 @@ class ReportPDFService {
     pdf.setFont('helvetica', 'normal');
     const detailLines = this.splitText(pdf, result.analysis.detailedAnalysis, this.contentWidth);
     detailLines.forEach((line: string) => {
-      if (y > this.pageHeight - this.margin - 10) {
+      if (y > this.pageHeight - this.bottomMargin - 10) {
         pdf.addPage();
         y = this.margin;
       }
@@ -354,7 +355,7 @@ class ReportPDFService {
     result.analysis.recommendations.forEach((rec: string) => {
       const recLines = this.splitText(pdf, `• ${rec}`, this.contentWidth - 5);
       recLines.forEach((line: string) => {
-        if (y > this.pageHeight - this.margin - 10) {
+        if (y > this.pageHeight - this.bottomMargin - 10) {
           pdf.addPage();
           y = this.margin;
         }
@@ -384,7 +385,7 @@ class ReportPDFService {
     recommendations.forEach((rec: string, index: number) => {
       const recLines = this.splitText(pdf, `${index + 1}. ${rec}`, this.contentWidth);
       recLines.forEach((line: string) => {
-        if (y > this.pageHeight - this.margin - 10) {
+        if (y > this.pageHeight - this.bottomMargin - 10) {
           pdf.addPage();
           y = this.margin;
         }

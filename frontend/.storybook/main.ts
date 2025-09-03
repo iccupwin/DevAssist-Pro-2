@@ -2,29 +2,30 @@ import type { StorybookConfig } from '@storybook/react-webpack5';
 
 const config: StorybookConfig = {
   stories: [
-    '../src/**/*.stories.@(js|jsx|ts|tsx)',
+    '../src/components/ui/SimpleButton.stories.tsx',
   ],
   addons: [
     '@storybook/preset-create-react-app',
     '@storybook/addon-essentials',
-    '@storybook/addon-actions',
-    '@storybook/addon-docs'
   ],
   framework: {
     name: '@storybook/react-webpack5',
-    options: {},
+    options: {
+      builder: {
+        useSWC: true,
+      },
+    },
   },
   docs: {
-    autodocs: 'tag',
-    defaultName: 'Documentation'
+    autodocs: false,
   },
   typescript: {
     check: false,
-    reactDocgen: 'react-docgen',
+    reactDocgen: false,
   },
   staticDirs: ['../public'],
-  features: {
-    storyStoreV7: true,
+  core: {
+    disableTelemetry: true,
   },
 };
 

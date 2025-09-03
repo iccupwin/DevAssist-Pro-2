@@ -1,0 +1,112 @@
+# DevAssist Pro Database Management
+# Convenient commands for database operations
+
+.PHONY: help db-help db-status db-create db-drop db-reset db-migrate db-upgrade db-seed db-backup db-restore
+
+# Default target
+help:
+	@echo "DevAssist Pro Database Management"
+	@echo "================================="
+	@echo ""
+	@echo "Available commands:"
+	@echo "  make db-help      - Show database commands help"
+	@echo "  make db-status    - Check database status and health"
+	@echo "  make db-create    - Create database"
+	@echo "  make db-drop      - Drop database (DANGEROUS!)"
+	@echo "  make db-reset     - Reset database (drop all tables and recreate)"
+	@echo "  make db-migrate   - Create new migration (requires MESSAGE)"
+	@echo "  make db-upgrade   - Apply all pending migrations"
+	@echo "  make db-seed      - Seed database with initial data"
+	@echo "  make db-backup    - Create database backup (requires FILE)"
+	@echo "  make db-restore   - Restore database from backup (requires FILE)"
+	@echo ""
+	@echo "Examples:"
+	@echo "  make db-migrate MESSAGE='Add user profile fields'"
+	@echo "  make db-backup FILE=backup_$(shell date +%Y%m%d_%H%M%S).sql"
+	@echo "  make db-restore FILE=backup_20250117_120000.sql"
+
+db-help: help
+
+db-status:
+	@echo "Checking database status..."
+	python manage.py health
+	python manage.py current
+
+db-create:
+	@echo "Creating database..."
+	python manage.py create-db
+
+db-drop:
+	@echo "⚠️  WARNING: This will drop the entire database!"
+	@read -p "Are you sure? Type 'yes' to continue: " confirm && [ "$$confirm" = "yes" ] || exit 1
+	python manage.py drop-db
+
+db-reset:
+	@echo "⚠️  WARNING: This will reset the entire database!"
+	@read -p "Are you sure? Type 'yes' to continue: " confirm && [ "$$confirm" = "yes" ] || exit 1
+	python manage.py reset
+
+db-migrate:
+	@if [ -z "$(MESSAGE)" ]; then \
+		echo "Error: MESSAGE is required"; \
+		echo "Usage: make db-migrate MESSAGE='Your migration message'"; \
+		exit 1; \
+	fi
+	python manage.py migrate "$(MESSAGE)"
+
+db-upgrade:
+	@echo "Applying database migrations..."
+	python manage.py upgrade
+
+db-seed:
+	@echo "Seeding database with initial data..."
+	python manage.py seed
+
+db-backup:
+	@if [ -z "$(FILE)" ]; then \
+		FILE="backup_$(shell date +%Y%m%d_%H%M%S).sql"; \
+	fi; \
+	echo "Creating database backup: $$FILE"; \
+	python manage.py backup "$$FILE"
+
+db-restore:
+	@if [ -z "$(FILE)" ]; then \
+		echo "Error: FILE is required"; \
+		echo "Usage: make db-restore FILE=backup_file.sql"; \
+		exit 1; \
+	fi
+	@echo "⚠️  WARNING: This will restore database from backup and overwrite current data!"
+	@read -p "Are you sure? Type 'yes' to continue: " confirm && [ "$$confirm" = "yes" ] || exit 1
+	python manage.py restore "$(FILE)"
+
+# Quick setup for development
+db-setup-dev:
+	@echo "Setting up development database..."
+	python manage.py create-db
+	python manage.py upgrade
+	python manage.py seed
+	@echo "✅ Development database ready!"
+
+# Production setup
+db-setup-prod:
+	@echo "Setting up production database..."
+	@echo "⚠️  Make sure environment variables are set correctly!"
+	python manage.py create-db
+	python manage.py upgrade
+	@echo "✅ Production database ready!"
+
+# Migration workflow
+db-migration-workflow:
+	@echo "Database Migration Workflow"
+	@echo "=========================="
+	@echo "1. Make changes to models in shared/models.py"
+	@echo "2. Create migration: make db-migrate MESSAGE='Description'"
+	@echo "3. Review migration file in migrations/versions/"
+	@echo "4. Apply migration: make db-upgrade"
+	@echo "5. Test the changes"
+
+# Database maintenance
+db-maintenance:
+	@echo "Running database maintenance tasks..."
+	python manage.py health
+	@echo "✅ Database maintenance completed"

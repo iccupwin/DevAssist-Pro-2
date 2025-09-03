@@ -12,14 +12,13 @@ import {
   AlertTriangle,
   TrendingUp,
   TrendingDown,
-  Zap,
   Shield,
   Clock,
   Minus,
   RefreshCw,
-  Eye,
   Bell,
   CheckCircle,
+  Eye,
   XCircle,
   AlertCircle
 } from 'lucide-react';
@@ -58,7 +57,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const loadRealData = async () => {
     try {
       setError(null);
-      console.log('[AdminDashboard] Loading real data from backend...');
+      // [AdminDashboard] Loading real data from backend...
       
       const [metricsResponse, alertsResponse] = await Promise.all([
         adminService.getSystemMetrics(),
@@ -68,16 +67,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       const metricsData = metricsResponse.data;
       const alertsData = alertsResponse.data;
 
-      console.log('[AdminDashboard] Real data loaded:', {
-        metrics: metricsData,
-        alerts: alertsData
-      });
+      // [AdminDashboard] Real data loaded successfully
 
       setMetrics(metricsData);
       setAlerts(alertsData);
       
     } catch (error) {
-      console.error('[AdminDashboard] Failed to load real data:', error);
+      // [AdminDashboard] Failed to load real data - using fallback
       setError(error instanceof Error ? error.message : 'Failed to load data');
       // Устанавливаем пустые данные в случае ошибки
       setMetrics(emptyMetrics);
@@ -92,7 +88,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     try {
       await loadRealData();
     } catch (error) {
-      console.error('Failed to refresh data:', error);
+      // Failed to refresh data
     } finally {
       setIsRefreshing(false);
     }
@@ -136,12 +132,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     value: string | number;
     change?: number;
     changeLabel?: string;
-    icon: React.ComponentType<any>;
+    icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
     color: string;
     subtitle?: string;
   }> = ({ title, value, change, changeLabel, icon: Icon, color, subtitle }) => {
     const changeInfo = change !== undefined ? formatChange(change) : null;
-    const ChangeIcon = changeInfo?.icon;
+    // const ChangeIcon = changeInfo?.icon; // Icon component for change indicators
 
     return (
       <div className="bg-gray-800 border border-gray-700 rounded-lg p-6 hover:border-gray-600 transition-colors">

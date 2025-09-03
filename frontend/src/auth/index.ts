@@ -1,6 +1,7 @@
 // Authentication Context
 export { AuthProvider, useAuth } from '../contexts/AuthContext';
-export type { AuthState, RegisterData } from '../contexts/AuthContext';
+export type { AuthState } from '../contexts/AuthContext';
+export type { RegisterFormData as RegisterData } from '../types/auth';
 export type { User } from '../types/auth';
 
 // Authentication Hooks

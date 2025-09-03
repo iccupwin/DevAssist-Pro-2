@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Auth - DevAssist Pro</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        .success {
+            border-color: #28a745;
+            background: #d4edda;
+        }
+        .error {
+            border-color: #dc3545;
+            background: #f8d7da;
+        }
+    </style>
+</head>
+<body>
+    <h1>DevAssist Pro - Auth Test</h1>
+    
+    <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="email" id="email" value="test@example.com">
+    </div>
+    
+    <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" id="password" value="TestPass123">
+    </div>
+    
+    <div class="form-group">
+        <label for="fullName">Full Name (для регистрации):</label>
+        <input type="text" id="fullName" value="Test User">
+    </div>
+    
+    <button onclick="testRegister()">Регистрация</button>
+    <button onclick="testLogin()">Вход</button>
+    <button onclick="testProfile()">Получить профиль</button>
+    <button onclick="testLogout()">Выход</button>
+    
+    <div id="result" class="result"></div>
+    
+    <script>
+        let currentToken = null;
+        
+        async function testRegister() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const fullName = document.getElementById('fullName').value;
+            
+            try {
+                const response = await fetch('http://localhost:8000/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password,
+                        full_name: fullName
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentToken = data.token;
+                    showResult('Регистрация успешна!<br>Token: ' + data.token + '<br>User ID: ' + data.user_id, 'success');
+                } else {
+                    showResult('Ошибка регистрации: ' + (data.error || 'Unknown error'), 'error');
+                }
+            } catch (error) {
+                showResult('Ошибка сети: ' + error.message, 'error');
+            }
+        }
+        
+        async function testLogin() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                const response = await fetch('http://localhost:8000/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentToken = data.token;
+                    showResult('Вход успешен!<br>Token: ' + data.token + '<br>User ID: ' + data.user_id, 'success');
+                } else {
+                    showResult('Ошибка входа: ' + (data.error || 'Unknown error'), 'error');
+                }
+            } catch (error) {
+                showResult('Ошибка сети: ' + error.message, 'error');
+            }
+        }
+        
+        async function testProfile() {
+            if (!currentToken) {
+                showResult('Сначала войдите в систему!', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch('http://localhost:8000/api/auth/me', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + currentToken
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('Профиль:<br>' + JSON.stringify(data, null, 2), 'success');
+                } else {
+                    showResult('Ошибка получения профиля: ' + (data.detail || 'Unknown error'), 'error');
+                }
+            } catch (error) {
+                showResult('Ошибка сети: ' + error.message, 'error');
+            }
+        }
+        
+        async function testLogout() {
+            if (!currentToken) {
+                showResult('Вы не авторизованы', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch('http://localhost:8000/api/auth/logout', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + currentToken
+                    }
+                });
+                
+                const data = await response.json();
+                currentToken = null;
+                showResult('Выход выполнен: ' + data.message, 'success');
+            } catch (error) {
+                showResult('Ошибка сети: ' + error.message, 'error');
+            }
+        }
+        
+        function showResult(message, type) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = message;
+            resultDiv.className = 'result ' + type;
+        }
+    </script>
+</body>
+</html>

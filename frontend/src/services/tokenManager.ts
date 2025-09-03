@@ -18,6 +18,17 @@ export interface TokenManagerConfig {
   enableAutoRefresh: boolean;
 }
 
+export interface LoginResponse {
+  accessToken?: string;
+  token?: string;
+  refreshToken?: string;
+  expiresAt?: string | number;
+  expiresIn?: number;
+  scope?: string;
+  success?: boolean;
+  message?: string;
+}
+
 const DEFAULT_CONFIG: TokenManagerConfig = {
   storageType: 'localStorage',
   refreshThreshold: 5, // Refresh 5 minutes before expiry
@@ -80,7 +91,8 @@ export class TokenManager {
       this.scheduleTokenRefresh();
       this.notifyRefreshCallbacks(tokenData);
     } catch (error) {
-      console.error('Failed to store token:', error);
+      // Token storage failed - authentication state may be inconsistent
+      throw new Error(`Token storage failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 
@@ -107,7 +119,7 @@ export class TokenManager {
 
       return tokenData;
     } catch (error) {
-      console.error('Failed to retrieve token:', error);
+      // Token retrieval failed - clearing corrupted token data
       this.clearToken();
       return null;
     }
@@ -178,7 +190,8 @@ export class TokenManager {
 
       this.notifyRefreshCallbacks(null);
     } catch (error) {
-      console.error('Failed to clear token:', error);
+      // Token clearing failed - storage may be in inconsistent state
+      // Continue execution as this is a cleanup operation
     }
   }
 
@@ -241,7 +254,7 @@ export class TokenManager {
         throw new Error(data.message || 'Token refresh failed');
       }
     } catch (error) {
-      console.error('Token refresh error:', error);
+      // Token refresh failed - clearing invalid token and requiring re-authentication
       this.clearToken();
       return null;
     }
@@ -268,7 +281,7 @@ export class TokenManager {
     const delay = Math.max(0, refreshTime - Date.now());
 
     this.refreshTimeout = setTimeout(async () => {
-      console.log('Auto-refreshing token...');
+      // Automatically refreshing token before expiry
       await this.refreshToken();
     }, delay);
   }
@@ -293,7 +306,8 @@ export class TokenManager {
       try {
         callback(token);
       } catch (error) {
-        console.error('Token change callback error:', error);
+        // Token change callback failed - continuing with other callbacks
+        // Callback error should not affect token management functionality
       }
     });
   }
@@ -322,7 +336,7 @@ export class TokenManager {
         return false;
       }
     } catch (error) {
-      console.error('Token validation error:', error);
+      // Token validation failed due to network or server error
       return false;
     }
   }
@@ -362,7 +376,7 @@ export class TokenManager {
   /**
    * Create token from login response
    */
-  static createTokenData(loginResponse: any): TokenData {
+  static createTokenData(loginResponse: LoginResponse): TokenData {
     const expiresAt = loginResponse.expiresAt 
       ? new Date(loginResponse.expiresAt).getTime()
       : Date.now() + (loginResponse.expiresIn ? loginResponse.expiresIn * 1000 : 60 * 60 * 1000);

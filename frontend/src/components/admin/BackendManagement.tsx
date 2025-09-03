@@ -18,7 +18,7 @@ import {
   RotateCcw,
   Eye,
   FileText,
-  Settings,
+  // Settings, // Removed unused import
   Monitor,
   Zap,
   Cloud
@@ -92,148 +92,11 @@ const BackendManagement: React.FC = () => {
         setDatabases(databasesResponse.data);
       }
     } catch (error) {
-      console.error('Failed to load backend data:', error);
-      // Fallback к mock данным
-      const mockServices: BackendService[] = [
-        {
-          id: 'api-gateway',
-          name: 'api-gateway',
-          displayName: 'API Gateway',
-          status: 'running',
-          port: 8000,
-          url: 'http://localhost:8000',
-          description: 'Центральный API Gateway для маршрутизации запросов',
-          cpu: 15.4,
-          memory: 256,
-          uptime: '2d 14h 32m',
-          lastRestart: '2024-01-13 10:15:00',
-          version: '1.2.3',
-          dependencies: ['auth-service', 'database']
-        },
-        {
-          id: 'auth-service',
-          name: 'auth-service',
-          displayName: 'Auth Service',
-          status: 'running',
-          port: 8001,
-          url: 'http://localhost:8001',
-          description: 'Сервис аутентификации и авторизации',
-          cpu: 8.2,
-          memory: 128,
-          uptime: '2d 14h 30m',
-          lastRestart: '2024-01-13 10:17:00',
-          version: '1.1.5',
-          dependencies: ['database', 'redis']
-        },
-        {
-          id: 'llm-service',
-          name: 'llm-service',
-          displayName: 'LLM Service',
-          status: 'running',
-          port: 8002,
-          url: 'http://localhost:8002',
-          description: 'Сервис управления AI моделями',
-          cpu: 45.7,
-          memory: 1024,
-          uptime: '2d 14h 28m',
-          lastRestart: '2024-01-13 10:19:00',
-          version: '2.0.1',
-          dependencies: ['database', 'redis']
-        },
-        {
-          id: 'documents-service',
-          name: 'documents-service',
-          displayName: 'Documents Service',
-          status: 'running',
-          port: 8003,
-          url: 'http://localhost:8003',
-          description: 'Сервис обработки документов',
-          cpu: 22.1,
-          memory: 512,
-          uptime: '2d 14h 25m',
-          lastRestart: '2024-01-13 10:22:00',
-          version: '1.3.2',
-          dependencies: ['database']
-        },
-        {
-          id: 'dashboard-service',
-          name: 'dashboard-service',
-          displayName: 'Dashboard Service',
-          status: 'error',
-          port: 8004,
-          url: 'http://localhost:8004',
-          description: 'Сервис дашборда и аналитики',
-          cpu: 0,
-          memory: 0,
-          uptime: '0m',
-          lastRestart: '2024-01-13 15:30:00',
-          version: '1.0.8',
-          dependencies: ['database', 'auth-service']
-        }
-      ];
-
-      const mockLogs: BackendLog[] = [
-        {
-          id: '1',
-          service: 'api-gateway',
-          timestamp: '2024-01-15 16:45:32',
-          level: 'info',
-          message: 'Request processed successfully: POST /api/auth/login'
-        },
-        {
-          id: '2',
-          service: 'llm-service',
-          timestamp: '2024-01-15 16:45:28',
-          level: 'info',
-          message: 'Claude API request completed in 2.3s'
-        },
-        {
-          id: '3',
-          service: 'dashboard-service',
-          timestamp: '2024-01-15 16:45:15',
-          level: 'error',
-          message: 'Database connection timeout after 30s'
-        },
-        {
-          id: '4',
-          service: 'auth-service',
-          timestamp: '2024-01-15 16:44:58',
-          level: 'warn',
-          message: 'Rate limit exceeded for IP 192.168.1.100'
-        },
-        {
-          id: '5',
-          service: 'documents-service',
-          timestamp: '2024-01-15 16:44:45',
-          level: 'info',
-          message: 'PDF processing completed: document_12345.pdf'
-        }
-      ];
-
-      const mockDatabases: DatabaseInfo[] = [
-        {
-          name: 'PostgreSQL',
-          status: 'connected',
-          host: 'localhost',
-          port: 5432,
-          size: '2.4 GB',
-          connections: 23,
-          uptime: '5d 8h 15m'
-        },
-        {
-          name: 'Redis',
-          status: 'connected',
-          host: 'localhost',
-          port: 6379,
-          size: '128 MB',
-          connections: 15,
-          uptime: '5d 8h 12m'
-        }
-      ];
-
-      setServices(mockServices);
-      setLogs(mockLogs);
-      setDatabases(mockDatabases);
+      // Failed to load backend data
+      // Показываем ошибку вместо моков
+      setServices([]);
+      setLogs([]);
+      setDatabases([]);
     }
   };
 
@@ -243,7 +106,7 @@ const BackendManagement: React.FC = () => {
 
     const interval = setInterval(() => {
       // Здесь бы был реальный API вызов для обновления данных
-      console.log('Refreshing backend data...');
+      // Refreshing backend data...
     }, 5000);
 
     return () => clearInterval(interval);

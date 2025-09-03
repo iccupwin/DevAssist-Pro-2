@@ -41,7 +41,7 @@ class KPPdfExportService {
   /**
    * Безопасное добавление текста с поддержкой кириллицы
    */
-  private addText(text: string, x: number, y: number, options?: any): void {
+  private addText(text: string, x: number, y: number, options?: { fontSize?: number; fontStyle?: string; align?: string }): void {
     if (!this.doc) return;
     
     try {
@@ -49,7 +49,7 @@ class KPPdfExportService {
       this.doc.text(text, x, y, options);
     } catch (error) {
       // Если не получается, используем транслитерацию
-      console.warn('Cyrillic text detected, using transliteration');
+      // Cyrillic text detected, using transliteration
       this.doc.text(this.toAscii(text), x, y, options);
     }
   }
@@ -64,20 +64,20 @@ class KPPdfExportService {
     options: ExportOptions = {}
   ): Promise<void> {
     try {
-      console.log('🔄 Начинаем генерацию PDF с поддержкой кириллицы...');
+      // Starting PDF generation with Cyrillic support
       
       // Попробуем простой метод с jsPDF
       await this.exportSimplePDF(analysisResults, comparisonResult, tzName, options);
 
     } catch (error) {
-      console.error('❌ Ошибка генерации PDF:', error);
+      // PDF generation error occurred
       
       // Fallback к HTML методу
       try {
-        console.log('🔄 Пробуем альтернативный метод...');
+        // Trying alternative PDF generation method
         await this.exportHtmlBasedPDF(analysisResults, comparisonResult, tzName, options);
       } catch (fallbackError) {
-        console.error('❌ Ошибка альтернативного метода:', fallbackError);
+        // Alternative PDF generation method failed
         throw new Error('Не удалось сгенерировать PDF отчет');
       }
     }
@@ -92,7 +92,7 @@ class KPPdfExportService {
     tzName: string,
     options: ExportOptions = {}
   ): Promise<void> {
-    console.log('🔄 Создаем простой PDF отчет...');
+    // Creating simple PDF report
     
     // Используем HTML метод для корректной кириллицы
     return this.exportHtmlBasedPDF(analysisResults, comparisonResult, tzName, options);
@@ -165,15 +165,7 @@ class KPPdfExportService {
       const imgWidth = pdfWidth;
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
       
-      console.log('📊 PDF размеры:', {
-        pdfWidth,
-        pdfHeight,
-        canvasWidth: canvas.width,
-        canvasHeight: canvas.height,
-        imgWidth,
-        imgHeight,
-        fitsOnePage: imgHeight <= pdfHeight
-      });
+      // PDF dimensions configured with width, height, and fit calculation
       
       // Проверяем, что контент не пустой
       if (imgHeight < 50) {
@@ -189,7 +181,7 @@ class KPPdfExportService {
           pdf.addPage();
         }
         
-        console.log(`📄 Добавляем страницу ${pageNumber}, позиция: ${position}`);
+        // Adding PDF page
         
         // Добавляем изображение
         pdf.addImage(imgData, 'PNG', 0, -position, imgWidth, imgHeight);
@@ -198,13 +190,13 @@ class KPPdfExportService {
         pageNumber++;
       }
       
-      console.log(`✅ Создано ${pageNumber - 1} страниц`);
+      // PDF pages created successfully
 
       // Сохраняем файл
       const fileName = `KP_Full_Analysis_Report_${new Date().toISOString().slice(0, 10)}.pdf`;
       pdf.save(fileName);
 
-      console.log(`✅ PDF отчет успешно сохранен: ${fileName}`);
+      // PDF report saved successfully
 
     } finally {
       // Удаляем временный div
@@ -222,17 +214,43 @@ class KPPdfExportService {
     options: ExportOptions = {}
   ): string {
     const sortedResults = [...analysisResults].sort((a, b) => (b.complianceScore || 0) - (a.complianceScore || 0));
-    const bestResult = sortedResults[0];
+    // Best result determined by compliance score
     const avgScore = Math.round(analysisResults.reduce((acc, r) => acc + (r.complianceScore || 0), 0) / analysisResults.length);
 
     // Функции для извлечения данных (аналогично KPDetailedAnalysisResults)
     const getComplianceScore = (result: KPAnalysisResult) => result.complianceScore || 0;
     const getCompanyName = (result: KPAnalysisResult) => result.companyName || 'Неизвестная компания';
     const getFileName = (result: KPAnalysisResult) => result.fileName || 'Неизвестный файл';
-    const extractPrice = (pricing: string) => {
-      const priceMatch = pricing.match(/(\d[\d\s,]*\.?\d*)\s*(?:руб|₽|рублей|тыс|млн)/i);
-      return priceMatch ? parseFloat(priceMatch[1].replace(/[\s,]/g, '')) : 0;
+    const getFileFormat = (result: KPAnalysisResult) => result.file_format?.toUpperCase() || 'TXT';
+    const getFileIcon = (format: string) => {
+      switch (format.toLowerCase()) {
+        case 'pdf': return '📄';
+        case 'docx':
+        case 'doc': return '📝';
+        default: return '📋';
+      }
     };
+    const extractPrice = (result: KPAnalysisResult) => {
+      // Сначала пробуем structured data
+      if (result.total_cost && result.total_cost > 0) {
+        return result.total_cost;
+      }
+      // Fallback к parsing строки
+      const pricing = result.pricing || '';
+      const priceMatch = pricing.match(/(\d[\d\s,]*\.?\d*)\s*(?:руб|₽|рублей|тыс|млн)/i);
+      if (!priceMatch) return 0;
+      
+      let price = parseFloat(priceMatch[1].replace(/[\s,]/g, ''));
+      if (pricing.toLowerCase().includes('млн')) {
+        price = price * 1000000;
+      } else if (pricing.toLowerCase().includes('тыс')) {
+        price = price * 1000;
+      }
+      return price;
+    };
+    const getStrengths = (result: KPAnalysisResult) => result.strengths || [];
+    const getWeaknesses = (result: KPAnalysisResult) => result.weaknesses || [];
+    // Missing requirements extraction utility available if needed
 
     const generateComplianceTable = (result: KPAnalysisResult) => {
       const score = getComplianceScore(result);
@@ -252,6 +270,13 @@ class KPPdfExportService {
       return { level: 'Высокий', color: '#EF4444', description: 'Требует внимания' };
     };
 
+    // Подсчет статистики
+    const excellentCount = sortedResults.filter(r => getComplianceScore(r) >= 80).length;
+    const goodCount = sortedResults.filter(r => getComplianceScore(r) >= 60 && getComplianceScore(r) < 80).length;
+    const weakCount = sortedResults.filter(r => getComplianceScore(r) < 60).length;
+    const totalPrice = sortedResults.reduce((sum, r) => sum + extractPrice(r), 0);
+    const avgPrice = analysisResults.length > 0 ? Math.round(totalPrice / analysisResults.length) : 0;
+
     return `
       <div style="width: 100%; margin: 0; font-family: Arial, sans-serif; line-height: 1.4; color: #333;">
         <!-- Заголовок -->
@@ -264,10 +289,71 @@ class KPPdfExportService {
           <p style="margin: 3px 0; font-size: 12px;"><strong>Время генерации:</strong> ${new Date().toLocaleTimeString('ru-RU')}</p>
         </div>
 
+        <!-- Быстрая статистика -->
+        <div style="margin-bottom: 25px; padding: 15px; background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 6px; page-break-inside: avoid;">
+          <h3 style="color: #0369a1; font-size: 14px; margin: 0 0 12px 0;">СВОДНАЯ СТАТИСТИКА</h3>
+          <div style="display: flex; justify-content: space-around; flex-wrap: wrap;">
+            <div style="text-align: center; margin: 10px;">
+              <div style="font-size: 24px; font-weight: bold; color: #0369a1;">${analysisResults.length}</div>
+              <div style="font-size: 11px; color: #64748b;">Всего КП</div>
+            </div>
+            <div style="text-align: center; margin: 10px;">
+              <div style="font-size: 24px; font-weight: bold; color: #10b981;">${excellentCount}</div>
+              <div style="font-size: 11px; color: #64748b;">Отличные (80%+)</div>
+            </div>
+            <div style="text-align: center; margin: 10px;">
+              <div style="font-size: 24px; font-weight: bold; color: #f59e0b;">${goodCount}</div>
+              <div style="font-size: 11px; color: #64748b;">Хорошие (60-79%)</div>
+            </div>
+            <div style="text-align: center; margin: 10px;">
+              <div style="font-size: 24px; font-weight: bold; color: #ef4444;">${weakCount}</div>
+              <div style="font-size: 11px; color: #64748b;">Слабые (<60%)</div>
+            </div>
+            ${avgPrice > 0 ? `
+              <div style="text-align: center; margin: 10px;">
+                <div style="font-size: 24px; font-weight: bold; color: #8b5cf6;">${new Intl.NumberFormat('ru-RU', { notation: 'compact' }).format(avgPrice)} ₽</div>
+                <div style="font-size: 11px; color: #64748b;">Средняя цена</div>
+              </div>
+            ` : ''}
+          </div>
+        </div>
+
+        <!-- Обзор КП карточками -->
+        <div style="margin-bottom: 30px; page-break-inside: avoid;">
+          <h3 style="color: #2980b9; font-size: 16px; margin-bottom: 15px;">ОБЗОР КОММЕРЧЕСКИХ ПРЕДЛОЖЕНИЙ</h3>
+          ${sortedResults.map((result, index) => {
+            const price = extractPrice(result);
+            return `
+              <div style="margin-bottom: 12px; padding: 12px; background: ${index === 0 ? '#fef3c7' : '#f9fafb'}; border: 1px solid ${index === 0 ? '#fcd34d' : '#e5e7eb'}; border-radius: 6px; page-break-inside: avoid;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <div style="flex: 1;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                      <span style="font-size: 18px;">${getFileIcon(getFileFormat(result))}</span>
+                      <strong style="font-size: 14px; color: #1e293b;">
+                        #${index + 1} ${getCompanyName(result)}
+                        ${index === 0 ? '<span style="color: #f59e0b; margin-left: 8px;">🏆</span>' : ''}
+                      </strong>
+                    </div>
+                    <div style="font-size: 11px; color: #64748b; margin-top: 4px;">
+                      ${getFileName(result)} • Формат: ${getFileFormat(result)}
+                    </div>
+                  </div>
+                  <div style="text-align: right;">
+                    <div style="font-size: 20px; font-weight: bold; color: ${getComplianceScore(result) >= 80 ? '#10b981' : getComplianceScore(result) >= 60 ? '#f59e0b' : '#ef4444'};">
+                      ${getComplianceScore(result)}%
+                    </div>
+                    ${price > 0 ? `<div style="font-size: 11px; color: #64748b;">${new Intl.NumberFormat('ru-RU').format(price)} ₽</div>` : ''}
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+
         ${sortedResults.map((result, index) => {
           const complianceTable = generateComplianceTable(result);
           const riskLevel = getRiskLevel(getComplianceScore(result));
-          const price = extractPrice(result.pricing || '');
+          const price = extractPrice(result);
           
           return `
             <div style="page-break-inside: avoid; margin-bottom: 25px; border: 1px solid #ddd; padding: 15px; background: #fff;">
@@ -322,11 +408,18 @@ class KPPdfExportService {
                 </h3>
                 <div style="background: #fefefe; padding: 12px; border: 1px solid #e5e7eb; border-radius: 4px; page-break-inside: avoid;">
                   <p style="margin: 0 0 8px 0;"><strong>Исполнитель:</strong> ${getCompanyName(result)}</p>
-                  <p style="margin: 0 0 10px 0;"><strong>Файл предложения:</strong> ${getFileName(result)}</p>
+                  <p style="margin: 0 0 10px 0;"><strong>Файл предложения:</strong> ${getFileName(result)} (${getFileFormat(result)})</p>
                   <p style="margin: 0 0 10px 0;"><strong>Дата анализа:</strong> ${new Date().toLocaleDateString('ru-RU')}</p>
                   <p style="margin: 0 0 10px 0;"><strong>Технологический стек:</strong> ${result.techStack || 'Не указан'}</p>
                   <p style="margin: 0 0 10px 0;"><strong>Предлагаемые сроки:</strong> ${result.timeline || 'Не указаны'}</p>
-                  ${price > 0 ? `<p style="margin: 0;"><strong>Стоимость:</strong> ${new Intl.NumberFormat('ru-RU').format(price)} ₽</p>` : ''}
+                  ${result.team ? `<p style="margin: 0 0 10px 0;"><strong>Команда:</strong> ${result.team}</p>` : ''}
+                  ${result.methodology ? `<p style="margin: 0 0 10px 0;"><strong>Методология:</strong> ${result.methodology}</p>` : ''}
+                  ${price > 0 ? `
+                    <p style="margin: 0 0 10px 0;"><strong>Стоимость:</strong> ${new Intl.NumberFormat('ru-RU').format(price)} ₽ ${result.currency ? `(${result.currency})` : ''}</p>
+                    ${result.cost_breakdown ? `<p style="margin: 0 0 10px 0;"><strong>Разбивка по этапам:</strong> ${result.cost_breakdown}</p>` : ''}
+                  ` : ''}
+                  ${result.support ? `<p style="margin: 0 0 10px 0;"><strong>Поддержка:</strong> ${result.support}</p>` : ''}
+                  ${result.quality_assurance ? `<p style="margin: 0;"><strong>Обеспечение качества:</strong> ${result.quality_assurance}</p>` : ''}
                 </div>
               </section>
 
@@ -348,9 +441,14 @@ class KPPdfExportService {
                   
                   ${result.additionalFeatures && result.additionalFeatures.length > 0 ? `
                     <p style="margin: 0 0 10px 0;"><strong>Дополнительные возможности:</strong></p>
-                    <ul style="margin: 0; padding-left: 20px;">
+                    <ul style="margin: 0 0 15px 0; padding-left: 20px;">
                       ${result.additionalFeatures.map(feature => `<li style="margin: 3px 0;">${feature}</li>`).join('')}
                     </ul>
+                  ` : ''}
+                  
+                  ${result.competitive_advantages ? `
+                    <p style="margin: 0 0 10px 0;"><strong>Конкурентные преимущества:</strong></p>
+                    <p style="margin: 0; padding-left: 20px;">${result.competitive_advantages}</p>
                   ` : ''}
                 </div>
               </section>
@@ -547,6 +645,144 @@ class KPPdfExportService {
           `;
         }).join('')}
 
+        ${sortedResults.length >= 2 ? `
+          <!-- Детальное сравнение первых двух КП -->
+          <div style="margin-top: 30px; margin-bottom: 30px; page-break-inside: avoid;">
+            <h2 style="color: #2980b9; font-size: 16px; margin-bottom: 20px; text-align: center;">ДЕТАЛЬНОЕ СРАВНЕНИЕ ЛУЧШИХ КП</h2>
+            
+            <div style="display: table; width: 100%; border-collapse: collapse;">
+              <div style="display: table-row;">
+                <div style="display: table-cell; width: 50%; padding: 15px; border: 1px solid #e5e7eb; background: #f9fafb;">
+                  <h3 style="margin: 0 0 10px 0; color: #1e293b; font-size: 14px;">
+                    ${getFileIcon(getFileFormat(sortedResults[0]))} ${getCompanyName(sortedResults[0])}
+                  </h3>
+                  <p style="margin: 5px 0; font-size: 12px;"><strong>Формат:</strong> ${getFileFormat(sortedResults[0])}</p>
+                  <p style="margin: 5px 0; font-size: 12px;"><strong>Рейтинг:</strong> 
+                    <span style="color: ${getComplianceScore(sortedResults[0]) >= 80 ? '#10b981' : '#f59e0b'}; font-weight: bold;">
+                      ${getComplianceScore(sortedResults[0])}%
+                    </span>
+                  </p>
+                  ${extractPrice(sortedResults[0]) > 0 ? `
+                    <p style="margin: 5px 0; font-size: 12px;"><strong>Стоимость:</strong> ${new Intl.NumberFormat('ru-RU').format(extractPrice(sortedResults[0]))} ₽</p>
+                  ` : ''}
+                  
+                  <div style="margin-top: 15px;">
+                    <p style="margin: 0 0 8px 0; font-size: 12px; font-weight: bold; color: #059669;">✓ Преимущества:</p>
+                    ${getStrengths(sortedResults[0]).slice(0, 3).map(s => `
+                      <p style="margin: 3px 0 3px 15px; font-size: 11px;">• ${s}</p>
+                    `).join('')}
+                  </div>
+                  
+                  <div style="margin-top: 15px;">
+                    <p style="margin: 0 0 8px 0; font-size: 12px; font-weight: bold; color: #dc2626;">× Недостатки:</p>
+                    ${getWeaknesses(sortedResults[0]).slice(0, 3).map(w => `
+                      <p style="margin: 3px 0 3px 15px; font-size: 11px;">• ${w}</p>
+                    `).join('')}
+                  </div>
+                </div>
+                
+                <div style="display: table-cell; width: 50%; padding: 15px; border: 1px solid #e5e7eb; background: #fefefe;">
+                  <h3 style="margin: 0 0 10px 0; color: #1e293b; font-size: 14px;">
+                    ${getFileIcon(getFileFormat(sortedResults[1]))} ${getCompanyName(sortedResults[1])}
+                  </h3>
+                  <p style="margin: 5px 0; font-size: 12px;"><strong>Формат:</strong> ${getFileFormat(sortedResults[1])}</p>
+                  <p style="margin: 5px 0; font-size: 12px;"><strong>Рейтинг:</strong> 
+                    <span style="color: ${getComplianceScore(sortedResults[1]) >= 80 ? '#10b981' : getComplianceScore(sortedResults[1]) >= 60 ? '#f59e0b' : '#ef4444'}; font-weight: bold;">
+                      ${getComplianceScore(sortedResults[1])}%
+                    </span>
+                  </p>
+                  ${extractPrice(sortedResults[1]) > 0 ? `
+                    <p style="margin: 5px 0; font-size: 12px;"><strong>Стоимость:</strong> ${new Intl.NumberFormat('ru-RU').format(extractPrice(sortedResults[1]))} ₽</p>
+                  ` : ''}
+                  
+                  <div style="margin-top: 15px;">
+                    <p style="margin: 0 0 8px 0; font-size: 12px; font-weight: bold; color: #059669;">✓ Преимущества:</p>
+                    ${getStrengths(sortedResults[1]).slice(0, 3).map(s => `
+                      <p style="margin: 3px 0 3px 15px; font-size: 11px;">• ${s}</p>
+                    `).join('')}
+                  </div>
+                  
+                  <div style="margin-top: 15px;">
+                    <p style="margin: 0 0 8px 0; font-size: 12px; font-weight: bold; color: #dc2626;">× Недостатки:</p>
+                    ${getWeaknesses(sortedResults[1]).slice(0, 3).map(w => `
+                      <p style="margin: 3px 0 3px 15px; font-size: 11px;">• ${w}</p>
+                    `).join('')}
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Сравнительная таблица -->
+            <table style="width: 100%; margin-top: 20px; border-collapse: collapse; font-size: 12px;">
+              <thead>
+                <tr style="background: #e0e7ff;">
+                  <th style="padding: 8px; text-align: left; border: 1px solid #ccc;">Показатель</th>
+                  <th style="padding: 8px; text-align: center; border: 1px solid #ccc;">${getCompanyName(sortedResults[0])}</th>
+                  <th style="padding: 8px; text-align: center; border: 1px solid #ccc;">${getCompanyName(sortedResults[1])}</th>
+                  <th style="padding: 8px; text-align: center; border: 1px solid #ccc;">Победитель</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding: 8px; border: 1px solid #ccc;">Общий рейтинг</td>
+                  <td style="padding: 8px; text-align: center; border: 1px solid #ccc; font-weight: bold;">
+                    ${getComplianceScore(sortedResults[0])}%
+                  </td>
+                  <td style="padding: 8px; text-align: center; border: 1px solid #ccc; font-weight: bold;">
+                    ${getComplianceScore(sortedResults[1])}%
+                  </td>
+                  <td style="padding: 8px; text-align: center; border: 1px solid #ccc; color: #059669; font-weight: bold;">
+                    ${getComplianceScore(sortedResults[0]) > getComplianceScore(sortedResults[1]) ? getCompanyName(sortedResults[0]) : 
+                      getComplianceScore(sortedResults[1]) > getComplianceScore(sortedResults[0]) ? getCompanyName(sortedResults[1]) : 'Равно'}
+                  </td>
+                </tr>
+                ${(extractPrice(sortedResults[0]) > 0 || extractPrice(sortedResults[1]) > 0) ? `
+                  <tr>
+                    <td style="padding: 8px; border: 1px solid #ccc;">Стоимость</td>
+                    <td style="padding: 8px; text-align: center; border: 1px solid #ccc;">
+                      ${extractPrice(sortedResults[0]) > 0 ? new Intl.NumberFormat('ru-RU').format(extractPrice(sortedResults[0])) + ' ₽' : 'Не указано'}
+                    </td>
+                    <td style="padding: 8px; text-align: center; border: 1px solid #ccc;">
+                      ${extractPrice(sortedResults[1]) > 0 ? new Intl.NumberFormat('ru-RU').format(extractPrice(sortedResults[1])) + ' ₽' : 'Не указано'}
+                    </td>
+                    <td style="padding: 8px; text-align: center; border: 1px solid #ccc; color: #059669; font-weight: bold;">
+                      ${(extractPrice(sortedResults[0]) > 0 && extractPrice(sortedResults[1]) > 0) ? 
+                        (extractPrice(sortedResults[0]) < extractPrice(sortedResults[1]) ? getCompanyName(sortedResults[0]) : 
+                         extractPrice(sortedResults[1]) < extractPrice(sortedResults[0]) ? getCompanyName(sortedResults[1]) : 'Равно') : '-'}
+                    </td>
+                  </tr>
+                ` : ''}
+                <tr>
+                  <td style="padding: 8px; border: 1px solid #ccc;">Преимущества</td>
+                  <td style="padding: 8px; text-align: center; border: 1px solid #ccc;">
+                    ${getStrengths(sortedResults[0]).length}
+                  </td>
+                  <td style="padding: 8px; text-align: center; border: 1px solid #ccc;">
+                    ${getStrengths(sortedResults[1]).length}
+                  </td>
+                  <td style="padding: 8px; text-align: center; border: 1px solid #ccc; color: #059669; font-weight: bold;">
+                    ${getStrengths(sortedResults[0]).length > getStrengths(sortedResults[1]).length ? getCompanyName(sortedResults[0]) : 
+                      getStrengths(sortedResults[1]).length > getStrengths(sortedResults[0]).length ? getCompanyName(sortedResults[1]) : 'Равно'}
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px; border: 1px solid #ccc;">Недостатки</td>
+                  <td style="padding: 8px; text-align: center; border: 1px solid #ccc;">
+                    ${getWeaknesses(sortedResults[0]).length}
+                  </td>
+                  <td style="padding: 8px; text-align: center; border: 1px solid #ccc;">
+                    ${getWeaknesses(sortedResults[1]).length}
+                  </td>
+                  <td style="padding: 8px; text-align: center; border: 1px solid #ccc; color: #059669; font-weight: bold;">
+                    ${getWeaknesses(sortedResults[0]).length < getWeaknesses(sortedResults[1]).length ? getCompanyName(sortedResults[0]) : 
+                      getWeaknesses(sortedResults[1]).length < getWeaknesses(sortedResults[0]).length ? getCompanyName(sortedResults[1]) : 'Равно'}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        ` : ''}
+
         <!-- Общие выводы -->
         <div style="margin-top: 30px; padding: 20px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; page-break-inside: avoid;">
           <h2 style="color: #2980b9; font-size: 16px; margin-bottom: 15px; text-align: center;">ОБЩИЕ ВЫВОДЫ И РЕКОМЕНДАЦИИ</h2>
@@ -556,21 +792,49 @@ class KPPdfExportService {
             <ul style="margin: 0; padding-left: 20px;">
               <li>Всего проанализировано КП: ${analysisResults.length}</li>
               <li>Средний балл соответствия: ${avgScore}%</li>
-              <li>Рекомендованы к рассмотрению: ${sortedResults.filter(r => getComplianceScore(r) >= 80).length}</li>
-              <li>Требуют доработки: ${sortedResults.filter(r => getComplianceScore(r) >= 60 && getComplianceScore(r) < 80).length}</li>
-              <li>Не рекомендованы: ${sortedResults.filter(r => getComplianceScore(r) < 60).length}</li>
+              <li>Рекомендованы к рассмотрению: ${excellentCount} (${Math.round(excellentCount / analysisResults.length * 100)}%)</li>
+              <li>Требуют доработки: ${goodCount} (${Math.round(goodCount / analysisResults.length * 100)}%)</li>
+              <li>Не рекомендованы: ${weakCount} (${Math.round(weakCount / analysisResults.length * 100)}%)</li>
+              ${avgPrice > 0 ? `<li>Средняя стоимость предложений: ${new Intl.NumberFormat('ru-RU').format(avgPrice)} ₽</li>` : ''}
+            </ul>
+          </div>
+
+          <div style="margin-bottom: 20px;">
+            <h4 style="color: #2980b9; margin-bottom: 10px;">Статистика по форматам файлов:</h4>
+            <ul style="margin: 0; padding-left: 20px;">
+              ${['PDF', 'DOCX', 'DOC', 'TXT'].map(format => {
+                const count = sortedResults.filter(r => getFileFormat(r) === format).length;
+                if (count > 0) {
+                  const avgRatingForFormat = Math.round(
+                    sortedResults
+                      .filter(r => getFileFormat(r) === format)
+                      .reduce((sum, r) => sum + getComplianceScore(r), 0) / count
+                  );
+                  return `<li>${getFileIcon(format)} ${format}: ${count} файлов (средний рейтинг: ${avgRatingForFormat}%)</li>`;
+                }
+                return '';
+              }).filter(item => item).join('')}
             </ul>
           </div>
 
           <div style="margin-bottom: 20px;">
             <h4 style="color: #2980b9; margin-bottom: 10px;">Итоговое ранжирование:</h4>
             <ol style="margin: 0; padding-left: 20px;">
-              ${sortedResults.slice(0, 5).map((result, index) => `
-                <li style="margin: 5px 0;">
-                  <strong>${getCompanyName(result)}</strong> - ${getComplianceScore(result)}% 
-                  ${getComplianceScore(result) >= 80 ? '(РЕКОМЕНДУЕТСЯ)' : getComplianceScore(result) >= 60 ? '(УСЛОВНО)' : '(НЕ РЕКОМЕНДУЕТСЯ)'}
-                </li>
-              `).join('')}
+              ${sortedResults.slice(0, 5).map((result, index) => {
+                const price = extractPrice(result);
+                return `
+                  <li style="margin: 8px 0;">
+                    <div style="font-weight: bold;">
+                      ${getFileIcon(getFileFormat(result))} ${getCompanyName(result)} - ${getComplianceScore(result)}%
+                      ${getComplianceScore(result) >= 80 ? '(РЕКОМЕНДУЕТСЯ)' : getComplianceScore(result) >= 60 ? '(УСЛОВНО)' : '(НЕ РЕКОМЕНДУЕТСЯ)'}
+                    </div>
+                    <div style="font-size: 11px; color: #64748b; margin-top: 2px;">
+                      Формат: ${getFileFormat(result)}${price > 0 ? ` • Стоимость: ${new Intl.NumberFormat('ru-RU').format(price)} ₽` : ''}
+                      ${result.team ? ` • Команда: ${result.team.substring(0, 50)}${result.team.length > 50 ? '...' : ''}` : ''}
+                    </div>
+                  </li>
+                `;
+              }).join('')}
             </ol>
           </div>
 

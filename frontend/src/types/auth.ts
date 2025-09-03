@@ -1,6 +1,6 @@
-// Re-export User from shared types to maintain compatibility
-import type { User } from './shared';
-export type { User };
+// Re-export types from shared types to maintain compatibility
+import type { User, AuthResponse, RegisterRequest } from './shared';
+export type { User, AuthResponse, RegisterRequest };
 
 export interface LoginFormData {
   email: string;
@@ -9,13 +9,20 @@ export interface LoginFormData {
 }
 
 export interface RegisterFormData {
-  firstName: string;
-  lastName: string;
   email: string;
   password: string;
   confirmPassword: string;
   acceptTerms: boolean;
+  
+  // Support both new and old name fields
+  full_name?: string;
+  firstName?: string;
+  lastName?: string;
+  
+  // Support both company/organization field names
+  company?: string;
   organization?: string;
+  phone?: string;
 }
 
 export interface ForgotPasswordFormData {
@@ -28,7 +35,8 @@ export interface ResetPasswordFormData {
   confirmPassword: string;
 }
 
-export interface AuthResponse {
+// AuthResponse is now imported from shared.ts - keeping old interface for backward compatibility
+export interface LegacyAuthResponse {
   success: boolean;
   user?: User;
   token?: string;

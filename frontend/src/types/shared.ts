@@ -48,6 +48,109 @@ export enum OAuthProvider {
 }
 
 // ===== BASE TYPES =====
+
+// Generic metadata types
+export interface DocumentMetadata {
+  pages?: number;
+  words?: number;
+  characters?: number;
+  language?: string;
+  author?: string;
+  title?: string;
+  subject?: string;
+  creator?: string;
+  producer?: string;
+  creationDate?: string;
+  modificationDate?: string;
+  format?: string;
+  version?: string;
+  [key: string]: unknown;
+}
+
+export interface AnalysisConfig {
+  model_temperature?: number;
+  max_tokens?: number;
+  timeout_seconds?: number;
+  custom_instructions?: string;
+  evaluation_criteria?: string[];
+  include_confidence_scores?: boolean;
+  output_format?: 'json' | 'text' | 'structured';
+  [key: string]: unknown;
+}
+
+export interface AnalysisResults {
+  summary?: string;
+  findings?: string[];
+  recommendations?: string[];
+  scores?: Record<string, number>;
+  metadata?: Record<string, unknown>;
+  raw_response?: string;
+  [key: string]: unknown;
+}
+
+export interface ActivityMetadata {
+  module?: string;
+  action?: string;
+  duration_ms?: number;
+  ip_address?: string;
+  user_agent?: string;
+  session_id?: string;
+  additional_context?: Record<string, unknown>;
+  [key: string]: unknown;
+}
+
+export interface GenerationConfig {
+  template_id?: string;
+  include_charts?: boolean;
+  include_tables?: boolean;
+  output_format?: 'pdf' | 'docx' | 'html';
+  page_orientation?: 'portrait' | 'landscape';
+  font_size?: number;
+  margins?: {
+    top: number;
+    bottom: number;
+    left: number;
+    right: number;
+  };
+  [key: string]: unknown;
+}
+
+export interface ServiceStatus {
+  name: string;
+  status: 'healthy' | 'unhealthy' | 'degraded';
+  response_time_ms?: number;
+  last_check?: string;
+  error?: string;
+  version?: string;
+  dependencies?: ServiceStatus[];
+}
+
+export interface WebSocketData {
+  progress?: number;
+  status?: string;
+  message?: string;
+  result?: unknown;
+  error?: string;
+  [key: string]: unknown;
+}
+
+export interface DashboardLayoutConfig {
+  grid_columns?: number;
+  widget_order?: string[];
+  hidden_widgets?: string[];
+  widget_sizes?: Record<string, { width: number; height: number }>;
+  theme_overrides?: Record<string, unknown>;
+  [key: string]: unknown;
+}
+
+export interface OrganizationPermissions {
+  organization_id: number;
+  organization_name: string;
+  role: UserRole;
+  permissions: string[];
+  is_active: boolean;
+}
+
 export interface BaseEntity {
   id: number | string;
   created_at: string;
@@ -56,19 +159,23 @@ export interface BaseEntity {
 
 // ===== USER TYPES =====
 export interface User extends BaseEntity {
+  id: number;
   email: string;
   full_name: string;
-  firstName: string;
-  lastName: string;
-  role: 'user' | 'admin' | 'moderator';
+  role: 'user' | 'superuser' | 'admin' | 'moderator';
   company?: string;
   position?: string;
   phone?: string;
   is_active: boolean;
   is_verified: boolean;
   is_superuser: boolean;
-  isEmailVerified: boolean;
-  is2FAEnabled: boolean;
+  
+  // Deprecated fields for backward compatibility
+  name?: string;
+  firstName?: string;
+  lastName?: string;
+  isEmailVerified?: boolean;
+  is2FAEnabled?: boolean;
   avatar?: string;
   subscription?: {
     plan: string;
@@ -92,14 +199,12 @@ export interface UserCreate {
   password: string;
   full_name: string;
   company?: string;
-  position?: string;
   phone?: string;
 }
 
 export interface UserUpdate {
   full_name?: string;
   company?: string;
-  position?: string;
   phone?: string;
 }
 
@@ -182,7 +287,7 @@ export interface Document extends BaseEntity {
   processed_at?: string;
   processing_status: string;
   extracted_text?: string;
-  metadata?: Record<string, any>;
+  document_metadata?: DocumentMetadata;
   uploaded_by_id: number;
   project_id?: number;
   uploaded_by?: User;
@@ -216,13 +321,13 @@ export interface DocumentContentResponse {
 export interface DocumentAnalysisRequest {
   analysis_type?: string;
   custom_prompt?: string;
-  context?: Record<string, any>;
+  context?: Record<string, unknown>;
 }
 
 export interface DocumentAnalysisResponse {
   document_id: string;
   analysis_type: string;
-  analysis_result: Record<string, any>;
+  analysis_result: AnalysisResults;
   confidence_score: number;
   processing_time: number;
   created_at: string;
@@ -236,8 +341,8 @@ export interface Analysis extends BaseEntity {
   status: AnalysisStatus;
   project_id: number;
   tz_document_id?: number;
-  analysis_config?: Record<string, any>;
-  results?: Record<string, any>;
+  analysis_config?: AnalysisConfig;
+  results?: AnalysisResults;
   confidence_score?: number;
   processing_time?: number;
   ai_cost: number;
@@ -252,7 +357,7 @@ export interface AnalysisCreate {
   ai_provider: string;
   project_id: number;
   tz_document_id?: number;
-  analysis_config?: Record<string, any>;
+  analysis_config?: AnalysisConfig;
 }
 
 export interface AnalysisDocument {
@@ -262,7 +367,7 @@ export interface AnalysisDocument {
   compliance_score?: number;
   risk_score?: number;
   recommendation?: string;
-  detailed_results?: Record<string, any>;
+  detailed_results?: AnalysisResults;
 }
 
 // ===== AI USAGE TYPES =====
@@ -290,7 +395,7 @@ export interface Report extends BaseEntity {
   file_path?: string;
   template_used?: string;
   ai_model?: string;
-  generation_config?: Record<string, any>;
+  generation_config?: GenerationConfig;
   analysis_id: number;
   generated_by_id: number;
   analysis?: Analysis;
@@ -299,20 +404,27 @@ export interface Report extends BaseEntity {
 
 // ===== ACTIVITY TYPES =====
 export interface Activity extends BaseEntity {
-  type: ActivityType;
-  title: string;
-  description: string;
   user_id: number;
+  title: string;
+  description?: string;
   organization_id?: number;
+  module_id?: string;
   project_id?: number;
   document_id?: number;
   analysis_id?: number;
-  project_metadata?: Record<string, any>;
   user?: User;
   organization?: Organization;
   project?: Project;
   document?: Document;
   analysis?: Analysis;
+  
+  // Support both old and new field names for activity type
+  activity_type?: string;
+  type?: ActivityType;
+  
+  // Support both old and new metadata field names
+  activity_metadata?: ActivityMetadata;
+  project_metadata?: ActivityMetadata;
 }
 
 export interface ActivityFeedRequest {
@@ -336,6 +448,24 @@ export interface ActivityFeedResponse {
 export interface LoginRequest {
   email: string;
   password: string;
+}
+
+export interface RegisterRequest {
+  email: string;
+  password: string;
+  full_name: string;
+  company?: string;
+  phone?: string;
+}
+
+export interface AuthResponse {
+  success: boolean;
+  user?: User;
+  token?: string;
+  refreshToken?: string;
+  expiresIn?: number;
+  message?: string;
+  error?: string;
 }
 
 export interface LoginResponse {
@@ -387,7 +517,7 @@ export interface OAuthUserInfo {
 }
 
 // ===== API RESPONSE TYPES =====
-export interface APIResponse<T = any> {
+export interface APIResponse<T = unknown> {
   success: boolean;
   message: string;
   data?: T;
@@ -396,7 +526,7 @@ export interface APIResponse<T = any> {
 export interface ErrorResponse {
   success: false;
   error: string;
-  details?: Record<string, any>;
+  details?: Record<string, unknown>;
 }
 
 export interface PaginationParams {
@@ -404,7 +534,7 @@ export interface PaginationParams {
   size?: number;
 }
 
-export interface PaginatedResponse<T = any> {
+export interface PaginatedResponse<T = unknown> {
   items: T[];
   total: number;
   page: number;
@@ -414,7 +544,7 @@ export interface PaginatedResponse<T = any> {
 
 export interface UserPermissions {
   is_superuser: boolean;
-  organizations: Array<Record<string, any>>;
+  organizations: OrganizationPermissions[];
   global_permissions: string[];
 }
 
@@ -431,7 +561,7 @@ export interface HealthCheck {
   status: string;
   timestamp: string;
   version: string;
-  services: Record<string, any>;
+  services: Record<string, ServiceStatus>;
 }
 
 export interface HealthResponse {
@@ -445,19 +575,19 @@ export interface HealthResponse {
 // ===== WEBSOCKET TYPES =====
 export interface WebSocketMessage {
   type: string;
-  data: any;
+  data: WebSocketData;
   timestamp: string;
 }
 
 export interface WebSocketError {
   type: 'error';
   error: string;
-  details?: Record<string, any>;
+  details?: Record<string, unknown>;
 }
 
 export interface WebSocketEvent {
   type: 'analysis_progress' | 'analysis_complete' | 'document_processed' | 'notification';
-  data: any;
+  data: WebSocketData;
   timestamp: string;
 }
 
@@ -468,6 +598,97 @@ export interface DashboardStats {
   total_analyses: number;
   ai_cost_this_month: number;
   recent_activities: Activity[];
+}
+
+export interface DashboardModule extends BaseEntity {
+  id: string; // kp-analyzer, tz-generator, etc.
+  title: string;
+  description: string;
+  icon: string;
+  status: 'active' | 'coming_soon' | 'beta';
+  ai_models: string[];
+  is_enabled: boolean;
+  sort_order: number;
+  access_level: 'public' | 'premium' | 'enterprise';
+  settings?: Record<string, unknown>;
+}
+
+export interface UserActivity extends BaseEntity {
+  user_id: number;
+  organization_id?: number;
+  activity_type: string;
+  title: string;
+  description?: string;
+  module_id?: string;
+  project_id?: number;
+  document_id?: number;
+  analysis_id?: number;
+  activity_metadata?: ActivityMetadata;
+  user?: User;
+  organization?: Organization;
+  project?: Project;
+  document?: Document;
+  analysis?: Analysis;
+}
+
+export interface Notification extends BaseEntity {
+  user_id: number;
+  organization_id?: number;
+  type: 'info' | 'success' | 'warning' | 'error';
+  title: string;
+  message: string;
+  is_read: boolean;
+  is_deleted: boolean;
+  expires_at?: string;
+  action_url?: string;
+  action_text?: string;
+  module_id?: string;
+  project_id?: number;
+  user?: User;
+  organization?: Organization;
+  project?: Project;
+}
+
+export interface DashboardPreference extends BaseEntity {
+  user_id: number;
+  theme: 'light' | 'dark' | 'auto';
+  language: 'ru' | 'en';
+  show_welcome_tour: boolean;
+  default_module?: string;
+  notifications_enabled: boolean;
+  email_notifications: boolean;
+  dashboard_layout?: DashboardLayoutConfig;
+  favorite_modules?: string[];
+  user?: User;
+}
+
+export interface SystemMetric extends BaseEntity {
+  metric_type: string;
+  metric_name: string;
+  value: number;
+  previous_value?: number;
+  organization_id?: number;
+  module_id?: string;
+  measured_at: string;
+  period: 'hour' | 'day' | 'week' | 'month';
+  organization?: Organization;
+}
+
+export interface SearchIndex extends BaseEntity {
+  object_type: 'project' | 'document' | 'analysis' | 'user';
+  object_id: number;
+  title: string;
+  content: string;
+  description?: string;
+  module_id?: string;
+  project_id?: number;
+  organization_id?: number;
+  user_id?: number;
+  relevance_boost: number;
+  last_accessed?: string;
+  access_count: number;
+  organization?: Organization;
+  user?: User;
 }
 
 
@@ -502,32 +723,36 @@ export interface KPAnalysisResult {
     compliance_score: number;
     risk_score: number;
     recommendation: string;
-    detailed_analysis: Record<string, any>;
+    detailed_analysis: AnalysisResults;
     cost_analysis: {
       total_cost: number;
       cost_breakdown: Record<string, number>;
     };
   }>;
-  comparison_matrix: Record<string, any>;
+  comparison_matrix: Record<string, unknown>;
   recommendations: string[];
   created_at: string;
 }
 
 // ===== TYPE GUARDS =====
-export function isUser(obj: any): obj is User {
-  return obj && typeof obj.id === 'number' && typeof obj.email === 'string';
+export function isUser(obj: unknown): obj is User {
+  return obj !== null && typeof obj === 'object' && 'id' in obj && 'email' in obj && 
+    typeof (obj as User).id === 'number' && typeof (obj as User).email === 'string';
 }
 
-export function isProject(obj: any): obj is Project {
-  return obj && typeof obj.id === 'number' && typeof obj.name === 'string';
+export function isProject(obj: unknown): obj is Project {
+  return obj !== null && typeof obj === 'object' && 'id' in obj && 'name' in obj &&
+    typeof (obj as Project).id === 'number' && typeof (obj as Project).name === 'string';
 }
 
-export function isDocument(obj: any): obj is Document {
-  return obj && typeof obj.id === 'number' && typeof obj.filename === 'string';
+export function isDocument(obj: unknown): obj is Document {
+  return obj !== null && typeof obj === 'object' && 'id' in obj && 'filename' in obj &&
+    typeof (obj as Document).id === 'number' && typeof (obj as Document).filename === 'string';
 }
 
-export function isAnalysis(obj: any): obj is Analysis {
-  return obj && typeof obj.id === 'number' && typeof obj.analysis_type === 'string';
+export function isAnalysis(obj: unknown): obj is Analysis {
+  return obj !== null && typeof obj === 'object' && 'id' in obj && 'analysis_type' in obj &&
+    typeof (obj as Analysis).id === 'number' && typeof (obj as Analysis).analysis_type === 'string';
 }
 
 // ===== FORM VALIDATION TYPES =====
@@ -536,7 +761,7 @@ export interface ValidationRule {
   minLength?: number;
   maxLength?: number;
   pattern?: RegExp;
-  custom?: (value: any) => boolean | string;
+  custom?: (value: unknown) => boolean | string;
 }
 
 export interface FormValidationRules {
@@ -563,10 +788,14 @@ export interface FileUploadOptions {
   onProgress?: (progress: FileUploadProgress) => void;
 }
 
-export default {
+// Named export object for backwards compatibility
+export const SharedTypesDefault = {
   UserRole,
   ProjectStatus,
   DocumentType,
   AnalysisStatus,
   OAuthProvider,
 };
+
+// Default export for backwards compatibility
+export default SharedTypesDefault;

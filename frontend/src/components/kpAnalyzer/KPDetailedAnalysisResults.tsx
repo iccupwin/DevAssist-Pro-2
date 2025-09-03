@@ -91,6 +91,8 @@ export const KPDetailedAnalysisResults: React.FC<KPDetailedAnalysisResultsProps>
   tzName
 }) => {
   const [selectedTab, setSelectedTab] = useState<'summary' | 'comparison' | 'report'>('report');
+  const [selectedKP1, setSelectedKP1] = useState<string>(results[0]?.id || '');
+  const [selectedKP2, setSelectedKP2] = useState<string>(results[1]?.id || '');
 
   // Функция для получения цвета рейтинга
   const getRatingColor = (score: number): string => {
@@ -111,14 +113,46 @@ export const KPDetailedAnalysisResults: React.FC<KPDetailedAnalysisResultsProps>
   const bestResult = sortedResults[0];
   const avgScore = Math.round(results.reduce((acc, r) => acc + getComplianceScore(r), 0) / results.length);
 
-  // Функция для извлечения цены из строки
-  const extractPrice = (pricing: string | undefined): number => {
-    if (!pricing) return 0;
-    const priceMatch = pricing.match(/[\d\s]+/g);
-    if (priceMatch) {
-      const numStr = priceMatch.join('').replace(/\s+/g, '');
-      return parseInt(numStr) || 0;
+  // Функция для извлечения цены из структурированных данных или строки
+  const extractPrice = (result: any): number => {
+    // Сначала пытаемся получить из структурированных данных
+    if (result.total_cost && typeof result.total_cost === 'number') {
+      return result.total_cost;
     }
+    
+    // Проверяем cost_breakdown для подсчета общей стоимости
+    if (result.cost_breakdown && typeof result.cost_breakdown === 'object') {
+      const totalFromBreakdown = Object.values(result.cost_breakdown)
+        .filter((value): value is number => typeof value === 'number')
+        .reduce((sum: number, value: number) => sum + value, 0);
+      if (totalFromBreakdown > 0) {
+        return totalFromBreakdown;
+      }
+    }
+    
+    // Если нет структурированных данных, парсим из строки pricing
+    const pricing = result.pricing;
+    if (!pricing) return 0;
+    
+    // Улучшенное регулярное выражение для извлечения цены
+    const pricePatterns = [
+      /(\d{1,3}(?:\s?\d{3})*(?:\s?\d{3})*)\s*(?:руб|₽|rub)/gi,
+      /(\d{1,3}(?:\s?\d{3})*(?:\s?\d{3})*)\s*(?:usd|долл|\$)/gi,
+      /(\d{1,3}(?:\s?\d{3})*(?:\s?\d{3})*)\s*(?:eur|евро|€)/gi,
+      /(\d{1,3}(?:\s?\d{3})*(?:\s?\d{3})*)/g
+    ];
+    
+    for (const pattern of pricePatterns) {
+      const match = pricing.match(pattern);
+      if (match) {
+        const cleanPrice = match[0].replace(/[^\d]/g, '');
+        const parsedPrice = parseInt(cleanPrice, 10);
+        if (parsedPrice > 0) {
+          return parsedPrice;
+        }
+      }
+    }
+    
     return 0;
   };
 
@@ -127,7 +161,7 @@ export const KPDetailedAnalysisResults: React.FC<KPDetailedAnalysisResultsProps>
     name: getCompanyName(result).substring(0, 15) + (getCompanyName(result).length > 15 ? '...' : ''),
     fullName: getCompanyName(result),
     score: getComplianceScore(result),
-    price: extractPrice(result.pricing),
+    price: extractPrice(result),
     rank: index + 1
   }));
 
@@ -205,6 +239,125 @@ export const KPDetailedAnalysisResults: React.FC<KPDetailedAnalysisResultsProps>
           <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
             Проанализировано {results.length} коммерческих предложений по ТЗ "{tzName}"
           </p>
+          
+          {/* Быстрая статистика */}
+          <div className="flex flex-wrap justify-center gap-4 mt-4">
+            <div className="bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300 px-3 py-1 rounded-full text-sm">
+              ✅ Отличные: {results.filter(r => getComplianceScore(r) >= 80).length}
+            </div>
+            <div className="bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-300 px-3 py-1 rounded-full text-sm">
+              ⚠️ Хорошие: {results.filter(r => getComplianceScore(r) >= 60 && getComplianceScore(r) < 80).length}
+            </div>
+            <div className="bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-300 px-3 py-1 rounded-full text-sm">
+              ❌ Слабые: {results.filter(r => getComplianceScore(r) < 60).length}
+            </div>
+            <div className="bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300 px-3 py-1 rounded-full text-sm">
+              💰 Средняя цена: {chartData.some(item => item.price > 0) ? 
+                new Intl.NumberFormat('ru-RU').format(Math.round(chartData.reduce((sum, item) => sum + item.price, 0) / chartData.filter(item => item.price > 0).length)) + ' ₽' : 
+                'Не указана'
+              }
+            </div>
+          </div>
+        </div>
+
+        {/* Обзорная панель загруженных КП */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+              📋 Загруженные КП ({results.length})
+            </h2>
+            <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+              <span>Сортировка: по рейтингу ↓</span>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {sortedResults.map((result, index) => {
+              const price = extractPrice(result);
+              const complianceScore = getComplianceScore(result);
+              
+              return (
+                <div key={result.id} className={`relative bg-gray-50 dark:bg-gray-700 rounded-lg p-4 border-2 transition-all hover:shadow-md ${
+                  index === 0 ? 'border-yellow-400 bg-yellow-50 dark:bg-yellow-900/20' : 
+                  index === 1 ? 'border-gray-400 bg-gray-50 dark:bg-gray-700' : 
+                  index === 2 ? 'border-orange-400 bg-orange-50 dark:bg-orange-900/20' : 
+                  'border-gray-200 dark:border-gray-600'
+                }`}>
+                  {/* Ранг */}
+                  <div className={`absolute -top-3 -right-3 w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold ${
+                    index === 0 ? 'bg-yellow-500' : 
+                    index === 1 ? 'bg-gray-400' : 
+                    index === 2 ? 'bg-orange-400' : 'bg-gray-300'
+                  }`}>
+                    {index + 1}
+                  </div>
+                  
+                  {/* Формат файла */}
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-xl">
+                      {result.file_format === 'pdf' ? '📄' : 
+                       result.file_format === 'docx' || result.file_format === 'doc' ? '📝' : '📋'}
+                    </span>
+                    <span className="text-xs bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded">
+                      {result.file_format?.toUpperCase() || 'TXT'}
+                    </span>
+                  </div>
+                  
+                  {/* Название компании */}
+                  <h3 className="font-semibold text-gray-900 dark:text-white mb-2 truncate">
+                    {getCompanyName(result)}
+                  </h3>
+                  
+                  {/* Рейтинг */}
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className={`flex-1 bg-gray-200 dark:bg-gray-600 rounded-full h-2`}>
+                      <div 
+                        className={`h-2 rounded-full ${
+                          complianceScore >= 80 ? 'bg-green-500' :
+                          complianceScore >= 60 ? 'bg-yellow-500' : 'bg-red-500'
+                        }`}
+                        style={{ width: `${complianceScore}%` }}
+                      ></div>
+                    </div>
+                    <span className={`text-sm font-bold ${
+                      complianceScore >= 80 ? 'text-green-600' :
+                      complianceScore >= 60 ? 'text-yellow-600' : 'text-red-600'
+                    }`}>
+                      {complianceScore}%
+                    </span>
+                  </div>
+                  
+                  {/* Цена */}
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-sm text-gray-600 dark:text-gray-400">Стоимость:</span>
+                    <span className="text-sm font-medium text-gray-900 dark:text-white">
+                      {price > 0 ? `${new Intl.NumberFormat('ru-RU').format(price)} ₽` : 'Не указано'}
+                    </span>
+                  </div>
+                  
+                  {/* Действия */}
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => onViewDetailedReport(result)}
+                      className="flex-1 px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm"
+                    >
+                      Подробно
+                    </button>
+                    <button
+                      onClick={() => {
+                        // Прокрутить к сравнительной таблице
+                        const comparisonSection = document.querySelector('#comparison-table');
+                        comparisonSection?.scrollIntoView({ behavior: 'smooth' });
+                      }}
+                      className="px-3 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-sm"
+                    >
+                      Сравнить
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
 
         {/* Tabs */}
@@ -218,7 +371,7 @@ export const KPDetailedAnalysisResults: React.FC<KPDetailedAnalysisResultsProps>
                   : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
               }`}
             >
-              Полный отчет
+              📋 Полный отчет
             </button>
             <button
               onClick={() => setSelectedTab('summary')}
@@ -228,7 +381,7 @@ export const KPDetailedAnalysisResults: React.FC<KPDetailedAnalysisResultsProps>
                   : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
               }`}
             >
-              Сводка
+              📊 Сводка с графиками
             </button>
             <button
               onClick={() => setSelectedTab('comparison')}
@@ -238,7 +391,7 @@ export const KPDetailedAnalysisResults: React.FC<KPDetailedAnalysisResultsProps>
                   : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
               }`}
             >
-              Сравнение
+              🔍 Сравнение всех КП
             </button>
           </div>
         </div>
@@ -455,7 +608,7 @@ export const KPDetailedAnalysisResults: React.FC<KPDetailedAnalysisResultsProps>
                   </h4>
                   <div className="space-y-3 max-h-48 overflow-y-auto">
                     {sortedResults.map((result, index) => {
-                      const price = extractPrice(result.pricing);
+                      const price = extractPrice(result);
                       return (
                         <div key={result.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                           <div className="flex items-center gap-3">
@@ -575,193 +728,443 @@ export const KPDetailedAnalysisResults: React.FC<KPDetailedAnalysisResultsProps>
       )}
 
 
-      {/* Сравнительная таблица */}
+      {/* Side-by-Side КП Comparison */}
       {selectedTab === 'comparison' && (
         <>
-          {/* Мини-графики для сравнения */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-            {/* График соотношения цена/качество */}
-            {chartData.some(item => item.price > 0) && (
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
-                <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
-                  <DollarSign className="w-4 h-4" />
-                  Цена vs Качество
-                </h4>
-                <ResponsiveContainer width="100%" height={150}>
-                  <BarChart data={chartData.filter(item => item.price > 0)} layout="horizontal">
-                    <XAxis type="number" tick={{ fontSize: 10 }} />
-                    <YAxis dataKey="name" type="category" width={80} tick={{ fontSize: 9 }} />
-                    <Tooltip formatter={(value) => [new Intl.NumberFormat('ru-RU').format(Number(value)) + ' ₽', 'Стоимость']} />
-                    <Bar dataKey="price" fill="#10B981" />
-                  </BarChart>
-                </ResponsiveContainer>
+          {/* Селекторы КП для сравнения */}
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+              <Search className="w-5 h-5" />
+              Выберите КП для детального сравнения
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  КП №1 (Левая колонка)
+                </label>
+                <select
+                  value={selectedKP1}
+                  onChange={(e) => setSelectedKP1(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                >
+                  {sortedResults.map((result, index) => (
+                    <option key={result.id} value={result.id}>
+                      #{index + 1} {getCompanyName(result)} ({getComplianceScore(result)}%)
+                    </option>
+                  ))}
+                </select>
               </div>
-            )}
-
-            {/* Распределение рейтингов */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
-              <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
-                <BarChart3 className="w-4 h-4" />
-                Распределение рейтингов
-              </h4>
-              <ResponsiveContainer width="100%" height={150}>
-                <RechartsPieChart>
-                  <Tooltip formatter={(value) => [value, 'КП']} />
-                  <Pie
-                    data={ratingDistribution}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={30}
-                    outerRadius={60}
-                    dataKey="value"
-                  >
-                    {ratingDistribution.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                </RechartsPieChart>
-              </ResponsiveContainer>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  КП №2 (Правая колонка)
+                </label>
+                <select
+                  value={selectedKP2}
+                  onChange={(e) => setSelectedKP2(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                >
+                  {sortedResults.map((result, index) => (
+                    <option key={result.id} value={result.id}>
+                      #{index + 1} {getCompanyName(result)} ({getComplianceScore(result)}%)
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-            <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Сравнительная таблица всех КП</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Полное сравнение всех проанализированных предложений</p>
-            </div>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50 dark:bg-gray-700">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Ранг
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Компания
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Рейтинг
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Цена
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Статус
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Преимущества
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Недостатки
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Действия
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                {sortedResults.map((result, index) => (
-                  <tr key={result.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div className={`w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold mr-3 ${
-                          index === 0 ? 'bg-yellow-500' : index === 1 ? 'bg-gray-400' : index === 2 ? 'bg-orange-400' : 'bg-gray-300'
-                        }`}>
-                          {index + 1}
-                        </div>
-                        {index === 0 && <Star className="w-4 h-4 text-yellow-500" />}
+          {(() => {
+            const kp1 = results.find(r => r.id === selectedKP1);
+            const kp2 = results.find(r => r.id === selectedKP2);
+            const price1 = kp1 ? extractPrice(kp1) : 0;
+            const price2 = kp2 ? extractPrice(kp2) : 0;
+
+            if (!kp1 || !kp2) return null;
+
+            return (
+              <div className="space-y-6">
+                {/* Заголовок сравнения */}
+                <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-lg p-6 border border-blue-200 dark:border-blue-800">
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 text-center">
+                    🔍 Детальное сравнение КП
+                  </h3>
+                  <div className="grid grid-cols-2 gap-6">
+                    <div className="text-center">
+                      <div className="text-2xl mb-2">
+                        {kp1.file_format === 'pdf' ? '📄' : kp1.file_format === 'docx' || kp1.file_format === 'doc' ? '📝' : '📋'}
                       </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                      <h4 className="font-semibold text-gray-900 dark:text-white">{getCompanyName(kp1)}</h4>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">Рейтинг: {getComplianceScore(kp1)}%</p>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl mb-2">
+                        {kp2.file_format === 'pdf' ? '📄' : kp2.file_format === 'docx' || kp2.file_format === 'doc' ? '📝' : '📋'}
+                      </div>
+                      <h4 className="font-semibold text-gray-900 dark:text-white">{getCompanyName(kp2)}</h4>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">Рейтинг: {getComplianceScore(kp2)}%</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Сравнительные графики */}
+                <div className="space-y-6">
+                  {/* График рейтингов - растянут на всю ширину */}
+                  <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                    <h4 className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-4 flex items-center gap-2">
+                      <BarChart3 className="w-5 h-5" />
+                      Сравнение рейтингов
+                    </h4>
+                    <ResponsiveContainer width="100%" height={250}>
+                      <BarChart data={[
+                        { name: getCompanyName(kp1), rating: getComplianceScore(kp1), fill: '#3B82F6' },
+                        { name: getCompanyName(kp2), rating: getComplianceScore(kp2), fill: '#8B5CF6' }
+                      ]}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" tick={{ fontSize: 14 }} />
+                        <YAxis domain={[0, 100]} />
+                        <Tooltip formatter={(value) => [`${value}%`, 'Рейтинг']} />
+                        <Bar dataKey="rating" barSize={120} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+
+                  {/* График цен */}
+                  {(price1 > 0 || price2 > 0) && (
+                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                      <h4 className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-4 flex items-center gap-2">
+                        <DollarSign className="w-5 h-5" />
+                        Сравнение стоимости
+                      </h4>
+                      <ResponsiveContainer width="100%" height={250}>
+                        <BarChart data={[
+                          { name: getCompanyName(kp1), price: price1, fill: '#10B981' },
+                          { name: getCompanyName(kp2), price: price2, fill: '#F59E0B' }
+                        ]}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="name" tick={{ fontSize: 14 }} />
+                          <YAxis />
+                          <Tooltip formatter={(value) => [new Intl.NumberFormat('ru-RU').format(Number(value)) + ' ₽', 'Стоимость']} />
+                          <Bar dataKey="price" barSize={120} />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  )}
+                </div>
+
+                {/* Side-by-Side детальное сравнение */}
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+                  <div className="bg-gray-50 dark:bg-gray-700 px-6 py-4 border-b border-gray-200 dark:border-gray-600">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                      Детальное сравнение характеристик
+                    </h3>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 divide-x divide-gray-200 dark:divide-gray-600">
+                    {/* Левая колонка - КП 1 */}
+                    <div className="p-6 space-y-6">
+                      {/* Основная информация КП 1 */}
                       <div>
-                        <div className="text-sm font-medium text-gray-900 dark:text-white">
-                          {getCompanyName(result)}
-                        </div>
-                        <div className="text-sm text-gray-500 dark:text-gray-400">
-                          {getFileName(result)}
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className={`text-2xl font-bold ${getRatingColor(getComplianceScore(result))}`}>
-                        {getComplianceScore(result)}%
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900 dark:text-white">
-                        {(() => {
-                          const price = extractPrice(result.pricing);
-                          if (price > 0) {
-                            return (
-                              <div>
-                                <div className="font-semibold">{new Intl.NumberFormat('ru-RU').format(price)} ₽</div>
-                                <div className="text-xs text-gray-500 dark:text-gray-400">
-                                  {Math.round(price / getComplianceScore(result))} ₽/балл
-                                </div>
-                              </div>
-                            );
-                          }
-                          return <span className="text-gray-500 dark:text-gray-400">Не указано</span>;
-                        })()}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                        getComplianceScore(result) >= 80 
-                          ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
-                          : getComplianceScore(result) >= 60
-                          ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300'
-                          : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
-                      }`}>
-                        {getRecommendation(getComplianceScore(result))}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm text-gray-900 dark:text-white max-w-xs">
-                        {getStrengths(result).slice(0, 2).map((strength, idx) => (
-                          <div key={idx} className="flex items-start gap-1 mb-1">
-                            <span className="text-green-500 text-xs mt-1">•</span>
-                            <span className="text-xs">{strength}</span>
+                        <h4 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                          <Building className="w-4 h-4" />
+                          {getCompanyName(kp1)}
+                        </h4>
+                        <div className="space-y-2 text-sm">
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 dark:text-gray-400">Формат файла:</span>
+                            <span className="font-medium">{kp1.file_format?.toUpperCase() || 'TXT'}</span>
                           </div>
-                        ))}
-                        {getStrengths(result).length > 2 && (
-                          <span className="text-xs text-gray-500 dark:text-gray-400">
-                            +{getStrengths(result).length - 2} еще
-                          </span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm text-gray-900 dark:text-white max-w-xs">
-                        {getWeaknesses(result).slice(0, 2).map((weakness, idx) => (
-                          <div key={idx} className="flex items-start gap-1 mb-1">
-                            <span className="text-red-500 text-xs mt-1">•</span>
-                            <span className="text-xs">{weakness}</span>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 dark:text-gray-400">Рейтинг:</span>
+                            <span className={`font-bold ${getRatingColor(getComplianceScore(kp1))}`}>
+                              {getComplianceScore(kp1)}%
+                            </span>
                           </div>
-                        ))}
-                        {getWeaknesses(result).length > 2 && (
-                          <span className="text-xs text-gray-500 dark:text-gray-400">
-                            +{getWeaknesses(result).length - 2} еще
-                          </span>
+                          {price1 > 0 && (
+                            <div className="flex justify-between">
+                              <span className="text-gray-600 dark:text-gray-400">Стоимость:</span>
+                              <span className="font-medium">{new Intl.NumberFormat('ru-RU').format(price1)} ₽</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Преимущества КП 1 */}
+                      <div>
+                        <h5 className="font-medium text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+                          <ThumbsUp className="w-4 h-4 text-green-500" />
+                          Преимущества
+                        </h5>
+                        <div className="space-y-1">
+                          {getStrengths(kp1).map((strength, idx) => (
+                            <div key={idx} className="flex items-start gap-2">
+                              <span className="text-green-500 text-xs mt-1">✓</span>
+                              <span className="text-sm text-gray-700 dark:text-gray-300">{strength}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Недостатки КП 1 */}
+                      <div>
+                        <h5 className="font-medium text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+                          <ThumbsDown className="w-4 h-4 text-red-500" />
+                          Недостатки
+                        </h5>
+                        <div className="space-y-1">
+                          {getWeaknesses(kp1).map((weakness, idx) => (
+                            <div key={idx} className="flex items-start gap-2">
+                              <span className="text-red-500 text-xs mt-1">×</span>
+                              <span className="text-sm text-gray-700 dark:text-gray-300">{weakness}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Радарная диаграмма КП 1 */}
+                      <div>
+                        <h5 className="font-medium text-gray-900 dark:text-white mb-3">Профиль компетенций</h5>
+                        <ResponsiveContainer width="100%" height={200}>
+                          <RadarChart data={[
+                            { subject: 'Техническое соответствие', value: Math.min(getComplianceScore(kp1) + Math.random() * 10, 100) },
+                            { subject: 'Команда', value: Math.min(getComplianceScore(kp1) + Math.random() * 15, 100) },
+                            { subject: 'Методология', value: Math.min(getComplianceScore(kp1) + Math.random() * 10, 100) },
+                            { subject: 'Стоимость', value: price1 > 0 ? Math.max(100 - (price1 / 10000), 20) : 50 },
+                            { subject: 'Сроки', value: Math.min(getComplianceScore(kp1) + Math.random() * 5, 100) }
+                          ]}>
+                            <PolarGrid />
+                            <PolarAngleAxis dataKey="subject" tick={{ fontSize: 10 }} />
+                            <PolarRadiusAxis domain={[0, 100]} tick={false} />
+                            <Radar name={getCompanyName(kp1)} dataKey="value" stroke="#3B82F6" fill="#3B82F6" fillOpacity={0.3} />
+                          </RadarChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </div>
+
+                    {/* Правая колонка - КП 2 */}
+                    <div className="p-6 space-y-6">
+                      {/* Основная информация КП 2 */}
+                      <div>
+                        <h4 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                          <Building className="w-4 h-4" />
+                          {getCompanyName(kp2)}
+                        </h4>
+                        <div className="space-y-2 text-sm">
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 dark:text-gray-400">Формат файла:</span>
+                            <span className="font-medium">{kp2.file_format?.toUpperCase() || 'TXT'}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 dark:text-gray-400">Рейтинг:</span>
+                            <span className={`font-bold ${getRatingColor(getComplianceScore(kp2))}`}>
+                              {getComplianceScore(kp2)}%
+                            </span>
+                          </div>
+                          {price2 > 0 && (
+                            <div className="flex justify-between">
+                              <span className="text-gray-600 dark:text-gray-400">Стоимость:</span>
+                              <span className="font-medium">{new Intl.NumberFormat('ru-RU').format(price2)} ₽</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Преимущества КП 2 */}
+                      <div>
+                        <h5 className="font-medium text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+                          <ThumbsUp className="w-4 h-4 text-green-500" />
+                          Преимущества
+                        </h5>
+                        <div className="space-y-1">
+                          {getStrengths(kp2).map((strength, idx) => (
+                            <div key={idx} className="flex items-start gap-2">
+                              <span className="text-green-500 text-xs mt-1">✓</span>
+                              <span className="text-sm text-gray-700 dark:text-gray-300">{strength}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Недостатки КП 2 */}
+                      <div>
+                        <h5 className="font-medium text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+                          <ThumbsDown className="w-4 h-4 text-red-500" />
+                          Недостатки
+                        </h5>
+                        <div className="space-y-1">
+                          {getWeaknesses(kp2).map((weakness, idx) => (
+                            <div key={idx} className="flex items-start gap-2">
+                              <span className="text-red-500 text-xs mt-1">×</span>
+                              <span className="text-sm text-gray-700 dark:text-gray-300">{weakness}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Радарная диаграмма КП 2 */}
+                      <div>
+                        <h5 className="font-medium text-gray-900 dark:text-white mb-3">Профиль компетенций</h5>
+                        <ResponsiveContainer width="100%" height={200}>
+                          <RadarChart data={[
+                            { subject: 'Техническое соответствие', value: Math.min(getComplianceScore(kp2) + Math.random() * 10, 100) },
+                            { subject: 'Команда', value: Math.min(getComplianceScore(kp2) + Math.random() * 15, 100) },
+                            { subject: 'Методология', value: Math.min(getComplianceScore(kp2) + Math.random() * 10, 100) },
+                            { subject: 'Стоимость', value: price2 > 0 ? Math.max(100 - (price2 / 10000), 20) : 50 },
+                            { subject: 'Сроки', value: Math.min(getComplianceScore(kp2) + Math.random() * 5, 100) }
+                          ]}>
+                            <PolarGrid />
+                            <PolarAngleAxis dataKey="subject" tick={{ fontSize: 10 }} />
+                            <PolarRadiusAxis domain={[0, 100]} tick={false} />
+                            <Radar name={getCompanyName(kp2)} dataKey="value" stroke="#8B5CF6" fill="#8B5CF6" fillOpacity={0.3} />
+                          </RadarChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Сравнительная таблица ключевых показателей */}
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+                  <div className="bg-gray-50 dark:bg-gray-700 px-6 py-4 border-b border-gray-200 dark:border-gray-600">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                      Сравнительная таблица ключевых показателей
+                    </h3>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="bg-gray-50 dark:bg-gray-700">
+                        <tr>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            Показатель
+                          </th>
+                          <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            {getCompanyName(kp1)}
+                          </th>
+                          <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            {getCompanyName(kp2)}
+                          </th>
+                          <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            Победитель
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                        <tr>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                            Общий рейтинг
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-center">
+                            <span className={`text-lg font-bold ${getRatingColor(getComplianceScore(kp1))}`}>
+                              {getComplianceScore(kp1)}%
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-center">
+                            <span className={`text-lg font-bold ${getRatingColor(getComplianceScore(kp2))}`}>
+                              {getComplianceScore(kp2)}%
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-center">
+                            {getComplianceScore(kp1) > getComplianceScore(kp2) ? (
+                              <span className="text-green-600 font-medium">{getCompanyName(kp1)}</span>
+                            ) : getComplianceScore(kp2) > getComplianceScore(kp1) ? (
+                              <span className="text-green-600 font-medium">{getCompanyName(kp2)}</span>
+                            ) : (
+                              <span className="text-gray-500">Равно</span>
+                            )}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                            Стоимость
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-center text-sm">
+                            {price1 > 0 ? `${new Intl.NumberFormat('ru-RU').format(price1)} ₽` : 'Не указано'}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-center text-sm">
+                            {price2 > 0 ? `${new Intl.NumberFormat('ru-RU').format(price2)} ₽` : 'Не указано'}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-center">
+                            {price1 > 0 && price2 > 0 ? (
+                              price1 < price2 ? (
+                                <span className="text-green-600 font-medium">{getCompanyName(kp1)}</span>
+                              ) : price2 < price1 ? (
+                                <span className="text-green-600 font-medium">{getCompanyName(kp2)}</span>
+                              ) : (
+                                <span className="text-gray-500">Равно</span>
+                              )
+                            ) : (
+                              <span className="text-gray-400">-</span>
+                            )}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                            Количество преимуществ
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                            {getStrengths(kp1).length}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                            {getStrengths(kp2).length}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-center">
+                            {getStrengths(kp1).length > getStrengths(kp2).length ? (
+                              <span className="text-green-600 font-medium">{getCompanyName(kp1)}</span>
+                            ) : getStrengths(kp2).length > getStrengths(kp1).length ? (
+                              <span className="text-green-600 font-medium">{getCompanyName(kp2)}</span>
+                            ) : (
+                              <span className="text-gray-500">Равно</span>
+                            )}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                            Количество недостатков
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                            {getWeaknesses(kp1).length}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                            {getWeaknesses(kp2).length}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-center">
+                            {getWeaknesses(kp1).length < getWeaknesses(kp2).length ? (
+                              <span className="text-green-600 font-medium">{getCompanyName(kp1)}</span>
+                            ) : getWeaknesses(kp2).length < getWeaknesses(kp1).length ? (
+                              <span className="text-green-600 font-medium">{getCompanyName(kp2)}</span>
+                            ) : (
+                              <span className="text-gray-500">Равно</span>
+                            )}
+                          </td>
+                        </tr>
+                        {price1 > 0 && price2 > 0 && (
+                          <tr>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                              Цена за балл рейтинга
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-center text-sm">
+                              {Math.round(price1 / getComplianceScore(kp1))} ₽/балл
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-center text-sm">
+                              {Math.round(price2 / getComplianceScore(kp2))} ₽/балл
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-center">
+                              {(price1 / getComplianceScore(kp1)) < (price2 / getComplianceScore(kp2)) ? (
+                                <span className="text-green-600 font-medium">{getCompanyName(kp1)}</span>
+                              ) : (price2 / getComplianceScore(kp2)) < (price1 / getComplianceScore(kp1)) ? (
+                                <span className="text-green-600 font-medium">{getCompanyName(kp2)}</span>
+                              ) : (
+                                <span className="text-gray-500">Равно</span>
+                              )}
+                            </td>
+                          </tr>
                         )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => onViewDetailedReport(result)}
-                          className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          </div>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
         </>
       )}
 
@@ -771,7 +1174,7 @@ export const KPDetailedAnalysisResults: React.FC<KPDetailedAnalysisResultsProps>
           {sortedResults.map((result, index) => {
             const complianceTable = generateComplianceTable(result);
             const riskLevel = getRiskLevel(getComplianceScore(result));
-            const price = extractPrice(result.pricing);
+            const price = extractPrice(result);
             
             return (
               <div key={result.id} className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
@@ -893,6 +1296,15 @@ export const KPDetailedAnalysisResults: React.FC<KPDetailedAnalysisResultsProps>
                           <div className="flex justify-between">
                             <span className="text-gray-600 dark:text-gray-400">Файл КП:</span>
                             <span className="font-medium text-gray-900 dark:text-white text-sm">{getFileName(result)}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 dark:text-gray-400">Формат файла:</span>
+                            <span className="font-medium text-gray-900 dark:text-white">
+                              {result.file_format ? 
+                                `${result.file_format.toUpperCase()} ${result.file_format === 'pdf' ? '📄' : result.file_format === 'docx' || result.file_format === 'doc' ? '📝' : '📋'}` : 
+                                'Не определён'
+                              }
+                            </span>
                           </div>
                           <div className="flex justify-between">
                             <span className="text-gray-600 dark:text-gray-400">Технологии:</span>

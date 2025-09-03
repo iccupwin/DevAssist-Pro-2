@@ -14,10 +14,10 @@ import {
   Edit,
   Ban,
   CheckCircle,
-  XCircle,
+  // XCircle, // Removed unused import
   Crown,
   User,
-  Calendar,
+  // Calendar, // Removed unused import
   Activity,
   DollarSign,
   MoreVertical,
@@ -149,6 +149,19 @@ export const UserManagement: React.FC<UserManagementProps> = ({
   const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
   const [showFilters, setShowFilters] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [totalUsers, setTotalUsers] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const [showCreateAdmin, setShowCreateAdmin] = useState(false);
+  const [createAdminData, setCreateAdminData] = useState({
+    email: '',
+    password: '',
+    full_name: '',
+    company: '',
+    position: '',
+    phone: ''
+  });
+  const [createAdminError, setCreateAdminError] = useState<string | null>(null);
+  const [isCreatingAdmin, setIsCreatingAdmin] = useState(false);
 
   // Загружаем реальных пользователей при монтировании компонента
   useEffect(() => {
@@ -158,19 +171,72 @@ export const UserManagement: React.FC<UserManagementProps> = ({
   const loadUsers = async () => {
     setIsLoading(true);
     try {
-      const response = await adminService.getUsers(currentPage, pageSize);
+      const response = await adminService.getUsers(currentPage, pageSize, filters);
       if (response.success) {
         setUsers(response.data.users);
+        setTotalUsers(response.data.total);
+        setTotalPages(response.data.total_pages || Math.ceil(response.data.total / pageSize));
       } else {
         // Fallback к mock данным
         setUsers(mockUsers);
+        setTotalUsers(mockUsers.length);
+        setTotalPages(Math.ceil(mockUsers.length / pageSize));
       }
     } catch (error) {
-      console.error('Failed to load users:', error);
+      // Failed to load users - using fallback mock data
       // Fallback к mock данным
       setUsers(mockUsers);
+      setTotalUsers(mockUsers.length);
+      setTotalPages(Math.ceil(mockUsers.length / pageSize));
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleCreateAdmin = async () => {
+    setCreateAdminError(null);
+    setIsCreatingAdmin(true);
+    
+    try {
+      const response = await adminService.createAdmin(createAdminData);
+      if (response.success) {
+        // Успешно создан
+        setShowCreateAdmin(false);
+        setCreateAdminData({
+          email: '',
+          password: '',
+          full_name: '',
+          company: '',
+          position: '',
+          phone: ''
+        });
+        // Перезагрузить список пользователей
+        await loadUsers();
+      } else {
+        setCreateAdminError(response.error || 'Failed to create admin');
+      }
+    } catch (error) {
+      setCreateAdminError('An unexpected error occurred');
+    } finally {
+      setIsCreatingAdmin(false);
+    }
+  };
+
+  const handleToggleUserStatus = async (userId: number) => {
+    try {
+      const response = await adminService.toggleUserStatus(userId);
+      if (response.success) {
+        // Обновить статус пользователя в списке
+        setUsers(prevUsers => 
+          prevUsers.map(user => 
+            user.id === userId 
+              ? { ...user, is_active: response.data.is_active }
+              : user
+          )
+        );
+      }
+    } catch (error) {
+      console.error('Failed to toggle user status:', error);
     }
   };
 
@@ -205,8 +271,8 @@ export const UserManagement: React.FC<UserManagementProps> = ({
 
     // Сортировка
     result.sort((a, b) => {
-      let aValue: any = a[sortBy];
-      let bValue: any = b[sortBy];
+      let aValue: string | number | boolean | Date = a[sortBy] as string | number | boolean | Date;
+      let bValue: string | number | boolean | Date = b[sortBy] as string | number | boolean | Date;
 
       if (aValue === undefined) aValue = '';
       if (bValue === undefined) bValue = '';
@@ -320,9 +386,9 @@ export const UserManagement: React.FC<UserManagementProps> = ({
             <Download className="h-4 w-4 mr-2" />
             Export
           </Button>
-          <Button size="sm">
+          <Button size="sm" onClick={() => setShowCreateAdmin(true)}>
             <Plus className="h-4 w-4 mr-2" />
-            Add User
+            Создать админа
           </Button>
         </div>
       </div>
@@ -517,7 +583,12 @@ export const UserManagement: React.FC<UserManagementProps> = ({
                         <Button size="sm" variant="outline">
                           <Edit className="h-4 w-4" />
                         </Button>
-                        <Button size="sm" variant="outline">
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => handleToggleUserStatus(user.id)}
+                          title={user.is_active ? 'Заблокировать пользователя' : 'Разблокировать пользователя'}
+                        >
                           {user.is_active ? <Ban className="h-4 w-4" /> : <CheckCircle className="h-4 w-4" />}
                         </Button>
                       </div>
@@ -564,6 +635,130 @@ export const UserManagement: React.FC<UserManagementProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Модальное окно для создания администратора */}
+      {showCreateAdmin && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-gray-800 border border-gray-700 rounded-lg p-6 w-full max-w-md">
+            <h3 className="text-lg font-semibold text-white mb-4">Создать администратора</h3>
+            
+            {createAdminError && (
+              <div className="bg-red-900 border border-red-600 text-red-200 p-3 rounded mb-4">
+                {createAdminError}
+              </div>
+            )}
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">
+                  Email*
+                </label>
+                <Input
+                  type="email"
+                  value={createAdminData.email}
+                  onChange={(e) => setCreateAdminData(prev => ({ ...prev, email: e.target.value }))}
+                  placeholder="admin@example.com"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">
+                  Пароль*
+                </label>
+                <Input
+                  type="password"
+                  value={createAdminData.password}
+                  onChange={(e) => setCreateAdminData(prev => ({ ...prev, password: e.target.value }))}
+                  placeholder="Минимум 8 символов"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">
+                  Полное имя*
+                </label>
+                <Input
+                  type="text"
+                  value={createAdminData.full_name}
+                  onChange={(e) => setCreateAdminData(prev => ({ ...prev, full_name: e.target.value }))}
+                  placeholder="Иван Петров"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">
+                  Компания
+                </label>
+                <Input
+                  type="text"
+                  value={createAdminData.company}
+                  onChange={(e) => setCreateAdminData(prev => ({ ...prev, company: e.target.value }))}
+                  placeholder="Название компании"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">
+                  Должность
+                </label>
+                <Input
+                  type="text"
+                  value={createAdminData.position}
+                  onChange={(e) => setCreateAdminData(prev => ({ ...prev, position: e.target.value }))}
+                  placeholder="Системный администратор"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">
+                  Телефон
+                </label>
+                <Input
+                  type="tel"
+                  value={createAdminData.phone}
+                  onChange={(e) => setCreateAdminData(prev => ({ ...prev, phone: e.target.value }))}
+                  placeholder="+7 (999) 123-45-67"
+                />
+              </div>
+            </div>
+            
+            <div className="flex justify-end space-x-3 mt-6">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowCreateAdmin(false);
+                  setCreateAdminError(null);
+                  setCreateAdminData({
+                    email: '',
+                    password: '',
+                    full_name: '',
+                    company: '',
+                    position: '',
+                    phone: ''
+                  });
+                }}
+                disabled={isCreatingAdmin}
+              >
+                Отмена
+              </Button>
+              <Button
+                onClick={handleCreateAdmin}
+                disabled={
+                  isCreatingAdmin || 
+                  !createAdminData.email || 
+                  !createAdminData.password || 
+                  !createAdminData.full_name
+                }
+              >
+                {isCreatingAdmin ? 'Создание...' : 'Создать администратора'}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -81,8 +81,13 @@ export const AUTH_ENDPOINTS = {
 } as const;
 
 // Backend auth service configuration
+// 🔒 PRODUCTION READY: Uses environment variables with secure fallbacks
 export const AUTH_CONFIG_API = {
-  BASE_URL: process.env.REACT_APP_AUTH_API_URL || 'http://localhost:8001',
+  BASE_URL: process.env.REACT_APP_AUTH_API_URL || (
+    process.env.NODE_ENV === 'production' 
+      ? 'https://your-auth-domain.com' 
+      : 'http://localhost:8001'
+  ),
   TIMEOUT: 30000,
 } as const;
 

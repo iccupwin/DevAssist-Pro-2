@@ -1,0 +1,724 @@
+INFO:__main__:Database modules loaded successfully
+INFO:shared.database:Database tables created successfully
+INFO:__main__:Database tables created/verified
+INFO:__main__:Admin user already exists
+INFO:prompt_manager:PromptManager initialized with directory: F:\DevAssitPro\DevAssist-Pro\backend\prompts
+INFO:services.documents.core.enhanced_ai_analyzer:Enhanced AI Analyzer initialized: use_real_api=True, fallback_mode=False
+INFO:services.reports.core.pdf_generator:ReportLab successfully imported - PDF generation available
+INFO:services.documents.core.enhanced_ai_analyzer:Enhanced AI Analyzer initialized: use_real_api=True, fallback_mode=False
+INFO:     Will watch for changes in these directories: ['F:\\DevAssitPro\\DevAssist-Pro\\backend']
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [12912] using WatchFiles
+INFO:__mp_main__:Database modules loaded successfully
+INFO:shared.database:Database tables created successfully
+INFO:__mp_main__:Database tables created/verified
+INFO:__mp_main__:Admin user already exists
+INFO:prompt_manager:PromptManager initialized with directory: F:\DevAssitPro\DevAssist-Pro\backend\prompts
+INFO:services.documents.core.enhanced_ai_analyzer:Enhanced AI Analyzer initialized: use_real_api=True, fallback_mode=False
+INFO:services.reports.core.pdf_generator:ReportLab successfully imported - PDF generation available
+INFO:services.documents.core.enhanced_ai_analyzer:Enhanced AI Analyzer initialized: use_real_api=True, fallback_mode=False
+INFO:app:Database modules loaded successfully
+INFO:shared.database:Database tables created successfully
+INFO:app:Database tables created/verified
+INFO:app:Admin user already exists
+INFO:     Started server process [37076]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     127.0.0.1:51312 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51371 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51372 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+ERROR:app:[CRITICAL DEBUG] /api/llm/analyze endpoint called!
+INFO:     127.0.0.1:51427 - "POST /api/llm/analyze HTTP/1.1" 200 OK
+ERROR:app:[CRITICAL DEBUG] Prompt length: 121
+ERROR:app:[CRITICAL DEBUG] Model requested: claude-3-haiku-20240307
+ERROR:app:[CRITICAL DEBUG] About to try Claude API...
+INFO:watchfiles.main:4 changes detected
+INFO:     127.0.0.1:51648 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+ERROR:app:[CRITICAL DEBUG] /api/llm/analyze endpoint called!
+INFO:     127.0.0.1:51670 - "POST /api/llm/analyze HTTP/1.1" 200 OK
+ERROR:app:[CRITICAL DEBUG] Prompt length: 1442
+ERROR:app:[CRITICAL DEBUG] Model requested: claude-3-haiku-20240307
+ERROR:app:[CRITICAL DEBUG] About to try Claude API...
+INFO:     127.0.0.1:51649 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:watchfiles.main:4 changes detected
+WARNING:  WatchFiles detected changes in 'app.py'. Reloading...
+Starting DevAssist Pro - Monolith Application
+==================================================
+Available APIs:
+   - Health Check:     http://localhost:8000/health
+   - API Docs:         http://localhost:8000/docs
+   - Documents API:    http://localhost:8000/api/documents/
+   - Analytics API:    http://localhost:8000/api/analytics/
+   - Reports API:      http://localhost:8000/api/reports/
+   - KP Analyzer:      http://localhost:8000/api/kp-analyzer/
+   - Admin Panel:      http://localhost:8000/api/admin/
+==================================================
+ INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [37076]
+INFO:__mp_main__:Database modules loaded successfully
+INFO:shared.database:Database tables created successfully
+INFO:__mp_main__:Database tables created/verified
+INFO:__mp_main__:Admin user already exists
+INFO:prompt_manager:PromptManager initialized with directory: F:\DevAssitPro\DevAssist-Pro\backend\prompts
+INFO:services.documents.core.enhanced_ai_analyzer:Enhanced AI Analyzer initialized: use_real_api=True, fallback_mode=False
+INFO:services.reports.core.pdf_generator:ReportLab successfully imported - PDF generation available
+INFO:services.documents.core.enhanced_ai_analyzer:Enhanced AI Analyzer initialized: use_real_api=True, fallback_mode=False
+INFO:app:Database modules loaded successfully
+INFO:shared.database:Database tables created successfully
+INFO:app:Database tables created/verified
+INFO:app:Admin user already exists
+INFO:     Started server process [42116]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     127.0.0.1:51719 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+ERROR:app:[CRITICAL DEBUG] /api/llm/analyze endpoint called!
+INFO:app:AI ANALYZER: Starting analysis with 926 chars
+INFO:httpx:HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO:app:SUCCESS: Claude API returned valid JSON response
+INFO:     127.0.0.1:51737 - "POST /api/llm/analyze HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51720 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51794 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51827 - "OPTIONS /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51795 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51866 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51867 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51930 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51931 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52003 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52004 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52068 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52069 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52179 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52180 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52355 - "OPTIONS /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52359 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52360 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52470 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52472 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52544 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52545 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52856 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52861 - "OPTIONS /api/auth/register HTTP/1.1" 200 OK
+INFO:app:Пользователь зарегистрирован в БД: z1x1123123c111c@gmail.com
+INFO:     127.0.0.1:52861 - "POST /api/auth/register HTTP/1.1" 200 OK
+INFO:app:Регистрация пользователя z1x1123123c111c@gmail.com: успешно
+INFO:watchfiles.main:3 changes detected
+INFO:     127.0.0.1:52862 - "OPTIONS /api/auth/login HTTP/1.1" 200 OK
+INFO:app:Пользователь вошел в систему через БД: z1x1123123c111c@gmail.com
+INFO:app:Вход пользователя z1x1123123c111c@gmail.com: успешно
+INFO:     127.0.0.1:52862 - "POST /api/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52858 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52862 - "OPTIONS /api/llm/providers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52858 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52862 - "OPTIONS /api/llm/providers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52862 - "GET /api/llm/providers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52862 - "GET /api/llm/providers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52862 - "GET /api/llm/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52862 - "GET /api/llm/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52882 - "OPTIONS /api/llm/analyze HTTP/1.1" 200 OK
+ERROR:app:[CRITICAL DEBUG] /api/llm/analyze endpoint called!
+INFO:app:AI ANALYZER: Starting analysis with 5171 chars
+INFO:httpx:HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO:app:SUCCESS: Claude API returned valid JSON response
+INFO:     127.0.0.1:52882 - "POST /api/llm/analyze HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52883 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52954 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52955 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+ERROR:app:[CRITICAL DEBUG] /api/llm/analyze endpoint called!
+INFO:app:AI ANALYZER: Starting analysis with 14767 chars
+INFO:httpx:HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO:app:SUCCESS: Claude API returned valid JSON response
+INFO:     127.0.0.1:53001 - "POST /api/llm/analyze HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53028 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53159 - "OPTIONS /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53029 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:watchfiles.main:4 changes detected
+WARNING:  WatchFiles detected changes in 'app.py'. Reloading...
+ INFO:     127.0.0.1:53191 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53192 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53364 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53365 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53430 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53431 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53597 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53598 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53673 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53674 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53732 - "OPTIONS /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53736 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53737 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53806 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53808 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53874 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53875 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53940 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53993 - "OPTIONS /api/llm/analyze HTTP/1.1" 200 OK
+ERROR:app:[CRITICAL DEBUG] /api/llm/analyze endpoint called!
+INFO:app:AI ANALYZER: Starting analysis with 5171 chars
+INFO:     Shutting down
+INFO:     Waiting for connections to close. (CTRL+C to force quit)
+INFO:httpx:HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO:app:SUCCESS: Claude API returned valid JSON response
+INFO:     127.0.0.1:53993 - "POST /api/llm/analyze HTTP/1.1" 200 OK
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [42116]
+INFO:watchfiles.main:13 changes detected
+ WARNING:  WatchFiles detected changes in 'app.py', 'test_enhanced_analysis.py'. Reloading...
+INFO:__mp_main__:Database modules loaded successfully
+INFO:shared.database:Database tables created successfully
+INFO:__mp_main__:Database tables created/verified
+INFO:__mp_main__:Admin user already exists
+INFO:prompt_manager:PromptManager initialized with directory: F:\DevAssitPro\DevAssist-Pro\backend\prompts
+INFO:services.documents.core.enhanced_ai_analyzer:Enhanced AI Analyzer initialized: use_real_api=True, fallback_mode=False
+INFO:services.reports.core.pdf_generator:ReportLab successfully imported - PDF generation available
+INFO:services.documents.core.enhanced_ai_analyzer:Enhanced AI Analyzer initialized: use_real_api=True, fallback_mode=False
+INFO:app:Database modules loaded successfully
+INFO:shared.database:Database tables created successfully
+INFO:app:Database tables created/verified
+INFO:app:Admin user already exists
+INFO:     Started server process [37980]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+ERROR:    Traceback (most recent call last):
+  File "C:\Users\Alienrhapsody\AppData\Local\Programs\Python\Python313\Lib\asyncio\runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\Alienrhapsody\AppData\Local\Programs\Python\Python313\Lib\asyncio\base_events.py", line 719, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+asyncio.exceptions.CancelledError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Alienrhapsody\AppData\Local\Programs\Python\Python313\Lib\asyncio\runners.py", line 195, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "C:\Users\Alienrhapsody\AppData\Local\Programs\Python\Python313\Lib\asyncio\runners.py", line 123, in run
+    raise KeyboardInterrupt()
+KeyboardInterrupt
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Alienrhapsody\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\routing.py", line 701, in lifespan
+    await receive()
+  File "C:\Users\Alienrhapsody\AppData\Local\Programs\Python\Python313\Lib\site-packages\uvicorn\lifespan\on.py", line 137, in receive
+    return await self.receive_queue.get()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Alienrhapsody\AppData\Local\Programs\Python\Python313\Lib\asyncio\queues.py", line 186, in get
+    await getter
+asyncio.exceptions.CancelledError
+
+INFO:__mp_main__:Database modules loaded successfully
+INFO:shared.database:Database tables created successfully
+INFO:__mp_main__:Database tables created/verified
+INFO:__mp_main__:Admin user already exists
+INFO:prompt_manager:PromptManager initialized with directory: F:\DevAssitPro\DevAssist-Pro\backend\prompts
+INFO:services.documents.core.enhanced_ai_analyzer:Enhanced AI Analyzer initialized: use_real_api=True, fallback_mode=False
+INFO:services.reports.core.pdf_generator:ReportLab successfully imported - PDF generation available
+INFO:services.documents.core.enhanced_ai_analyzer:Enhanced AI Analyzer initialized: use_real_api=True, fallback_mode=False
+INFO:app:Database modules loaded successfully
+INFO:shared.database:Database tables created successfully
+INFO:app:Database tables created/verified
+INFO:app:Admin user already exists
+INFO:     Started server process [25740]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     127.0.0.1:54020 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54071 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54072 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54138 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54179 - "OPTIONS /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54139 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54216 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54217 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54393 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54394 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:watchfiles.main:5 changes detected
+WARNING:  WatchFiles detected changes in 'services\llm\config.py'. Reloading...
+ INFO:     127.0.0.1:54459 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [25740]
+INFO:watchfiles.main:4 changes detected
+ WARNING:  WatchFiles detected changes in 'app.py'. Reloading...
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    from multiprocessing.spawn import spawn_main; spawn_main(parent_pid=12912, pipe_handle=584)
+                                                  ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Alienrhapsody\AppData\Local\Programs\Python\Python313\Lib\multiprocessing\spawn.py", line 122, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\Alienrhapsody\AppData\Local\Programs\Python\Python313\Lib\multiprocessing\spawn.py", line 131, in _main
+    prepare(preparation_data)
+    ~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Alienrhapsody\AppData\Local\Programs\Python\Python313\Lib\multiprocessing\spawn.py", line 246, in prepare
+    _fixup_main_from_path(data['init_main_from_path'])
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Alienrhapsody\AppData\Local\Programs\Python\Python313\Lib\multiprocessing\spawn.py", line 297, in _fixup_main_from_path
+    main_content = runpy.run_path(main_path,
+                                  run_name="__mp_main__")
+  File "<frozen runpy>", line 287, in run_path
+  File "<frozen runpy>", line 98, in _run_module_code
+  File "<frozen runpy>", line 88, in _run_code
+  File "F:\DevAssitPro\DevAssist-Pro\backend\app.py", line 36, in <module>
+    from shared.database import create_tables, get_db_session, db_manager
+  File "F:\DevAssitPro\DevAssist-Pro\backend\shared\database.py", line 4, in <module>
+    from sqlalchemy import create_engine
+  File "C:\Users\Alienrhapsody\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\__init__.py", line 12, in <module>
+    from . import util as _util
+  File "C:\Users\Alienrhapsody\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\util\__init__.py", line 14, in <module>
+    from ._collections import coerce_generator_arg as coerce_generator_arg
+  File "C:\Users\Alienrhapsody\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\util\_collections.py", line 38, in <module>
+    from ._has_cy import HAS_CYEXTENSION
+  File "C:\Users\Alienrhapsody\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\util\_has_cy.py", line 32, in <module>
+    _import_cy_extensions()
+    ~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Alienrhapsody\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\util\_has_cy.py", line 20, in _import_cy_extensions
+    from ..cyextension import util
+  File "lib/sqlalchemy/cyextension/util.pyx", line 9, in init sqlalchemy.cyextension.util
+  File "C:\Users\Alienrhapsody\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\exc.py", line 26, in <module>
+    from .util import compat
+  File "C:\Users\Alienrhapsody\AppData\Local\Programs\Python\Python313\Lib\site-packages\sqlalchemy\util\compat.py", line 48, in <module>
+    arm = "aarch" in platform.machine().lower()
+                     ~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Alienrhapsody\AppData\Local\Programs\Python\Python313\Lib\platform.py", line 1110, in machine
+    return uname().machine
+           ~~~~~^^
+  File "C:\Users\Alienrhapsody\AppData\Local\Programs\Python\Python313\Lib\platform.py", line 999, in uname
+    release, version, csd, ptype = win32_ver()
+                                   ~~~~~~~~~^^
+  File "C:\Users\Alienrhapsody\AppData\Local\Programs\Python\Python313\Lib\platform.py", line 450, in win32_ver
+    version, csd, ptype, is_client = _win32_ver(version, csd, ptype)
+                                     ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Alienrhapsody\AppData\Local\Programs\Python\Python313\Lib\platform.py", line 391, in _win32_ver
+    (version, product_type, ptype, spmajor, spminor)  = _wmi_query(
+                                                        ~~~~~~~~~~^
+        'OS',
+        ^^^^^
+    ...<4 lines>...
+        'ServicePackMinorVersion',
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Alienrhapsody\AppData\Local\Programs\Python\Python313\Lib\platform.py", line 330, in _wmi_query
+    data = _wmi.exec_query("SELECT {} FROM {}".format(
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        ",".join(keys),
+        ^^^^^^^^^^^^^^^
+        table,
+        ^^^^^^
+    )).split("\0")
+    ^^
+KeyboardInterrupt
+INFO:__mp_main__:Database modules loaded successfully
+INFO:shared.database:Database tables created successfully
+INFO:__mp_main__:Database tables created/verified
+INFO:__mp_main__:Admin user already exists
+INFO:prompt_manager:PromptManager initialized with directory: F:\DevAssitPro\DevAssist-Pro\backend\prompts
+INFO:services.documents.core.enhanced_ai_analyzer:Enhanced AI Analyzer initialized: use_real_api=True, fallback_mode=False
+INFO:services.reports.core.pdf_generator:ReportLab successfully imported - PDF generation available
+INFO:services.documents.core.enhanced_ai_analyzer:Enhanced AI Analyzer initialized: use_real_api=True, fallback_mode=False
+INFO:app:Database modules loaded successfully
+INFO:shared.database:Database tables created successfully
+INFO:app:Database tables created/verified
+INFO:app:Admin user already exists
+INFO:     Started server process [42976]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     127.0.0.1:54494 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54495 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54560 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54561 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54662 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54796 - "OPTIONS /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54663 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55031 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55032 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55095 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55152 - "OPTIONS /api/llm/analyze HTTP/1.1" 200 OK
+INFO:app:\U0001f680 COMPREHENSIVE AI ANALYSIS STARTED: 5171 chars, model: claude-3-5-sonnet-20240620
+INFO:app:\U0001f4cb STAGE 1: Document Structure Analysis
+INFO:httpx:HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO:app:\U0001f50d STAGE 2: Technical and Commercial Deep Analysis
+INFO:     127.0.0.1:55096 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:httpx:HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO:app:\u2696\ufe0f STAGE 3: Risk Assessment and Business Analysis
+INFO:httpx:HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+ERROR:app:JSON parsing error: Extra data: line 49 column 1 (char 2440)
+INFO:app:\U0001f4ca STAGE 4: Final Comprehensive Assessment
+INFO:httpx:HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:55152 - "POST /api/llm/analyze HTTP/1.1" 200 OK
+INFO:app:\u2705 COMPREHENSIVE ANALYSIS COMPLETED in 47.9 seconds
+ERROR:app:Multi-stage AI analysis failed: name 'json' is not defined
+ERROR:app:Traceback: Traceback (most recent call last):
+  File "F:\DevAssitPro\DevAssist-Pro\backend\app.py", line 2396, in ai_analyze_comprehensive_multi_stage
+    "content": json.dumps(comprehensive_result, ensure_ascii=False, indent=2),
+               ^^^^
+NameError: name 'json' is not defined. Did you forget to import 'json'?
+
+INFO:     127.0.0.1:55201 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55202 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:watchfiles.main:1 change detected
+INFO:     127.0.0.1:55275 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55276 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55276 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:55276 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55276 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:55276 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55381 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55382 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55451 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55451 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:55455 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55493 - "OPTIONS /api/llm/providers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55494 - "OPTIONS /api/llm/providers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55495 - "OPTIONS /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55496 - "OPTIONS /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55494 - "GET /api/llm/providers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55496 - "GET /api/llm/providers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55496 - "GET /api/llm/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55494 - "GET /api/llm/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55500 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55500 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55502 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55514 - "GET /health HTTP/1.1" 200 OK
+INFO:app:\U0001f680 COMPREHENSIVE AI ANALYSIS STARTED: 16 chars, model: claude-3.5-sonnet-20241022
+INFO:app:\U0001f4cb STAGE 1: Document Structure Analysis
+INFO:httpx:HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 404 Not Found"
+ERROR:app:Multi-stage AI analysis failed: Error code: 404 - {'type': 'error', 'error': {'type': 'not_found_error', 'message': 'model: claude-3.5-sonnet-20241022 was not found. Did you mean claude-3-5-sonnet-20241022?'}}
+INFO:     127.0.0.1:55521 - "POST /api/llm/analyze HTTP/1.1" 200 OK
+ERROR:app:Traceback: Traceback (most recent call last):
+  File "F:\DevAssitPro\DevAssist-Pro\backend\app.py", line 2219, in ai_analyze_comprehensive_multi_stage
+    stage1_response = await client.messages.create(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+    )
+    ^
+  File "C:\Users\Alienrhapsody\AppData\Local\Programs\Python\Python313\Lib\site-packages\anthropic\resources\messages\messages.py", line 2272, in create
+    return await self._post(
+           ^^^^^^^^^^^^^^^^^
+    ...<28 lines>...
+    )
+    ^
+  File "C:\Users\Alienrhapsody\AppData\Local\Programs\Python\Python313\Lib\site-packages\anthropic\_base_client.py", line 1895, in post
+    return await self.request(cast_to, opts, stream=stream, stream_cls=stream_cls)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Alienrhapsody\AppData\Local\Programs\Python\Python313\Lib\site-packages\anthropic\_base_client.py", line 1695, in request
+    raise self._make_status_error_from_response(err.response) from None
+anthropic.NotFoundError: Error code: 404 - {'type': 'error', 'error': {'type': 'not_found_error', 'message': 'model: claude-3.5-sonnet-20241022 was not found. Did you mean claude-3-5-sonnet-20241022?'}}
+
+INFO:app:\U0001f680 COMPREHENSIVE AI ANALYSIS STARTED: 5171 chars, model: claude-3-5-sonnet-20240620
+INFO:app:\U0001f4cb STAGE 1: Document Structure Analysis
+INFO:httpx:HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO:app:\U0001f50d STAGE 2: Technical and Commercial Deep Analysis
+INFO:httpx:HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO:app:\u2696\ufe0f STAGE 3: Risk Assessment and Business Analysis
+INFO:     127.0.0.1:55503 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:httpx:HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+ERROR:app:JSON parsing error: Extra data: line 48 column 1 (char 2448)
+INFO:app:\U0001f4ca STAGE 4: Final Comprehensive Assessment
+INFO:httpx:HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO:app:\u2705 COMPREHENSIVE ANALYSIS COMPLETED in 46.0 seconds
+ERROR:app:Multi-stage AI analysis failed: name 'json' is not defined
+ERROR:app:Traceback: Traceback (most recent call last):
+  File "F:\DevAssitPro\DevAssist-Pro\backend\app.py", line 2396, in ai_analyze_comprehensive_multi_stage
+    "content": json.dumps(comprehensive_result, ensure_ascii=False, indent=2),
+               ^^^^
+NameError: name 'json' is not defined. Did you forget to import 'json'?
+
+INFO:     127.0.0.1:55498 - "POST /api/llm/analyze HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55722 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55730 - "OPTIONS /api/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55730 - "POST /api/auth/login HTTP/1.1" 200 OK
+INFO:app:Вход пользователя admin121233321@gmail.com: неудача
+INFO:     127.0.0.1:55731 - "OPTIONS /api/auth/register HTTP/1.1" 200 OK
+INFO:app:Пользователь зарегистрирован в БД: admin121233321@gmail.com
+INFO:     127.0.0.1:55731 - "POST /api/auth/register HTTP/1.1" 200 OK
+INFO:app:Регистрация пользователя admin121233321@gmail.com: успешно
+INFO:watchfiles.main:3 changes detected
+INFO:app:Пользователь вошел в систему через БД: admin121233321@gmail.com
+INFO:app:Вход пользователя admin121233321@gmail.com: успешно
+INFO:     127.0.0.1:55744 - "POST /api/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55744 - "OPTIONS /api/llm/providers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55744 - "OPTIONS /api/llm/providers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55744 - "OPTIONS /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55744 - "OPTIONS /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55723 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55744 - "GET /api/llm/providers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55723 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55744 - "GET /api/llm/providers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55744 - "GET /api/llm/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55744 - "GET /api/llm/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55744 - "GET /api/llm/providers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55750 - "GET /api/llm/providers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55723 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55756 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55750 - "GET /api/llm/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55750 - "GET /api/llm/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55806 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56072 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56078 - "GET /docs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55807 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56154 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+WARNING:PyPDF2._reader:incorrect startxref pointer(1)
+WARNING:PyPDF2._reader:incorrect startxref pointer(1)
+INFO:real_managers:File uploaded successfully: adfad134-362b-4a2d-9802-29d1aacc82fa
+INFO:     127.0.0.1:56165 - "POST /api/documents/upload HTTP/1.1" 200 OK
+INFO:watchfiles.main:2 changes detected
+INFO:real_managers:File uploaded successfully: 6d9010ad-55d5-4288-85bf-0e27ec1fc899
+INFO:     127.0.0.1:56166 - "POST /api/documents/upload HTTP/1.1" 200 OK
+INFO:real_managers:File uploaded successfully: 284ec38d-9c4c-41a5-8f9e-32329347cce3
+INFO:     127.0.0.1:56166 - "POST /api/documents/upload HTTP/1.1" 200 OK
+INFO:watchfiles.main:3 changes detected
+INFO:watchfiles.main:1 change detected
+INFO:     127.0.0.1:56166 - "OPTIONS /api/llm/analyze HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56177 - "OPTIONS /api/llm/analyze HTTP/1.1" 200 OK
+INFO:app:\U0001f680 COMPREHENSIVE AI ANALYSIS STARTED: 3942 chars, model: claude-3-5-sonnet-20241022
+INFO:app:\U0001f4cb STAGE 1: Document Structure Analysis
+INFO:app:\U0001f680 COMPREHENSIVE AI ANALYSIS STARTED: 3937 chars, model: claude-3-5-sonnet-20241022
+INFO:app:\U0001f4cb STAGE 1: Document Structure Analysis
+INFO:httpx:HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+WARNING:app:No valid JSON found in Claude response
+INFO:app:\U0001f50d STAGE 2: Technical and Commercial Deep Analysis
+INFO:httpx:HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO:app:\U0001f50d STAGE 2: Technical and Commercial Deep Analysis
+INFO:httpx:HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+WARNING:app:No valid JSON found in Claude response
+INFO:app:\u2696\ufe0f STAGE 3: Risk Assessment and Business Analysis
+INFO:httpx:HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+WARNING:app:No valid JSON found in Claude response
+INFO:app:\u2696\ufe0f STAGE 3: Risk Assessment and Business Analysis
+INFO:httpx:HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO:app:\U0001f4ca STAGE 4: Final Comprehensive Assessment
+INFO:app:\U0001f4ca STAGE 4: Final Comprehensive Assessment
+INFO:httpx:HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO:app:\u2705 COMPREHENSIVE ANALYSIS COMPLETED in 33.1 seconds
+INFO:     127.0.0.1:56166 - "POST /api/llm/analyze HTTP/1.1" 200 OK
+ERROR:app:Multi-stage AI analysis failed: name 'json' is not defined
+ERROR:app:Traceback: Traceback (most recent call last):
+  File "F:\DevAssitPro\DevAssist-Pro\backend\app.py", line 2396, in ai_analyze_comprehensive_multi_stage
+    "content": json.dumps(comprehensive_result, ensure_ascii=False, indent=2),
+               ^^^^
+NameError: name 'json' is not defined. Did you forget to import 'json'?
+
+INFO:     127.0.0.1:56204 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:httpx:HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+INFO:app:\u2705 COMPREHENSIVE ANALYSIS COMPLETED in 37.2 seconds
+ERROR:app:Multi-stage AI analysis failed: name 'json' is not defined
+ERROR:app:Traceback: Traceback (most recent call last):
+  File "F:\DevAssitPro\DevAssist-Pro\backend\app.py", line 2396, in ai_analyze_comprehensive_multi_stage
+    "content": json.dumps(comprehensive_result, ensure_ascii=False, indent=2),
+               ^^^^
+NameError: name 'json' is not defined. Did you forget to import 'json'?
+
+INFO:     127.0.0.1:56177 - "POST /api/llm/analyze HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56220 - "OPTIONS /api/llm/analyze-detailed HTTP/1.1" 200 OK
+INFO:app:\U0001f3af DETAILED 10-SECTION KP ANALYSIS STARTED
+ERROR:app:\u274c Detailed analysis failed: `BaseSettings` has been moved to the `pydantic-settings` package. See https://docs.pydantic.dev/2.11/migration/#basesettings-has-moved-to-pydantic-settings for more details.
+
+For further information visit https://errors.pydantic.dev/2.11/u/import-error
+INFO:     127.0.0.1:56220 - "POST /api/llm/analyze-detailed HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56205 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56273 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56274 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56348 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56385 - "OPTIONS /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56349 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56419 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56420 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56921 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56923 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57188 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57190 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57248 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57249 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57424 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57425 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57686 - "OPTIONS /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57690 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57691 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57761 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57762 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57827 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57829 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57893 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57894 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57966 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57967 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58073 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58108 - "OPTIONS /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58075 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58149 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58150 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58219 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58221 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58585 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58586 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58655 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58656 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58726 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58727 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59100 - "OPTIONS /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59104 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59105 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59169 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59170 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59232 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59233 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:watchfiles.main:4 changes detected
+WARNING:  WatchFiles detected changes in 'app.py'. Reloading...
+ INFO:     127.0.0.1:59304 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59305 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59366 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59367 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59740 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59774 - "OPTIONS /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59741 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59809 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59810 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59871 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59872 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59940 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60177 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60202 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60178 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60249 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60250 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60250 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:60381 - "OPTIONS /api/auth/register HTTP/1.1" 200 OK
+INFO:app:Пользователь зарегистрирован в БД: z1x1c11223311c@gmail.com
+INFO:app:Регистрация пользователя z1x1c11223311c@gmail.com: успешно
+INFO:     127.0.0.1:60381 - "POST /api/auth/register HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60388 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60382 - "OPTIONS /api/auth/login HTTP/1.1" 200 OK
+INFO:app:Пользователь вошел в систему через БД: z1x1c11223311c@gmail.com
+INFO:app:Вход пользователя z1x1c11223311c@gmail.com: успешно
+INFO:     127.0.0.1:60382 - "POST /api/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60382 - "OPTIONS /api/llm/providers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60382 - "OPTIONS /api/llm/providers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60382 - "OPTIONS /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60382 - "OPTIONS /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60388 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60382 - "GET /api/llm/providers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60389 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60382 - "GET /api/llm/providers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60382 - "GET /api/llm/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60382 - "GET /api/llm/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60382 - "GET /api/llm/providers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60396 - "GET /api/llm/providers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60389 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60388 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60396 - "GET /api/llm/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60396 - "GET /api/llm/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60397 - "GET /api/llm/providers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60398 - "GET /api/llm/providers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60398 - "GET /api/llm/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60397 - "GET /api/llm/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60440 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60440 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60442 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60527 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60528 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60834 - "OPTIONS /api/llm/providers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60835 - "OPTIONS /api/llm/providers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60834 - "OPTIONS /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60835 - "OPTIONS /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60834 - "GET /api/llm/providers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60835 - "GET /api/llm/providers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60835 - "GET /api/llm/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60834 - "GET /api/llm/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60846 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60847 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60839 - "GET /api/llm/providers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60852 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60840 - "GET /api/llm/providers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60852 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60840 - "GET /api/llm/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60839 - "GET /api/llm/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60843 - "GET /api/llm/providers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60845 - "GET /api/llm/providers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60904 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60904 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60845 - "GET /api/llm/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60843 - "GET /api/llm/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60904 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60981 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61049 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61048 - "GET /api/llm/providers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61049 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61048 - "GET /api/llm/providers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61048 - "GET /api/llm/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61048 - "GET /api/llm/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61056 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61055 - "GET /api/llm/providers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61056 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61058 - "GET /api/llm/providers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61057 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61058 - "GET /api/llm/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61055 - "GET /api/llm/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61146 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61147 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61381 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61382 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61417 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61426 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61418 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61454 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61456 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61487 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61488 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61581 - "OPTIONS /api/auth/login HTTP/1.1" 200 OK
+INFO:app:Вход пользователя admin@test.local: неудача
+INFO:     127.0.0.1:61581 - "POST /api/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61582 - "OPTIONS /api/llm/providers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61582 - "OPTIONS /api/llm/providers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61582 - "GET /api/llm/providers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61582 - "GET /api/llm/providers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61582 - "OPTIONS /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61582 - "OPTIONS /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61582 - "GET /api/llm/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61582 - "GET /api/llm/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61607 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61607 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61611 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61611 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61602 - "GET /api/llm/providers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61603 - "GET /api/llm/providers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61612 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61612 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61603 - "GET /api/llm/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61602 - "GET /api/llm/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61602 - "GET /api/llm/providers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61603 - "GET /api/llm/providers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61612 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61760 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61603 - "GET /api/llm/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61602 - "GET /api/llm/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61789 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61789 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61791 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61792 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61792 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62142 - "OPTIONS /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62146 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62147 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62147 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62378 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62422 - "OPTIONS /api/llm/providers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62423 - "OPTIONS /api/llm/providers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62424 - "OPTIONS /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62422 - "OPTIONS /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62422 - "GET /api/llm/providers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62424 - "GET /api/llm/providers HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62379 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62379 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62424 - "GET /api/llm/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62422 - "GET /api/llm/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62431 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62431 - "GET /api/activity?limit=8&offset=0 HTTP/1.1" 200 OK

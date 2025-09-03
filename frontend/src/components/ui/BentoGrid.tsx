@@ -125,4 +125,5 @@ const BentoGrid: React.FC<BentoGridProps> = ({ items, className = "" }) => {
   );
 };
 
+export { BentoGrid };
 export default BentoGrid;

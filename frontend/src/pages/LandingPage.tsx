@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { Features } from '../components/blocks/features-8';
 import { 
   FileText, 
   ArrowRight, 
@@ -291,13 +292,10 @@ const LandingPage: React.FC = () => {
               </button>
               <div className="flex gap-2">
                 {isAuthenticated && user ? (
-                  <div className="flex items-center gap-3">
-                    <div className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                      Добро пожаловать, {user.firstName || user.email}
-                    </div>
+                  <div className="flex items-center gap-2">
                     <button 
                       onClick={() => navigate('/dashboard')}
-                      className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all h-10 rounded-md px-6 ${
+                      className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all h-10 rounded-md px-4 ${
                         isDarkMode
                           ? 'bg-white text-black hover:bg-gray-100 shadow-sm'
                           : 'bg-gray-900 text-white hover:bg-gray-800 shadow-sm'
@@ -533,85 +531,8 @@ const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Benefits Section */}
-      <section id="benefits" className="pb-20 sm:pb-32">
-        <div className="container">
-          <div className="grid lg:grid-cols-2 lg:gap-24">
-            <div>
-              <header className="mx-auto mb-6 lg:mb-12 sticky max-w-full text-center lg:top-96 lg:text-start">
-                <div className={`mb-4 bg-gradient-to-b from-primary/60 to-primary bg-clip-text font-semibold tracking-wider text-transparent uppercase`}>
-                  Преимущества
-                </div>
-                <h2 className="mb-4 text-3xl font-bold md:text-4xl">
-                  Что мы вам даём?
-                </h2>
-                <p className={`mb-8 text-lg ${
-                  isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                }`}>
-                  Все инновационные решения, необходимые для роста вашего бизнеса, здесь! 
-                  Мы добавляем ценность вашему бизнесу с помощью наших функций, которые упрощают рабочий процесс, 
-                  повышают эффективность и укрепляют ваши решения.
-                </p>
-              </header>
-            </div>
-
-            <div className="flex w-full flex-col gap-6 lg:gap-56">
-              {[
-                {
-                  icon: Blocks,
-                  title: "Автоматизация процессов",
-                  description: "Система автоматически обрабатывает и анализирует коммерческие предложения, экономя до 80% времени на рутинных задачах.",
-                  number: "01"
-                },
-                {
-                  icon: Zap,
-                  title: "Высокая точность анализа",
-                  description: "Благодаря продвинутым алгоритмам ИИ, точность анализа достигает 97.8%, что превышает показатели экспертов на 12%.",
-                  number: "02"
-                },
-                {
-                  icon: Shield,
-                  title: "Безопасность данных",
-                  description: "Полное соблюдение требований 152-ФЗ, SOC 2 и ISO 27001. Ваши данные защищены на высшем уровне.",
-                  number: "03"
-                }
-              ].map((benefit, index) => {
-                const IconComponent = benefit.icon;
-                return (
-                  <div key={index} className={`flex flex-col gap-6 rounded-xl border py-6 group/number transition-colors ${
-                    isDarkMode 
-                      ? 'bg-gray-900 border-gray-800' 
-                      : 'bg-white border-gray-200'
-                  } lg:sticky`} style={{ top: `${22 + index * 4}rem` }}>
-                    <div className="px-6">
-                      <div className="flex justify-between">
-                        <IconComponent className={`mb-6 size-10 rounded-full p-2 ring-8 ${
-                          isDarkMode 
-                            ? 'text-primary bg-primary/20 ring-primary/10' 
-                            : 'text-primary bg-primary/20 ring-primary/10'
-                        }`} />
-                        <span className={`text-5xl font-bold transition-all delay-75 ${
-                          isDarkMode 
-                            ? 'text-gray-800 group-hover/number:text-gray-600' 
-                            : 'text-gray-200 group-hover/number:text-gray-400'
-                        }`}>
-                          {benefit.number}
-                        </span>
-                      </div>
-                      <h3 className="text-xl font-semibold mb-2">{benefit.title}</h3>
-                      <p className={`text-sm leading-relaxed ${
-                        isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                      }`}>
-                        {benefit.description}
-                      </p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Features Section */}
+      <Features />
 
       {/* Solutions/Features Section */}
       <section id="solutions" className={`py-20 border-t transition-colors duration-300 ${

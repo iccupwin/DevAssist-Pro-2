@@ -38,7 +38,7 @@ app.add_middleware(
 # Trusted host middleware
 app.add_middleware(
     TrustedHostMiddleware,
-    allowed_hosts=["localhost", "127.0.0.1", "*.devassist.pro"]
+    allowed_hosts=["localhost", "127.0.0.1", "46.149.71.162", "*.devassist.pro", "*"]
 )
 
 # Конфигурация микросервисов
@@ -49,6 +49,7 @@ SERVICES = {
     "documents": os.getenv("DOCUMENTS_SERVICE_URL", "http://localhost:8003"),
     "analytics": os.getenv("ANALYTICS_SERVICE_URL", "http://localhost:8004"),
     "reports": os.getenv("REPORTS_SERVICE_URL", "http://localhost:8005"),
+    "admin": os.getenv("ADMIN_SERVICE_URL", "http://localhost:8007"),
 }
 
 # HTTP клиент для проксирования запросов
@@ -140,6 +141,8 @@ async def proxy_request(service_name: str, path: str, request: Request):
         logger.error(f"Error proxying request to {service_name}: {str(e)}")
         raise HTTPException(status_code=502, detail=f"Service {service_name} error")
 
+# Mock endpoints removed - using real backend services
+
 # Специализированные эндпоинты для КП Анализатора
 @app.post("/api/kp-analyzer/upload")
 async def kp_analyzer_upload(request: Request):
@@ -162,10 +165,7 @@ async def kp_analyzer_document_content(document_id: str, request: Request):
     return await proxy_request("documents", f"/documents/{document_id}/content", request)
 
 # Маршруты для микросервисов
-@app.api_route("/api/auth/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH"])
-async def auth_service(path: str, request: Request):
-    """Проксирование запросов к сервису авторизации"""
-    return await proxy_request("auth", f"/{path}", request)
+# Note: Direct auth endpoints are above, catch-all auth proxy is below other specific routes
 
 @app.api_route("/api/dashboard/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH"])
 async def dashboard_service(path: str, request: Request):
@@ -191,6 +191,18 @@ async def analytics_service(path: str, request: Request):
 async def reports_service(path: str, request: Request):
     """Проксирование запросов к сервису отчетов"""
     return await proxy_request("reports", f"/{path}", request)
+
+# Auth service proxy restored
+@app.api_route("/api/auth/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH"])
+async def auth_service_proxy(path: str, request: Request):
+    """Проксирование запросов к сервису авторизации"""
+    return await proxy_request("auth", f"/{path}", request)
+
+# Admin service proxy
+@app.api_route("/api/admin/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH"])
+async def admin_service_proxy(path: str, request: Request):
+    """Проксирование запросов к сервису администрирования"""
+    return await proxy_request("admin", f"/{path}", request)
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):

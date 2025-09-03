@@ -4,6 +4,8 @@
  */
 
 import { httpClient } from './httpInterceptors';
+import { realApiService } from './realApiService';
+import { devAssistApi } from './apiWrapper';
 
 export interface ApiResponse<T> {
   data: T;
@@ -218,17 +220,8 @@ class ApiClient {
   }
 }
 
-// Выбор между mock и real API в зависимости от настроек
-import { mockApiService } from './mockApiService';
-import { realApiService } from './realApiService';
-import { devAssistApi } from './apiWrapper';
-import { API_CONFIG } from '../config/api';
-
-// Определяем, использовать ли реальные API или mock
-const USE_REAL_API = API_CONFIG.USE_REAL_API;
-
-// Создаем универсальный API сервис
-export const apiService = USE_REAL_API ? realApiService : mockApiService;
+// Используем только реальные API
+export const apiService = realApiService;
 
 // Экспорт нового интегрированного API
 export { devAssistApi, useDevAssistApi } from './apiWrapper';

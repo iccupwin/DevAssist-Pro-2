@@ -9,17 +9,12 @@ import {
   Settings,
   BarChart3,
   DollarSign,
-  Zap,
   AlertTriangle,
   CheckCircle,
   Clock,
-  TrendingUp,
-  TrendingDown,
   Minus,
-  RefreshCw,
   Eye,
-  Edit,
-  Power,
+  RefreshCw,
   PieChart,
   Activity,
   Brain
@@ -34,128 +29,16 @@ interface AIManagementProps {
   className?: string;
 }
 
-// Mock данные AI провайдеров
-const mockProviders: AIProvider[] = [
-  {
-    name: 'openai',
-    displayName: 'OpenAI',
-    status: 'active',
-    usage: {
-      current: 850000,
-      limit: 1000000,
-      percentage: 85
-    },
-    costs: {
-      current: 124.50,
-      monthly: 890.25,
-      budget: 1000
-    },
-    models: [
-      {
-        name: 'gpt-4o',
-        status: 'active',
-        requests: 12543,
-        successRate: 98.2,
-        avgLatency: 2.1
-      },
-      {
-        name: 'gpt-4-turbo',
-        status: 'active',
-        requests: 8901,
-        successRate: 97.8,
-        avgLatency: 1.8
-      },
-      {
-        name: 'gpt-3.5-turbo',
-        status: 'active',
-        requests: 23456,
-        successRate: 99.1,
-        avgLatency: 1.2
-      }
-    ],
-    lastUpdate: new Date().toISOString()
-  },
-  {
-    name: 'anthropic',
-    displayName: 'Anthropic',
-    status: 'active',
-    usage: {
-      current: 670000,
-      limit: 1000000,
-      percentage: 67
-    },
-    costs: {
-      current: 89.30,
-      monthly: 456.78,
-      budget: 800
-    },
-    models: [
-      {
-        name: 'claude-3-5-sonnet',
-        status: 'active',
-        requests: 9876,
-        successRate: 98.5,
-        avgLatency: 2.4
-      },
-      {
-        name: 'claude-3-opus',
-        status: 'active',
-        requests: 3456,
-        successRate: 97.9,
-        avgLatency: 3.1
-      },
-      {
-        name: 'claude-3-haiku',
-        status: 'active',
-        requests: 15678,
-        successRate: 99.3,
-        avgLatency: 1.5
-      }
-    ],
-    lastUpdate: new Date().toISOString()
-  },
-  {
-    name: 'google',
-    displayName: 'Google AI',
-    status: 'limited',
-    usage: {
-      current: 450000,
-      limit: 1000000,
-      percentage: 45
-    },
-    costs: {
-      current: 34.20,
-      monthly: 123.45,
-      budget: 500
-    },
-    models: [
-      {
-        name: 'gemini-pro',
-        status: 'active',
-        requests: 5432,
-        successRate: 96.1,
-        avgLatency: 2.8
-      },
-      {
-        name: 'gemini-pro-vision',
-        status: 'error',
-        requests: 123,
-        successRate: 87.2,
-        avgLatency: 4.2
-      }
-    ],
-    lastUpdate: new Date(Date.now() - 5 * 60 * 1000).toISOString()
-  }
-];
+// Удалены все моковые данные AI провайдеров
 
 export const AIManagement: React.FC<AIManagementProps> = ({
   className = ''
 }) => {
   const [providers, setProviders] = useState<AIProvider[]>([]);
-  const [selectedProvider, setSelectedProvider] = useState<AIProvider | null>(null);
+  // const [selectedProvider, setSelectedProvider] = useState<AIProvider | null>(null); // Reserved for future use
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isConfigPanelOpen, setIsConfigPanelOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // Currently used for loading state
   
   // Интеграция с unified AI config
   const { config, saveConfig } = useAIConfig();
@@ -172,13 +55,14 @@ export const AIManagement: React.FC<AIManagementProps> = ({
       if (response.success) {
         setProviders(response.data);
       } else {
-        // Fallback к mock данным
-        setProviders(mockProviders);
+        // Показываем ошибку вместо моков
+        // Failed to load AI providers: API error
+        setProviders([]);
       }
     } catch (error) {
-      console.error('Failed to load AI providers:', error);
-      // Fallback к mock данным
-      setProviders(mockProviders);
+      // Failed to load AI providers
+      // Показываем ошибку вместо моков
+      setProviders([]);
     } finally {
       setIsLoading(false);
     }
@@ -189,7 +73,7 @@ export const AIManagement: React.FC<AIManagementProps> = ({
     try {
       await loadProviders();
     } catch (error) {
-      console.error('Failed to refresh AI data:', error);
+      // Failed to refresh AI data
     } finally {
       setIsRefreshing(false);
     }

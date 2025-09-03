@@ -1,26 +1,35 @@
 FROM python:3.11-slim
 
-# Установка системных зависимостей
+# Install system dependencies for development
 RUN apt-get update && apt-get install -y \
+    curl \
+    postgresql-client \
     gcc \
+    g++ \
+    build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-# Создание рабочей директории
 WORKDIR /app
 
-# Копирование и установка зависимостей
-COPY requirements.txt .
+# Copy requirements first for better caching
+COPY api_gateway/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Установка дополнительных зависимостей для разработки
-RUN pip install --no-cache-dir watchdog
+# Copy shared modules
+COPY shared /app/shared
 
-# Создание непривилегированного пользователя
-RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
-USER appuser
+# Copy API Gateway source
+COPY api_gateway .
 
-# Открытие порта
+# Create uploads directory
+RUN mkdir -p /app/uploads
+
+# Expose port
 EXPOSE 8000
 
-# Команда запуска с автоперезагрузкой
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD curl -f http://localhost:8000/health || exit 1
+
+# Start the application with reload for development
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload", "--log-level", "debug"]

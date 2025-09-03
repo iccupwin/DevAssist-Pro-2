@@ -3,6 +3,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Стили для улучшенной доступности */
+@import './styles/accessibility.css';
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -136,34 +139,4 @@
   }
 }
 
-@layer utilities {
-  .mask-b-from-20\% {
-    mask-image: linear-gradient(to bottom, black 20%, transparent 90%);
-    -webkit-mask-image: linear-gradient(to bottom, black 20%, transparent 90%);
-  }
-  
-  .mask-b-to-90\% {
-    mask-image: linear-gradient(to bottom, black 20%, transparent 90%);
-    -webkit-mask-image: linear-gradient(to bottom, black 20%, transparent 90%);
-  }
-  
-  .mask-r-from-50\% {
-    mask-image: linear-gradient(to right, black 50%, transparent 90%);
-    -webkit-mask-image: linear-gradient(to right, black 50%, transparent 90%);
-  }
-  
-  .mask-r-to-90\% {
-    mask-image: linear-gradient(to right, black 50%, transparent 90%);
-    -webkit-mask-image: linear-gradient(to right, black 50%, transparent 90%);
-  }
-  
-  .mask-l-from-50\% {
-    mask-image: linear-gradient(to left, black 50%, transparent 90%);
-    -webkit-mask-image: linear-gradient(to left, black 50%, transparent 90%);
-  }
-  
-  .mask-l-to-90\% {
-    mask-image: linear-gradient(to left, black 50%, transparent 90%);
-    -webkit-mask-image: linear-gradient(to left, black 50%, transparent 90%);
-  }
-}
+/* Mask utilities moved to tailwind.config.js to avoid duplication */

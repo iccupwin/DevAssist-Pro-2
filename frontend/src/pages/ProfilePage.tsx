@@ -151,10 +151,13 @@ const ProfilePage: React.FC = () => {
   const [isEditing, setIsEditing] = React.useState(false);
   const [editedUser, setEditedUser] = React.useState<any>(user);
   const [saving, setSaving] = React.useState(false);
-  if (!user) return null;
+  
   React.useEffect(() => {
     setEditedUser(user);
   }, [user]);
+  
+  if (!user) return null;
+  
   const status = user.is_active ? 'online' : 'offline';
   const handleSave = async () => {
     setSaving(true);

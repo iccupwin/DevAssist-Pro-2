@@ -44,7 +44,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   // Если пользователь авторизован, но маршрут не требует авторизации
   if (!requireAuth && isAuthenticated) {
     // Получаем URL для возврата или используем дефолтный
-    const returnUrl = (location.state as any)?.returnUrl || '/dashboard';
+    const returnUrl = (location.state as { returnUrl?: string })?.returnUrl || '/dashboard';
     return <Navigate to={returnUrl} replace />;
   }
 

@@ -33,10 +33,15 @@ export interface ApiResponse<T = any> {
 
 /**
  * Сервис для работы с API аутентификации
- * Currently using mock functions for development, will be replaced with real API calls
+ * Использует реальные API calls для production и development без mock
+ * В development режиме с включенным DEV_CONFIG.USE_MOCK_AUTH использует mock функции
  */
 class AuthService {
-  private baseURL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+  private baseURL = process.env.REACT_APP_API_URL || (
+    process.env.NODE_ENV === 'production' 
+      ? 'https://your-api-domain.com' 
+      : 'http://localhost:8000'
+  );
 
   /**
    * Выполнение HTTP запроса с обработкой ошибок
@@ -83,10 +88,12 @@ class AuthService {
    * Вход в систему
    */
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
-    // Will be replaced with actual API call to backend auth service
-    return this.mockLogin(credentials);
+    // В development режиме с включенным mock auth используем mock функцию
+    if (process.env.NODE_ENV === 'development' && DEV_CONFIG.USE_MOCK_AUTH) {
+      return this.mockLogin(credentials);
+    }
 
-    /* Реальная реализация:
+    // Реальная реализация для production и development без mock
     const response = await this.apiRequest<{
       user: any;
       token: string;
@@ -109,17 +116,18 @@ class AuthService {
       success: false,
       error: response.error || 'Ошибка входа',
     };
-    */
   }
 
   /**
    * Регистрация нового пользователя
    */
   async register(data: RegisterData): Promise<AuthResponse> {
-    // Will be replaced with actual API call to backend auth service
-    return this.mockRegister(data);
+    // В development режиме с включенным mock auth используем mock функцию
+    if (process.env.NODE_ENV === 'development' && DEV_CONFIG.USE_MOCK_AUTH) {
+      return this.mockRegister(data);
+    }
 
-    /* Реальная реализация:
+    // Реальная реализация для production и development без mock
     const response = await this.apiRequest<{
       user: any;
       token: string;
@@ -142,21 +150,26 @@ class AuthService {
       success: false,
       error: response.error || 'Ошибка регистрации',
     };
-    */
   }
 
   /**
    * Выход из системы
    */
   async logout(): Promise<ApiResponse> {
-    // Will be replaced with actual API call to backend auth service
-    await this.mockLogout();
-
-    /* Реальная реализация:
-    const response = await this.apiRequest(AUTH_ENDPOINTS.LOGOUT, {
-      method: 'POST',
-    });
-    */
+    // В development режиме с включенным mock auth используем mock функцию
+    if (process.env.NODE_ENV === 'development' && DEV_CONFIG.USE_MOCK_AUTH) {
+      await this.mockLogout();
+    } else {
+      // Реальная реализация для production и development без mock
+      try {
+        await this.apiRequest(AUTH_ENDPOINTS.LOGOUT, {
+          method: 'POST',
+        });
+      } catch (error) {
+        // Логируем ошибку, но не блокируем выход
+        console.warn('Logout API call failed:', error);
+      }
+    }
 
     // Очищаем локальные данные независимо от результата API
     clearAuthData();
@@ -168,10 +181,12 @@ class AuthService {
    * Обновление токена
    */
   async refreshToken(refreshToken: string): Promise<AuthResponse> {
-    // Will be replaced with actual API call to backend auth service
-    return this.mockRefreshToken(refreshToken);
+    // В development режиме с включенным mock auth используем mock функцию
+    if (process.env.NODE_ENV === 'development' && DEV_CONFIG.USE_MOCK_AUTH) {
+      return this.mockRefreshToken(refreshToken);
+    }
 
-    /* Реальная реализация:
+    // Реальная реализация для production и development без mock
     const response = await this.apiRequest<{
       token: string;
       refreshToken: string;
@@ -192,41 +207,42 @@ class AuthService {
       success: false,
       error: response.error || 'Ошибка обновления токена',
     };
-    */
   }
 
   /**
    * Запрос на восстановление пароля
    */
   async forgotPassword(email: string): Promise<ApiResponse> {
-    // Will be replaced with actual API call to backend auth service
-    return this.mockForgotPassword(email);
+    // В development режиме с включенным mock auth используем mock функцию
+    if (process.env.NODE_ENV === 'development' && DEV_CONFIG.USE_MOCK_AUTH) {
+      return this.mockForgotPassword(email);
+    }
 
-    /* Реальная реализация:
+    // Реальная реализация для production и development без mock
     const response = await this.apiRequest(AUTH_ENDPOINTS.FORGOT_PASSWORD, {
       method: 'POST',
       body: JSON.stringify({ email }),
     });
 
     return response;
-    */
   }
 
   /**
    * Сброс пароля
    */
   async resetPassword(token: string, password: string): Promise<ApiResponse> {
-    // Will be replaced with actual API call to backend auth service
-    return this.mockResetPassword(token, password);
+    // В development режиме с включенным mock auth используем mock функцию
+    if (process.env.NODE_ENV === 'development' && DEV_CONFIG.USE_MOCK_AUTH) {
+      return this.mockResetPassword(token, password);
+    }
 
-    /* Реальная реализация:
+    // Реальная реализация для production и development без mock
     const response = await this.apiRequest(AUTH_ENDPOINTS.RESET_PASSWORD, {
       method: 'POST',
       body: JSON.stringify({ token, password }),
     });
 
     return response;
-    */
   }
 
   /**

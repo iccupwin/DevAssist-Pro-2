@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  # Frontend (уже работает)
+  frontend:
+    image: devassist_pro-frontend
+    container_name: devassist_frontend
+    ports:
+      - "3000:80"
+    restart: unless-stopped
+
+  # Backend API на порту 8000
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.simple
+    container_name: devassist_backend
+    ports:
+      - "8000:8000"
+    environment:
+      # База данных (опционально)
+      DATABASE_AVAILABLE: "false"
+      
+      # CORS - важно!
+      ALLOWED_ORIGINS: "http://46.149.71.162:3000,http://46.149.71.162,http://localhost:3000"
+      CORS_ALLOW_CREDENTIALS: "true"
+      
+      # AI ключи из .env
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY}
+      USE_REAL_API: "true"
+      
+      # Остальные настройки
+      DEBUG: "false"
+      LOG_LEVEL: "INFO"
+      ENVIRONMENT: "production"
+    volumes:
+      - ./backend/app.py:/app/app.py:ro
+      - ./backend/shared:/app/shared:ro
+      - backend_data:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  backend_data:
+    driver: local

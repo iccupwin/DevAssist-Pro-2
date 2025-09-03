@@ -80,7 +80,7 @@ export const ResultsVisualization: React.FC<ResultsVisualizationProps> = ({
 
   // Фильтрация и сортировка результатов
   const filteredResults = useMemo(() => {
-    let filtered = showAllResults 
+    const filtered = showAllResults 
       ? results 
       : results.filter(r => selectedResults.includes(r.id));
 

@@ -1,0 +1,199 @@
+INFO:__main__:Database modules loaded successfully
+INFO:shared.database:Database tables created successfully
+INFO:__main__:Database tables created/verified
+INFO:__main__:Admin user already exists
+INFO:prompt_manager:PromptManager initialized with directory: F:\DevAssitPro\DevAssist-Pro\backend\prompts
+INFO:services.documents.core.enhanced_ai_analyzer:Enhanced AI Analyzer initialized: use_real_api=True, fallback_mode=False
+INFO:services.reports.core.pdf_generator:ReportLab successfully imported - PDF generation available
+INFO:services.documents.core.enhanced_ai_analyzer:Enhanced AI Analyzer initialized: use_real_api=True, fallback_mode=False
+INFO:     Will watch for changes in these directories: ['F:\\DevAssitPro\\DevAssist-Pro\\backend']
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [54196] using WatchFiles
+INFO:__mp_main__:Database modules loaded successfully
+INFO:shared.database:Database tables created successfully
+INFO:__mp_main__:Database tables created/verified
+INFO:__mp_main__:Admin user already exists
+INFO:prompt_manager:PromptManager initialized with directory: F:\DevAssitPro\DevAssist-Pro\backend\prompts
+INFO:services.documents.core.enhanced_ai_analyzer:Enhanced AI Analyzer initialized: use_real_api=True, fallback_mode=False
+INFO:services.reports.core.pdf_generator:ReportLab successfully imported - PDF generation available
+INFO:services.documents.core.enhanced_ai_analyzer:Enhanced AI Analyzer initialized: use_real_api=True, fallback_mode=False
+INFO:app:Database modules loaded successfully
+INFO:shared.database:Database tables created successfully
+INFO:app:Database tables created/verified
+INFO:app:Admin user already exists
+INFO:     Started server process [16144]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:4 changes detected
+WARNING:  WatchFiles detected changes in 'app.py'. Reloading...
+Starting DevAssist Pro - Monolith Application
+==================================================
+Available APIs:
+   - Health Check:     http://localhost:8000/health
+   - API Docs:         http://localhost:8000/docs
+   - Documents API:    http://localhost:8000/api/documents/
+   - Analytics API:    http://localhost:8000/api/analytics/
+   - Reports API:      http://localhost:8000/api/reports/
+   - KP Analyzer:      http://localhost:8000/api/kp-analyzer/
+   - Admin Panel:      http://localhost:8000/api/admin/
+==================================================
+ INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [16144]
+INFO:watchfiles.main:1 change detected
+INFO:__mp_main__:Database modules loaded successfully
+INFO:shared.database:Database tables created successfully
+INFO:__mp_main__:Database tables created/verified
+INFO:__mp_main__:Admin user already exists
+INFO:prompt_manager:PromptManager initialized with directory: F:\DevAssitPro\DevAssist-Pro\backend\prompts
+INFO:services.documents.core.enhanced_ai_analyzer:Enhanced AI Analyzer initialized: use_real_api=True, fallback_mode=False
+INFO:services.reports.core.pdf_generator:ReportLab successfully imported - PDF generation available
+INFO:services.documents.core.enhanced_ai_analyzer:Enhanced AI Analyzer initialized: use_real_api=True, fallback_mode=False
+INFO:app:Database modules loaded successfully
+INFO:shared.database:Database tables created successfully
+INFO:app:Database tables created/verified
+INFO:app:Admin user already exists
+INFO:     Started server process [19304]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:watchfiles.main:5 changes detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:5 changes detected
+WARNING:  WatchFiles detected changes in 'app.py'. Reloading...
+ 

@@ -205,12 +205,34 @@ export class PDFExportService {
   private utf8Setup: boolean = false;
 
   /**
+   * Проверка переполнения страницы
+   */
+  private checkPageOverflow(pdf: jsPDF, currentY: number, styling: PDFStylingOptions, lineHeight: number = 20): { newY: number; pageAdded: boolean } {
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const maxY = pageHeight - styling.margins.bottom;
+    
+    if (currentY + lineHeight > maxY) {
+      pdf.addPage();
+      return { 
+        newY: styling.margins.top + 20,
+        pageAdded: true 
+      };
+    }
+    
+    return { 
+      newY: currentY,
+      pageAdded: false 
+    };
+  }
+
+  /**
    * Добавление текста с поддержкой русского языка
    */
-  private addText(pdf: jsPDF, text: string, x: number, y: number, options?: any): void {
+  private addText(pdf: jsPDF, text: string, x: number, y: number, options?: any): number {
     try {
       // Пробуем сначала с оригинальным текстом
       pdf.text(text, x, y, options);
+      return y;
     } catch (error) {
       console.warn('Проблема с кириллицей, пробуем другой подход:', error);
       
@@ -218,12 +240,28 @@ export class PDFExportService {
       try {
         const utf8Text = this.convertToUTF8(text);
         pdf.text(utf8Text, x, y, options);
+        return y;
       } catch (utf8Error) {
         // Последний fallback - транслитерация
         console.warn('Переходим к транслитерации:', utf8Error);
         const processedText = this.transliterate(text);
         pdf.text(processedText, x, y, options);
+        return y;
       }
+    }
+  }
+
+  /**
+   * Добавление текста с автоматической проверкой переполнения
+   */
+  private addTextWithOverflowCheck(pdf: jsPDF, text: string, x: number, y: number, styling: PDFStylingOptions, lineHeight?: number): number {
+    const actualLineHeight = lineHeight || (styling.fontSize.body * 1.5);
+    const overflow = this.checkPageOverflow(pdf, y, styling, actualLineHeight);
+    
+    if (overflow.pageAdded) {
+      return this.addText(pdf, text, x, overflow.newY);
+    } else {
+      return this.addText(pdf, text, x, y);
     }
   }
   
@@ -324,12 +362,12 @@ export class PDFExportService {
     pdf.setFontSize(styling.fontSize.title);
     pdf.setTextColor(styling.primaryColor);
     const title = options.customTitle || 'Отчет по анализу коммерческих предложений';
-    this.addText(pdf, title, styling.margins.left, styling.margins.top + 30);
+    this.addTextWithOverflowCheck(pdf, title, styling.margins.left, styling.margins.top + 30, styling, styling.fontSize.title * 1.5);
 
     // Подзаголовок
     pdf.setFontSize(styling.fontSize.heading);
     pdf.setTextColor(styling.secondaryColor);
-    this.addText(pdf, options.projectName || 'Анализ КП', styling.margins.left, styling.margins.top + 60);
+    this.addTextWithOverflowCheck(pdf, options.projectName || 'Анализ КП', styling.margins.left, styling.margins.top + 60, styling, styling.fontSize.heading * 1.5);
 
     // Информация о проекте
     pdf.setFontSize(styling.fontSize.body);
@@ -346,9 +384,10 @@ export class PDFExportService {
     let yPosition = styling.margins.top + 100;
     projectInfo.forEach(line => {
       if (line) {
-        this.addText(pdf, line, styling.margins.left, yPosition);
+        yPosition = this.addTextWithOverflowCheck(pdf, line, styling.margins.left, yPosition, styling) + (styling.fontSize.body * 1.5);
+      } else {
+        yPosition += styling.fontSize.body * 1.5;
       }
-      yPosition += styling.fontSize.body * 1.5;
     });
 
     pdf.addPage();
@@ -384,8 +423,7 @@ export class PDFExportService {
     pdf.setTextColor('#000000');
 
     summaryText.forEach(line => {
-      this.addText(pdf, line, styling.margins.left, yPosition);
-      yPosition += styling.fontSize.body * 1.5;
+      yPosition = this.addTextWithOverflowCheck(pdf, line, styling.margins.left, yPosition, styling) + (styling.fontSize.body * 1.5);
     });
 
     // Таблица сводных результатов
@@ -412,22 +450,19 @@ export class PDFExportService {
     // Сводка сравнения
     pdf.setFontSize(styling.fontSize.body);
     pdf.setTextColor('#000000');
-    this.addText(pdf, comparison.summary || 'Сравнительный анализ проведен', styling.margins.left, yPosition);
-    yPosition += styling.fontSize.body * 2;
+    yPosition = this.addTextWithOverflowCheck(pdf, comparison.summary || 'Сравнительный анализ проведен', styling.margins.left, yPosition, styling) + (styling.fontSize.body * 2);
 
     // Рекомендации
     if (comparison.recommendations && comparison.recommendations.length > 0) {
       pdf.setFontSize(styling.fontSize.heading);
       pdf.setTextColor(styling.primaryColor);
-      this.addText(pdf, 'Рекомендации:', styling.margins.left, yPosition);
-      yPosition += styling.fontSize.heading * 1.5;
+      yPosition = this.addTextWithOverflowCheck(pdf, 'Рекомендации:', styling.margins.left, yPosition, styling, styling.fontSize.heading * 1.5) + (styling.fontSize.heading * 1.5);
 
       pdf.setFontSize(styling.fontSize.body);
       pdf.setTextColor('#000000');
 
       comparison.recommendations.forEach(rec => {
-        this.addText(pdf, `• ${rec}`, styling.margins.left + 10, yPosition);
-        yPosition += styling.fontSize.body * 1.5;
+        yPosition = this.addTextWithOverflowCheck(pdf, `• ${rec}`, styling.margins.left + 10, yPosition, styling) + (styling.fontSize.body * 1.5);
       });
     }
 
@@ -459,8 +494,7 @@ export class PDFExportService {
     pdf.setTextColor('#000000');
 
     generalInfo.forEach(line => {
-      this.addText(pdf, line, styling.margins.left, yPosition);
-      yPosition += styling.fontSize.body * 1.5;
+      yPosition = this.addTextWithOverflowCheck(pdf, line, styling.margins.left, yPosition, styling) + (styling.fontSize.body * 1.5);
     });
 
     yPosition += 10;
@@ -469,15 +503,13 @@ export class PDFExportService {
     if (result.strengths && result.strengths.length > 0) {
       pdf.setFontSize(styling.fontSize.heading);
       pdf.setTextColor(styling.accentColor);
-      this.addText(pdf, 'Сильные стороны:', styling.margins.left, yPosition);
-      yPosition += styling.fontSize.heading * 1.5;
+      yPosition = this.addTextWithOverflowCheck(pdf, 'Сильные стороны:', styling.margins.left, yPosition, styling, styling.fontSize.heading * 1.5) + (styling.fontSize.heading * 1.5);
 
       pdf.setFontSize(styling.fontSize.body);
       pdf.setTextColor('#000000');
 
       result.strengths.forEach(strength => {
-        this.addText(pdf, `• ${strength}`, styling.margins.left + 10, yPosition);
-        yPosition += styling.fontSize.body * 1.5;
+        yPosition = this.addTextWithOverflowCheck(pdf, `• ${strength}`, styling.margins.left + 10, yPosition, styling) + (styling.fontSize.body * 1.5);
       });
       yPosition += 5;
     }
@@ -486,15 +518,13 @@ export class PDFExportService {
     if (result.weaknesses && result.weaknesses.length > 0) {
       pdf.setFontSize(styling.fontSize.heading);
       pdf.setTextColor('#ef4444');
-      this.addText(pdf, 'Слабые стороны:', styling.margins.left, yPosition);
-      yPosition += styling.fontSize.heading * 1.5;
+      yPosition = this.addTextWithOverflowCheck(pdf, 'Слабые стороны:', styling.margins.left, yPosition, styling, styling.fontSize.heading * 1.5) + (styling.fontSize.heading * 1.5);
 
       pdf.setFontSize(styling.fontSize.body);
       pdf.setTextColor('#000000');
 
       result.weaknesses.forEach(weakness => {
-        this.addText(pdf, `• ${weakness}`, styling.margins.left + 10, yPosition);
-        yPosition += styling.fontSize.body * 1.5;
+        yPosition = this.addTextWithOverflowCheck(pdf, `• ${weakness}`, styling.margins.left + 10, yPosition, styling) + (styling.fontSize.body * 1.5);
       });
     }
 
@@ -517,9 +547,9 @@ export class PDFExportService {
     pdf.setFillColor(styling.primaryColor);
     pdf.rect(styling.margins.left, yPosition - 5, 160, 8, 'F');
     
-    this.addText(pdf, 'Компания', styling.margins.left + 2, yPosition);
-    this.addText(pdf, 'Балл', styling.margins.left + 80, yPosition);
-    this.addText(pdf, 'Рекомендация', styling.margins.left + 110, yPosition);
+    this.addTextWithOverflowCheck(pdf, 'Компания', styling.margins.left + 2, yPosition, styling);
+    this.addTextWithOverflowCheck(pdf, 'Балл', styling.margins.left + 80, yPosition, styling);
+    this.addTextWithOverflowCheck(pdf, 'Рекомендация', styling.margins.left + 110, yPosition, styling);
     
     yPosition += 10;
 
@@ -532,12 +562,12 @@ export class PDFExportService {
         pdf.rect(styling.margins.left, yPosition - 5, 160, 8, 'F');
       }
       
-      this.addText(pdf, result.companyName, styling.margins.left + 2, yPosition);
-      this.addText(pdf, `${result.overallRating || 0}%`, styling.margins.left + 80, yPosition);
+      this.addTextWithOverflowCheck(pdf, result.companyName, styling.margins.left + 2, yPosition, styling);
+      this.addTextWithOverflowCheck(pdf, `${result.overallRating || 0}%`, styling.margins.left + 80, yPosition, styling);
       
       const recommendation = (result.overallRating || 0) >= 80 ? 'Рекомендуется' :
                            (result.overallRating || 0) >= 60 ? 'Условно' : 'Не рекомендуется';
-      this.addText(pdf, recommendation, styling.margins.left + 110, yPosition);
+      this.addTextWithOverflowCheck(pdf, recommendation, styling.margins.left + 110, yPosition, styling);
       
       yPosition += 8;
     });
@@ -554,8 +584,7 @@ export class PDFExportService {
     // Методология
     pdf.setFontSize(styling.fontSize.heading);
     pdf.setTextColor(styling.primaryColor);
-    this.addText(pdf, 'A. Методология оценки', styling.margins.left, yPosition);
-    yPosition += styling.fontSize.heading * 1.5;
+    yPosition = this.addTextWithOverflowCheck(pdf, 'A. Методология оценки', styling.margins.left, yPosition, styling, styling.fontSize.heading * 1.5) + (styling.fontSize.heading * 1.5);
 
     const methodology = [
       'Анализ проводится с использованием искусственного интеллекта',
@@ -571,8 +600,7 @@ export class PDFExportService {
     pdf.setTextColor('#000000');
 
     methodology.forEach(line => {
-      this.addText(pdf, line, styling.margins.left, yPosition);
-      yPosition += styling.fontSize.body * 1.5;
+      yPosition = this.addTextWithOverflowCheck(pdf, line, styling.margins.left, yPosition, styling) + (styling.fontSize.body * 1.5);
     });
   }
 
@@ -584,7 +612,7 @@ export class PDFExportService {
     
     pdf.setFontSize(styling.fontSize.title);
     pdf.setTextColor(styling.primaryColor);
-    this.addText(pdf, title, styling.margins.left, yPosition);
+    this.addTextWithOverflowCheck(pdf, title, styling.margins.left, yPosition, styling, styling.fontSize.title * 1.5);
     
     // Линия под заголовком
     pdf.setDrawColor(styling.primaryColor);
@@ -617,8 +645,8 @@ export class PDFExportService {
         const pageWidth = pdf.internal.pageSize.getWidth();
         const textWidth = pdf.getTextWidth(this.transliterate(pageText));
         
-        this.addText(pdf, pageText, pageWidth - styling.margins.right - textWidth, 
-                pdf.internal.pageSize.getHeight() - styling.margins.bottom + 5);
+        this.addTextWithOverflowCheck(pdf, pageText, pageWidth - styling.margins.right - textWidth, 
+                pdf.internal.pageSize.getHeight() - styling.margins.bottom + 5, styling, styling.fontSize.caption * 1.5);
       }
     }
   }

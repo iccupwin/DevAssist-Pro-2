@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { getBackendApiUrl } from '../config/app';
 import { 
   FileText, 
   PenTool, 
@@ -21,11 +22,10 @@ import {
 import { useTheme } from '../contexts/ThemeContext';
 import { RecentActivityFeed } from '../components/main';
 import { ResultsVisualization } from '../components/visualization';
-import { InteractiveComparison } from '../components/tables';
+import { ModernSidebar } from '../components/ui/ModernSidebar';
 import { useAIConfig } from '../hooks/useAIConfig';
 import type { AIProvider } from '../types/aiConfig';
-const logoLight = '/devent-logo.png';
-const logoDark = '/devent-logo-white1.png';
+import { kpAnalyzerService } from '../services/ai/kpAnalyzerService';
 
 interface DashboardModule {
   id: string;
@@ -39,25 +39,26 @@ interface DashboardModule {
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const { isDarkMode, toggleTheme } = useTheme();
-  const { isAuthenticated, user, isLoading, logout } = useAuth();
+  const { isAuthenticated, isLoading, logout } = useAuth();
   const [activeTab, setActiveTab] = useState<'modules' | 'visualization' | 'comparison'>('modules');
-  const { config, isLoading: aiConfigLoading } = useAIConfig();
+  useAIConfig(); // Using hook for configuration
   const [aiStatus, setAIStatus] = useState<{ openai: boolean | null; anthropic: boolean | null }>({ openai: null, anthropic: null });
   const [aiStatusDetails, setAIStatusDetails] = useState<
     Map<AIProvider, { ok: boolean; error?: { code: string; status?: number; message?: string } }>
   >(new Map());
   const [checkingStatus, setCheckingStatus] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   // Security check - redirect to login if not authenticated
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      console.warn('[Dashboard] User not authenticated, redirecting to login');
+      // User not authenticated, redirecting to login
       navigate('/auth/login', { replace: true });
       return;
     }
   }, [isAuthenticated, isLoading, navigate]);
 
-  // Отладочное логирование для Dashboard
+  // Dashboard lifecycle tracking
   useEffect(() => {
     // Component mounted
     
@@ -66,7 +67,7 @@ const Dashboard: React.FC = () => {
     };
   }, []);
 
-  // Логируем изменения темы
+  // Theme change tracking
   useEffect(() => {
     // Theme changed
   }, [isDarkMode]);
@@ -77,7 +78,7 @@ const Dashboard: React.FC = () => {
       
       try {
         // Используем backend API Gateway вместо прямых вызовов к AI сервисам
-        const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+        const apiUrl = getBackendApiUrl();
         const response = await fetch(`${apiUrl}/api/llm/providers`, {
           method: 'GET',
           headers: {
@@ -151,7 +152,7 @@ const Dashboard: React.FC = () => {
         setAIStatusDetails(statusDetails);
         
       } catch (error) {
-        console.error('Failed to check AI providers via backend:', error);
+        // Failed to check AI providers via backend
         
         // Безопасное извлечение сообщения об ошибке
         const errorMessage = error instanceof Error ? error.message : 'Неизвестная ошибка';
@@ -171,334 +172,71 @@ const Dashboard: React.FC = () => {
     checkAIProviders();
   }, []);
 
-  // Демонстрационные данные для визуализации
-  const mockAnalysisResults = [
-    {
-      id: '1',
-      companyName: 'ТехСофт',
-      proposalName: 'Разработка CRM системы',
-      overallScore: 87.5,
-      maxScore: 100,
-      criteria: {
-        technical: 90,
-        commercial: 85,
-        timeline: 88,
-        experience: 92,
-        compliance: 83,
-      },
-      budget: {
-        total: 2500000,
-        breakdown: {
-          development: 1500000,
-          testing: 400000,
-          deployment: 300000,
-          support: 250000,
-          other: 50000,
-        },
-      },
-      metadata: {
-        submissionDate: '2024-01-15',
-        evaluationDate: '2024-01-20',
-        evaluator: 'И. Петров',
-        status: 'evaluated' as const,
-      },
-    },
-    {
-      id: '2',
-      companyName: 'ИнноДев',
-      proposalName: 'ERP система',
-      overallScore: 79.2,
-      maxScore: 100,
-      criteria: {
-        technical: 85,
-        commercial: 75,
-        timeline: 80,
-        experience: 82,
-        compliance: 74,
-      },
-      budget: {
-        total: 3200000,
-        breakdown: {
-          development: 2000000,
-          testing: 600000,
-          deployment: 350000,
-          support: 200000,
-          other: 50000,
-        },
-      },
-      metadata: {
-        submissionDate: '2024-01-16',
-        evaluationDate: '2024-01-21',
-        evaluator: 'А. Сидорова',
-        status: 'evaluated' as const,
-      },
-    },
-    {
-      id: '3',
-      companyName: 'БизнесСолюшн',
-      proposalName: 'Модернизация ИТ',
-      overallScore: 72.8,
-      maxScore: 100,
-      criteria: {
-        technical: 70,
-        commercial: 78,
-        timeline: 75,
-        experience: 68,
-        compliance: 73,
-      },
-      budget: {
-        total: 1800000,
-        breakdown: {
-          development: 1000000,
-          testing: 300000,
-          deployment: 250000,
-          support: 200000,
-          other: 50000,
-        },
-      },
-      metadata: {
-        submissionDate: '2024-01-17',
-        evaluationDate: '2024-01-22',
-        evaluator: 'С. Козлов',
-        status: 'evaluated' as const,
-      },
-    },
-  ];
+  // Реальные данные для визуализации
+  const [analysisResults, setAnalysisResults] = useState<any[]>([]);
+  const [isLoadingResults, setIsLoadingResults] = useState(false);
+
+  // Загрузка реальных данных анализа
+  const loadAnalysisResults = async () => {
+    setIsLoadingResults(true);
+    try {
+      // Получаем историю анализов из localStorage
+      const history = await kpAnalyzerService.getAnalysisHistory();
+      
+      // Преобразуем данные для компонента визуализации
+      const transformedResults = history.map((item: any, index: number) => {
+        const kpResults = item.kp_results || [];
+        const firstKp = kpResults[0] || {};
+        
+        return {
+          id: item.analysis_id?.toString() || index.toString(),
+          companyName: firstKp.company_name || `Компания ${index + 1}`,
+          proposalName: firstKp.proposal_name || 'Коммерческое предложение',
+          overallScore: firstKp.overall_score || 0,
+          maxScore: 100,
+          criteria: {
+            technical: firstKp.technical_score || 0,
+            commercial: firstKp.commercial_score || 0,
+            timeline: firstKp.timeline_score || 0,
+            experience: firstKp.experience_score || 0,
+            compliance: firstKp.compliance_score || 0,
+          },
+          budget: {
+            total: firstKp.total_budget || 0,
+            breakdown: {
+              development: firstKp.development_cost || 0,
+              testing: firstKp.testing_cost || 0,
+              deployment: firstKp.deployment_cost || 0,
+              support: firstKp.support_cost || 0,
+              other: firstKp.other_cost || 0,
+            },
+          },
+          metadata: {
+            submissionDate: item.created_at?.split('T')[0] || new Date().toISOString().split('T')[0],
+            evaluationDate: item.updated_at?.split('T')[0] || new Date().toISOString().split('T')[0],
+            evaluator: 'AI Система',
+            status: 'evaluated' as const,
+          },
+        };
+      });
+      
+      setAnalysisResults(transformedResults);
+    } catch (error) {
+      // Error loading analysis data
+      setAnalysisResults([]);
+    } finally {
+      setIsLoadingResults(false);
+    }
+  };
+
+  // Загружаем данные при монтировании
+  useEffect(() => {
+    loadAnalysisResults();
+  }, []);
+
+  // Заглушка для совместимости с существующим кодом
 
   // Расширенные данные для интерактивного сравнения
-  const mockComparisonData = [
-    {
-      id: '1',
-      companyName: 'ТехСофт',
-      proposalName: 'Разработка CRM системы',
-      submissionDate: '2024-01-15',
-      evaluationDate: '2024-01-20',
-      evaluator: 'И. Петров',
-      status: 'evaluated' as const,
-      overallScore: 87.5,
-      maxScore: 100,
-      currentRank: 1,
-      previousRank: 2,
-      change: 'up' as const,
-      criteria: {
-        technical: {
-          value: 90,
-          maxValue: 100,
-          weight: 0.3,
-          threshold: { excellent: 85, good: 70, acceptable: 50 }
-        },
-        commercial: {
-          value: 85,
-          maxValue: 100,
-          weight: 0.25,
-          threshold: { excellent: 85, good: 70, acceptable: 50 }
-        },
-        timeline: {
-          value: 88,
-          maxValue: 100,
-          weight: 0.2,
-          threshold: { excellent: 85, good: 70, acceptable: 50 }
-        },
-        experience: {
-          value: 92,
-          maxValue: 100,
-          weight: 0.15,
-          threshold: { excellent: 85, good: 70, acceptable: 50 }
-        },
-        compliance: {
-          value: 83,
-          maxValue: 100,
-          weight: 0.1,
-          threshold: { excellent: 85, good: 70, acceptable: 50 }
-        }
-      },
-      budget: {
-        total: 2500000,
-        currency: '₽',
-        breakdown: {
-          development: 1500000,
-          testing: 400000,
-          deployment: 300000,
-          support: 250000,
-          other: 50000,
-        },
-      },
-      timeline: {
-        estimated: 45,
-        unit: 'days' as const,
-        startDate: '2024-02-01',
-        endDate: '2024-03-17'
-      },
-      team: {
-        size: 8,
-        experience: 5,
-        certifications: ['ISO 9001', 'CMMI Level 3', 'Microsoft Gold Partner']
-      },
-      risks: {
-        level: 'low' as const,
-        factors: ['Стабильная команда', 'Проверенные технологии']
-      },
-      advantages: ['Высокая экспертиза', 'Быстрые сроки', 'Конкурентная цена'],
-      disadvantages: ['Ограниченная поддержка'],
-      recommendation: 'recommend' as const,
-      strengths: ['Техническая экспертиза', 'Опыт команды'],
-      weaknesses: ['Поддержка после внедрения']
-    },
-    {
-      id: '2',
-      companyName: 'ИнноДев',
-      proposalName: 'ERP система',
-      submissionDate: '2024-01-16',
-      evaluationDate: '2024-01-21',
-      evaluator: 'А. Сидорова',
-      status: 'evaluated' as const,
-      overallScore: 79.2,
-      maxScore: 100,
-      currentRank: 2,
-      previousRank: 1,
-      change: 'down' as const,
-      criteria: {
-        technical: {
-          value: 85,
-          maxValue: 100,
-          weight: 0.3,
-          threshold: { excellent: 85, good: 70, acceptable: 50 }
-        },
-        commercial: {
-          value: 75,
-          maxValue: 100,
-          weight: 0.25,
-          threshold: { excellent: 85, good: 70, acceptable: 50 }
-        },
-        timeline: {
-          value: 80,
-          maxValue: 100,
-          weight: 0.2,
-          threshold: { excellent: 85, good: 70, acceptable: 50 }
-        },
-        experience: {
-          value: 82,
-          maxValue: 100,
-          weight: 0.15,
-          threshold: { excellent: 85, good: 70, acceptable: 50 }
-        },
-        compliance: {
-          value: 74,
-          maxValue: 100,
-          weight: 0.1,
-          threshold: { excellent: 85, good: 70, acceptable: 50 }
-        }
-      },
-      budget: {
-        total: 3200000,
-        currency: '₽',
-        breakdown: {
-          development: 2000000,
-          testing: 600000,
-          deployment: 350000,
-          support: 200000,
-          other: 50000,
-        },
-      },
-      timeline: {
-        estimated: 60,
-        unit: 'days' as const,
-        startDate: '2024-02-15',
-        endDate: '2024-04-15'
-      },
-      team: {
-        size: 12,
-        experience: 7,
-        certifications: ['ISO 27001', 'Oracle Certified', 'AWS Partner']
-      },
-      risks: {
-        level: 'medium' as const,
-        factors: ['Сложная интеграция', 'Новая технология']
-      },
-      advantages: ['Большой опыт', 'Комплексное решение'],
-      disadvantages: ['Высокая стоимость', 'Длительные сроки'],
-      recommendation: 'conditional' as const,
-      strengths: ['ERP экспертиза', 'Большая команда'],
-      weaknesses: ['Стоимость проекта', 'Сроки реализации']
-    },
-    {
-      id: '3',
-      companyName: 'БизнесСолюшн',
-      proposalName: 'Модернизация ИТ',
-      submissionDate: '2024-01-17',
-      evaluationDate: '2024-01-22',
-      evaluator: 'С. Козлов',
-      status: 'evaluated' as const,
-      overallScore: 72.8,
-      maxScore: 100,
-      currentRank: 3,
-      previousRank: 3,
-      change: 'same' as const,
-      criteria: {
-        technical: {
-          value: 70,
-          maxValue: 100,
-          weight: 0.3,
-          threshold: { excellent: 85, good: 70, acceptable: 50 }
-        },
-        commercial: {
-          value: 78,
-          maxValue: 100,
-          weight: 0.25,
-          threshold: { excellent: 85, good: 70, acceptable: 50 }
-        },
-        timeline: {
-          value: 75,
-          maxValue: 100,
-          weight: 0.2,
-          threshold: { excellent: 85, good: 70, acceptable: 50 }
-        },
-        experience: {
-          value: 68,
-          maxValue: 100,
-          weight: 0.15,
-          threshold: { excellent: 85, good: 70, acceptable: 50 }
-        },
-        compliance: {
-          value: 73,
-          maxValue: 100,
-          weight: 0.1,
-          threshold: { excellent: 85, good: 70, acceptable: 50 }
-        }
-      },
-      budget: {
-        total: 1800000,
-        currency: '₽',
-        breakdown: {
-          development: 1000000,
-          testing: 300000,
-          deployment: 250000,
-          support: 200000,
-          other: 50000,
-        },
-      },
-      timeline: {
-        estimated: 35,
-        unit: 'days' as const,
-        startDate: '2024-02-01',
-        endDate: '2024-03-08'
-      },
-      team: {
-        size: 5,
-        experience: 3,
-        certifications: ['Microsoft Certified']
-      },
-      risks: {
-        level: 'high' as const,
-        factors: ['Малый опыт команды', 'Ограниченные ресурсы']
-      },
-      advantages: ['Низкая стоимость', 'Быстрые сроки'],
-      disadvantages: ['Ограниченный опыт', 'Неполное покрытие требований'],
-      recommendation: 'not_recommend' as const,
-      strengths: ['Конкурентная цена'],
-      weaknesses: ['Опыт команды', 'Качество решения']
-    }
-  ];
 
   const modules: DashboardModule[] = [
     {
@@ -558,61 +296,60 @@ const Dashboard: React.FC = () => {
     <div className={`min-h-screen transition-colors duration-300 ${
       isDarkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'
     }`}>
-      {/* Header */}
-      <header className={`border-b transition-colors duration-300 ${
-        isDarkMode ? 'border-gray-800 bg-gray-900' : 'border-gray-200 bg-white'
+      {/* Modern Sidebar */}
+      <ModernSidebar 
+        isCollapsed={sidebarCollapsed} 
+        onToggle={setSidebarCollapsed} 
+      />
+
+      {/* Main Content Area */}
+      <div className={`transition-all duration-300 ${
+        sidebarCollapsed ? 'md:ml-16' : 'md:ml-64'
       }`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-3">
-              <img 
-                src={isDarkMode ? logoDark : logoLight} 
-                alt="DevAssist Pro" 
-                className="w-8 h-8" 
-              />
-              <h1 className="text-xl font-semibold">DevAssist Pro</h1>
-            </div>
-            
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={toggleTheme}
-                className={`p-2 rounded-lg transition-colors ${
-                  isDarkMode 
-                    ? 'hover:bg-gray-800 text-gray-400 hover:text-white' 
-                    : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-              </button>
+        {/* Header */}
+        <header className={`border-b transition-colors duration-300 ${
+          isDarkMode ? 'border-gray-800 bg-gray-900' : 'border-gray-200 bg-white'
+        }`}>
+          <div className="px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center h-16">
+              <div className="flex items-center space-x-3 md:ml-0 ml-12">
+                <h1 className="text-xl font-semibold">Дашборд</h1>
+                <span className={`text-sm px-2 py-1 rounded-full ${
+                  isDarkMode ? 'bg-gray-800 text-gray-300' : 'bg-gray-100 text-gray-600'
+                }`}>
+                  DevAssist Pro
+                </span>
+              </div>
               
-              <button
-                onClick={() => navigate('/profile')}
-                className={`p-2 rounded-lg transition-colors ${
-                  isDarkMode 
-                    ? 'hover:bg-gray-800 text-gray-400 hover:text-white' 
-                    : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                <User className="w-5 h-5" />
-              </button>
-              
-              <button
-                onClick={handleLogout}
-                className={`p-2 rounded-lg transition-colors ${
-                  isDarkMode 
-                    ? 'hover:bg-gray-800 text-gray-400 hover:text-white' 
-                    : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                <LogOut className="w-5 h-5" />
-              </button>
+              <div className="flex items-center space-x-4">
+                <button
+                  onClick={toggleTheme}
+                  className={`p-2 rounded-lg transition-colors ${
+                    isDarkMode 
+                      ? 'hover:bg-gray-800 text-gray-400 hover:text-white' 
+                      : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                </button>
+                
+                <button
+                  onClick={() => navigate('/profile')}
+                  className={`p-2 rounded-lg transition-colors ${
+                    isDarkMode 
+                      ? 'hover:bg-gray-800 text-gray-400 hover:text-white' 
+                      : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  <User className="w-5 h-5" />
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      </header>
+        </header>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Main Content */}
+        <main className="px-4 sm:px-6 lg:px-8 py-8">
         {/* Welcome Section */}
         <div className="mb-8">
           <h2 className="text-2xl font-bold mb-2">Добро пожаловать в DevAssist Pro</h2>
@@ -661,18 +398,18 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* Main Dashboard Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
           {/* Left Column - Modules, Visualization, or Comparison */}
           <div className="lg:col-span-2">
             {activeTab === 'modules' ? (
               <>
-                <h3 className="text-lg font-semibold mb-4">Модули системы</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <h3 className="text-base sm:text-lg font-semibold mb-4">Модули системы</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                   {modules.map((module) => (
                     <div
                       key={module.id}
                       onClick={() => handleModuleClick(module)}
-                      className={`group relative rounded-xl border p-6 transition-all duration-200 ${
+                      className={`group relative rounded-xl border p-4 sm:p-6 transition-all duration-200 ${
                         isDarkMode 
                           ? 'bg-gray-800 border-gray-700 hover:bg-gray-750' 
                           : 'bg-white border-gray-200 hover:bg-gray-50'
@@ -683,7 +420,7 @@ const Dashboard: React.FC = () => {
                       }`}
                     >
                       {/* Status Badge */}
-                      <div className="absolute top-4 right-4">
+                      <div className="absolute top-3 right-3 sm:top-4 sm:right-4">
                         {module.status === 'active' ? (
                           <span className="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">
                             Активен
@@ -696,7 +433,7 @@ const Dashboard: React.FC = () => {
                       </div>
 
                       {/* Icon */}
-                      <div className={`w-12 h-12 rounded-lg flex items-center justify-center mb-4 ${
+                      <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-lg flex items-center justify-center mb-3 sm:mb-4 ${
                         module.status === 'active'
                           ? 'bg-blue-600 text-white'
                           : isDarkMode 
@@ -727,37 +464,24 @@ const Dashboard: React.FC = () => {
               </>
             ) : activeTab === 'visualization' ? (
               <ResultsVisualization
-                results={mockAnalysisResults}
+                results={analysisResults}
                 showFilters={true}
                 showExportOptions={true}
                 onExport={(type) => {
                   // Export functionality
+                  // Export as: ${type}
                 }}
                 onRefresh={() => {
-                  // Data update
+                  // Data refresh functionality - перезагружаем реальные данные
+                  loadAnalysisResults();
                 }}
               />
             ) : (
-              <InteractiveComparison
-                proposals={mockComparisonData}
-                title="Интерактивное сравнение КП"
-                defaultView="table"
-                showViewTabs={true}
-                enableExport={true}
-                enableFilters={true}
-                onProposalSelect={(proposal) => {
-                  // Proposal selected
-                }}
-                onProposalsCompare={(proposals) => {
-                  // Comparing proposals
-                }}
-                onExport={(data, format) => {
-                  // Export data
-                }}
-                onRefresh={() => {
-                  // Update comparison data
-                }}
-              />
+              <div className="text-gray-400 text-center py-8">
+                <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p>Нет данных для сравнения</p>
+                <p className="text-sm mt-2">Загрузите КП для анализа</p>
+              </div>
             )}
           </div>
 
@@ -856,6 +580,7 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
       </main>
+      </div>
     </div>
   );
 };

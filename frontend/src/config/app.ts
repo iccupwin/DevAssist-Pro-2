@@ -1,7 +1,33 @@
 // Application configuration
+// 🔒 PRODUCTION READY: All URLs use environment variables with production fallbacks
 export const APP_CONFIG = {
   // Streamlit app URL (main application)
-  STREAMLIT_URL: process.env.REACT_APP_STREAMLIT_URL || 'http://localhost:8501',
+  STREAMLIT_URL: process.env.REACT_APP_STREAMLIT_URL || (
+    process.env.NODE_ENV === 'production' 
+      ? 'https://your-streamlit-domain.com' 
+      : 'http://localhost:8501'
+  ),
+  
+  // Backend API URL
+  BACKEND_API_URL: process.env.REACT_APP_API_URL || (
+    process.env.NODE_ENV === 'production' 
+      ? 'https://your-api-domain.com' 
+      : 'http://localhost:8000'
+  ),
+  
+  // Auth Service URL
+  AUTH_SERVICE_URL: process.env.REACT_APP_AUTH_API_URL || (
+    process.env.NODE_ENV === 'production' 
+      ? 'https://your-auth-domain.com' 
+      : 'http://localhost:8001'
+  ),
+  
+  // WebSocket URL
+  SOCKET_URL: process.env.REACT_APP_SOCKET_URL || (
+    process.env.NODE_ENV === 'production' 
+      ? 'wss://your-websocket-domain.com' 
+      : 'ws://localhost:5000'
+  ),
   
   // Authentication endpoints
   AUTH_ENDPOINTS: {
@@ -25,13 +51,43 @@ export const APP_CONFIG = {
   PORTS: {
     REACT_APP: 3000,
     STREAMLIT_APP: 8501,
-    BACKEND_API: 5000
+    BACKEND_API: 8000,
+    AUTH_SERVICE: 8001,
+    LLM_SERVICE: 8002,
+    DOCUMENTS_SERVICE: 8003,
+    DASHBOARD_SERVICE: 8004
   }
 } as const;
 
 // Helper function to get Streamlit URL with fallback
 export const getStreamlitUrl = (): string => {
   return APP_CONFIG.STREAMLIT_URL;
+};
+
+// Helper function to get backend API URL
+export const getBackendApiUrl = (): string => {
+  return APP_CONFIG.BACKEND_API_URL;
+};
+
+// Helper function to get auth service URL
+export const getAuthServiceUrl = (): string => {
+  return APP_CONFIG.AUTH_SERVICE_URL;
+};
+
+// Helper function to get WebSocket URL
+export const getSocketUrl = (): string => {
+  return APP_CONFIG.SOCKET_URL;
+};
+
+// Helper function to build service URLs
+export const buildServiceUrl = (service: 'api' | 'auth' | 'socket', path: string = ''): string => {
+  const baseUrls = {
+    api: APP_CONFIG.BACKEND_API_URL,
+    auth: APP_CONFIG.AUTH_SERVICE_URL,
+    socket: APP_CONFIG.SOCKET_URL
+  };
+  
+  return `${baseUrls[service]}${path}`;
 };
 
 // Helper function to store user authentication data

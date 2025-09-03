@@ -1,6 +1,6 @@
 /**
- * Сайдбар KP анализатора в стиле Claude
- * Кнопка "Новый анализ" сверху и история анализов снизу
+ * Сайдбар KP анализатора в стиле Dashboard
+ * Лого вверху, кнопка "Новый анализ", история анализов и профиль внизу
  */
 
 import React, { useState } from 'react';
@@ -9,7 +9,6 @@ import {
   History,
   FileText,
   Calendar,
-  TrendingUp,
   Clock,
   CheckCircle,
   AlertCircle,
@@ -18,8 +17,17 @@ import {
   Menu,
   X,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  User,
+  LogOut,
+  Search
 } from 'lucide-react';
+import { useAuth } from '../../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { useTheme } from '../../contexts/ThemeContext';
+
+const logoLight = '/devent-logo.png';
+const logoDark = '/devent-logo-white1.png';
 
 export interface AnalysisHistoryItem {
   id: string;
@@ -58,9 +66,27 @@ const KPAnalyzerSidebar: React.FC<KPAnalyzerSidebarProps> = ({
   isCollapsed = false,
   onCollapse
 }) => {
-  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  const { isDarkMode } = useTheme();
 
-  const getStatusIcon = (status: string) => {
+  const handleToggle = () => {
+    if (onCollapse) {
+      onCollapse();
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/auth/login');
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  };
+
+  const getStatusIcon = (status: AnalysisHistoryItem['status']) => {
     switch (status) {
       case 'completed':
         return <CheckCircle className="w-4 h-4 text-green-500" />;
@@ -70,19 +96,6 @@ const KPAnalyzerSidebar: React.FC<KPAnalyzerSidebarProps> = ({
         return <AlertCircle className="w-4 h-4 text-red-500" />;
       default:
         return <FileText className="w-4 h-4 text-gray-500" />;
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'completed':
-        return 'text-green-500';
-      case 'in-progress':
-        return 'text-yellow-500';
-      case 'failed':
-        return 'text-red-500';
-      default:
-        return 'text-gray-500';
     }
   };
 
@@ -102,234 +115,226 @@ const KPAnalyzerSidebar: React.FC<KPAnalyzerSidebarProps> = ({
     });
   };
 
-  return (
-    <>
-      {/* Backdrop для мобильных устройств */}
-      {isOpen && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
-          onClick={onToggle}
-        />
-      )}
-      
-      {/* Кнопка для открытия меню на мобильных */}
-      <button
-        onClick={onToggle}
-        className="fixed top-4 left-4 z-50 lg:hidden p-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg"
-      >
-        {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-      </button>
-      
-      {/* Sidebar */}
-      <div className={`
-        fixed left-0 top-0 h-full bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 
-        transform transition-all duration-300 ease-in-out z-50 relative
-        ${isOpen ? 'translate-x-0' : '-translate-x-full'}
-        lg:translate-x-0 lg:static lg:z-0
-        ${isCollapsed ? 'w-16' : 'w-80'}
-        group/sidebar hover:shadow-lg
-      `}>
-        <div className="flex flex-col h-full">
-          {/* Header */}
-          <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-            <div className="flex items-center justify-between">
-              {!isCollapsed && (
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                  КП Анализатор
-                </h2>
-              )}
-              {isCollapsed && (
-                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                  <FileText className="w-5 h-5 text-white" />
-                </div>
-              )}
-              <button
-                onClick={onToggle}
-                className="lg:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-              >
-                <X className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-              </button>
+  const SidebarContent = () => (
+    <div className="flex flex-col h-full">
+      {/* Logo Header */}
+      <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+        {!isCollapsed && (
+          <div className="flex items-center space-x-3">
+            <img 
+              src={isDarkMode ? logoDark : logoLight} 
+              alt="DevAssist Pro" 
+              className="w-8 h-8 rounded-lg"
+            />
+            <div>
+              <h1 className="text-lg font-bold text-gray-900 dark:text-white">DevAssist</h1>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Pro</p>
             </div>
           </div>
+        )}
+        {isCollapsed && (
+          <img 
+            src={isDarkMode ? logoDark : logoLight} 
+            alt="DevAssist Pro" 
+            className="w-8 h-8 rounded-lg mx-auto"
+          />
+        )}
+        <button
+          onClick={handleToggle}
+          className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+        >
+          {isCollapsed ? (
+            <ChevronRight className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+          ) : (
+            <ChevronLeft className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+          )}
+        </button>
+      </div>
 
-          {/* New Analysis Button */}
-          <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-            <button
-              onClick={onNewAnalysis}
-              className={`w-full flex items-center gap-3 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium ${
-                isCollapsed ? 'justify-center' : ''
-              }`}
-              title={isCollapsed ? 'Новый анализ' : ''}
-            >
-              <Plus className="w-5 h-5" />
-              {!isCollapsed && 'Новый анализ'}
-            </button>
+      {/* New Analysis Button */}
+      <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+        <button
+          onClick={onNewAnalysis}
+          className={`w-full flex items-center px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium ${
+            isCollapsed ? 'justify-center' : 'justify-start space-x-3'
+          }`}
+          title={isCollapsed ? 'Новый анализ' : ''}
+        >
+          <Plus className="w-5 h-5 flex-shrink-0" />
+          {!isCollapsed && <span>Новый анализ</span>}
+        </button>
+      </div>
+
+      {/* History Section */}
+      <div className="flex-1 overflow-y-auto px-4 py-2">
+        <div className="mb-4">
+          {!isCollapsed && (
+            <div className="flex items-center space-x-2 mb-4 px-3 py-2">
+              <History className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+              <h3 className="text-sm font-medium text-gray-900 dark:text-white">
+                История анализов
+              </h3>
+            </div>
+          )}
+          {isCollapsed && (
+            <div className="flex justify-center mb-4 py-2" title="История анализов">
+              <History className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+            </div>
+          )}
+        </div>
+
+        {history.length === 0 ? (
+          <div className="text-center py-8">
+            <FileText className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+            {!isCollapsed && (
+              <>
+                <p className="text-gray-500 dark:text-gray-400 text-sm">
+                  Нет сохраненных анализов
+                </p>
+                <p className="text-gray-400 dark:text-gray-500 text-xs mt-1">
+                  Создайте новый анализ для начала работы
+                </p>
+              </>
+            )}
           </div>
-
-          {/* History Section */}
-          <div className="flex-1 overflow-y-auto">
-            <div className="p-4">
-              {!isCollapsed && (
-                <div className="flex items-center gap-2 mb-4">
-                  <History className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-                  <h3 className="font-semibold text-gray-900 dark:text-white">
-                    История анализов
-                  </h3>
-                </div>
-              )}
-              {isCollapsed && (
-                <div className="flex justify-center mb-4" title="История анализов">
-                  <History className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-                </div>
-              )}
-
-              {history.length === 0 ? (
-                <div className="text-center py-8">
-                  <FileText className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                  {!isCollapsed && (
-                    <>
-                      <p className="text-gray-500 dark:text-gray-400 text-sm">
-                        Пока нет анализов
-                      </p>
-                      <p className="text-gray-400 dark:text-gray-500 text-xs mt-1">
-                        Создайте первый анализ
-                      </p>
-                    </>
-                  )}
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  {history.map((item) => (
-                    <div
-                      key={item.id}
-                      className={`
-                        relative group rounded-lg border transition-all duration-200 cursor-pointer
-                        ${item.id === currentAnalysisId 
-                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' 
-                          : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700/50'
-                        }
-                      `}
-                      onMouseEnter={() => setHoveredItem(item.id)}
-                      onMouseLeave={() => setHoveredItem(null)}
-                      onClick={() => onLoadHistory(item)}
-                      title={isCollapsed ? item.name : ''}
-                    >
-                      <div className={`p-3 ${isCollapsed ? 'px-2' : ''}`}>
-                        <div className="flex items-start justify-between mb-2">
-                          <div className="flex items-center gap-2">
-                            <div className={getStatusColor(item.status)}>
-                              {getStatusIcon(item.status)}
-                            </div>
-                            {!isCollapsed && (
-                              <span className="font-medium text-gray-900 dark:text-white text-sm truncate">
-                                {item.name}
-                              </span>
-                            )}
-                          </div>
-                          
-                          {hoveredItem === item.id && !isCollapsed && (
-                            <div className="flex items-center gap-1">
-                              {onExportHistory && (
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    onExportHistory(item.id);
-                                  }}
-                                  className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-                                  title="Экспорт"
-                                >
-                                  <Download className="w-4 h-4 text-gray-500" />
-                                </button>
-                              )}
+        ) : (
+          <div className="space-y-1">
+            {history.map((item) => (
+              <div 
+                key={item.id} 
+                className={`group rounded-lg transition-all duration-200 ${
+                  currentAnalysisId === item.id 
+                    ? 'bg-blue-50 dark:bg-blue-900/20' 
+                    : 'hover:bg-gray-50 dark:hover:bg-gray-800'
+                }`}
+              >
+                <button
+                  onClick={() => onLoadHistory(item)}
+                  className={`w-full flex items-center px-3 py-2.5 text-left transition-all duration-200 ${
+                    isCollapsed ? 'justify-center' : 'justify-start'
+                  }`}
+                >
+                  <div className={`flex items-center ${isCollapsed ? '' : 'space-x-3 w-full'}`}>
+                    {getStatusIcon(item.status)}
+                    {!isCollapsed && (
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between">
+                          <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                            {item.name}
+                          </p>
+                          <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            {onExportHistory && (
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  onDeleteHistory(item.id);
+                                  onExportHistory(item.id);
                                 }}
-                                className="p-1 rounded hover:bg-red-100 dark:hover:bg-red-900/20 transition-colors"
-                                title="Удалить"
+                                className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded"
+                                title="Экспорт"
                               >
-                                <Trash2 className="w-4 h-4 text-red-500" />
+                                <Download className="w-4 h-4 text-gray-500" />
                               </button>
-                            </div>
-                          )}
-                        </div>
-
-                        {!isCollapsed && (
-                          <div className="space-y-1 text-xs text-gray-600 dark:text-gray-400">
-                            <div className="flex items-center gap-1">
-                              <FileText className="w-3 h-3" />
-                              <span className="truncate">{item.tzName}</span>
-                            </div>
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-1">
-                                <Calendar className="w-3 h-3" />
-                                <span>{formatDate(item.date)}</span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <span>{item.kpCount} КП</span>
-                                {item.status === 'completed' && (
-                                  <span className="text-green-600 dark:text-green-400 font-medium">
-                                    {item.avgScore}%
-                                  </span>
-                                )}
-                              </div>
-                            </div>
+                            )}
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onDeleteHistory(item.id);
+                              }}
+                              className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded"
+                              title="Удалить"
+                            >
+                              <Trash2 className="w-4 h-4 text-red-500" />
+                            </button>
                           </div>
-                        )}
+                        </div>
+                        <div className="flex items-center space-x-2 mt-1">
+                          <Calendar className="w-3 h-3 text-gray-400" />
+                          <span className="text-xs text-gray-500 dark:text-gray-400">
+                            {formatDate(item.date)}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between mt-1">
+                          <span className="text-xs text-gray-500 dark:text-gray-400">
+                            {item.kpCount} КП
+                          </span>
+                          <span className="text-xs font-medium text-blue-600 dark:text-blue-400">
+                            {item.avgScore.toFixed(1)}
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Footer */}
-          <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-            {!isCollapsed && (
-              <div className="text-center text-xs text-gray-500 dark:text-gray-400">
-                DevAssist Pro • КП Анализатор
+                    )}
+                  </div>
+                </button>
               </div>
-            )}
-            {isCollapsed && (
-              <div className="text-center">
-                <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center mx-auto">
-                  <span className="text-white text-xs font-bold">DA</span>
-                </div>
-              </div>
-            )}
+            ))}
           </div>
-        </div>
-        
-        {/* Кнопка скрытия/разворачивания на границе */}
-        {isOpen && onCollapse && (
-          <button
-            onClick={onCollapse}
-            className={`
-              absolute -right-3 top-1/2 transform -translate-y-1/2 
-              w-6 h-10 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 
-              rounded-r-lg shadow-lg hover:shadow-xl transition-all duration-200
-              flex items-center justify-center group
-              hover:bg-gray-50 dark:hover:bg-gray-700
-              hover:border-gray-300 dark:hover:border-gray-600
-              hover:w-7 hover:-right-3.5
-              z-10 hidden lg:flex
-              opacity-0 group-hover/sidebar:opacity-100
-              ${isCollapsed ? 'opacity-100' : ''}
-            `}
-            title={isCollapsed ? 'Развернуть сайдбар' : 'Свернуть сайдбар'}
-          >
-            {isCollapsed ? (
-              <ChevronRight className="w-4 h-4 text-gray-600 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
-            ) : (
-              <ChevronLeft className="w-4 h-4 text-gray-600 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
-            )}
-          </button>
         )}
+      </div>
+
+      {/* User Profile */}
+      <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+        <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
+          {!isCollapsed && (
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center justify-center">
+                <User className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                  {user?.name || 'Пользователь'}
+                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                  {user?.email || 'user@example.com'}
+                </p>
+              </div>
+            </div>
+          )}
+          <button
+            onClick={handleLogout}
+            className={`p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors ${
+              isCollapsed ? 'w-full flex justify-center' : ''
+            }`}
+            title="Выйти"
+          >
+            <LogOut className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <>
+      {/* Mobile Overlay */}
+      {isMobileOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+          onClick={() => setIsMobileOpen(false)}
+        />
+      )}
+
+      {/* Mobile Toggle Button */}
+      <button
+        onClick={() => setIsMobileOpen(true)}
+        className="fixed top-4 left-4 z-50 p-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg md:hidden"
+      >
+        <Menu className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+      </button>
+
+      {/* Sidebar */}
+      <div
+        className={`
+          fixed left-0 top-0 h-full bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 z-50
+          transform transition-transform duration-300 ease-in-out
+          ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'}
+          md:translate-x-0 md:static md:z-0
+          ${isCollapsed ? 'w-16' : 'w-80'}
+        `}
+      >
+        <SidebarContent />
       </div>
     </>
   );
 };
 
-export default KPAnalyzerSidebar; 
+export default KPAnalyzerSidebar;

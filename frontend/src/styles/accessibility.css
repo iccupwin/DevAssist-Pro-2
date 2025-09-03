@@ -1,0 +1,407 @@
+/* Стили для улучшенной доступности */
+
+/* Скрытие элементов только для экранных читалок */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Показать элементы при фокусе */
+.sr-only:focus {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: inherit;
+  margin: inherit;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+  border: inherit;
+}
+
+/* Высокий контраст */
+.high-contrast {
+  --bg-primary: #000000;
+  --bg-secondary: #ffffff;
+  --text-primary: #ffffff;
+  --text-secondary: #000000;
+  --border-color: #ffffff;
+  --focus-color: #ffff00;
+  --link-color: #00ffff;
+  --button-bg: #0000ff;
+  --button-text: #ffffff;
+  --error-color: #ff0000;
+  --success-color: #00ff00;
+  --warning-color: #ffff00;
+}
+
+.high-contrast * {
+  background-color: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-color) !important;
+}
+
+.high-contrast button {
+  background-color: var(--button-bg) !important;
+  color: var(--button-text) !important;
+  border: 2px solid var(--border-color) !important;
+}
+
+.high-contrast a {
+  color: var(--link-color) !important;
+  text-decoration: underline !important;
+}
+
+.high-contrast input,
+.high-contrast textarea,
+.high-contrast select {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-secondary) !important;
+  border: 2px solid var(--border-color) !important;
+}
+
+/* Крупный текст */
+.large-text {
+  --text-scale: 1.25;
+}
+
+.large-text * {
+  font-size: calc(1em * var(--text-scale)) !important;
+  line-height: calc(1.5 * var(--text-scale)) !important;
+}
+
+/* Улучшенный индикатор фокуса */
+.focus-indicator *:focus {
+  outline: 3px solid #2563eb !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.3) !important;
+}
+
+.focus-indicator *:focus-visible {
+  outline: 3px solid #2563eb !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.3) !important;
+}
+
+/* Уменьшение анимаций */
+.reduce-motion * {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* Улучшенные кнопки для доступности */
+.accessible-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.375rem;
+  border: 2px solid transparent;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  user-select: none;
+}
+
+.accessible-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.accessible-button:active {
+  transform: translateY(0);
+}
+
+.accessible-button:focus {
+  outline: 3px solid #2563eb;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.3);
+}
+
+.accessible-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Улучшенные формы */
+.accessible-form-field {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.accessible-form-field label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.accessible-form-field input,
+.accessible-form-field textarea,
+.accessible-form-field select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #d1d5db;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  transition: border-color 0.2s ease-in-out;
+}
+
+.accessible-form-field input:focus,
+.accessible-form-field textarea:focus,
+.accessible-form-field select:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.accessible-form-field.error input,
+.accessible-form-field.error textarea,
+.accessible-form-field.error select {
+  border-color: #dc2626;
+}
+
+.accessible-form-field.error input:focus,
+.accessible-form-field.error textarea:focus,
+.accessible-form-field.error select:focus {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.accessible-form-field .error-message {
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: #dc2626;
+}
+
+.accessible-form-field .helper-text {
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+/* Улучшенные таблицы */
+.accessible-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1.5rem;
+}
+
+.accessible-table th,
+.accessible-table td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.accessible-table th {
+  font-weight: 600;
+  background-color: #f9fafb;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.accessible-table tr:hover {
+  background-color: #f9fafb;
+}
+
+.accessible-table tr:focus-within {
+  background-color: #eff6ff;
+  outline: 2px solid #2563eb;
+  outline-offset: -2px;
+}
+
+/* Улучшенные модальные окна */
+.accessible-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.accessible-modal-content {
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+.accessible-modal-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.accessible-modal-body {
+  padding: 1.5rem;
+}
+
+.accessible-modal-footer {
+  padding: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+/* Улучшенные списки */
+.accessible-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.accessible-list-item {
+  padding: 0.75rem;
+  border-radius: 0.375rem;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.accessible-list-item:hover {
+  background-color: #f9fafb;
+}
+
+.accessible-list-item:focus {
+  outline: 2px solid #2563eb;
+  outline-offset: -2px;
+  background-color: #eff6ff;
+}
+
+/* Улучшенные карточки */
+.accessible-card {
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+  transition: box-shadow 0.2s ease-in-out;
+}
+
+.accessible-card:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.accessible-card:focus-within {
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.3);
+  outline: 2px solid #2563eb;
+  outline-offset: -2px;
+}
+
+/* Улучшенные навигационные элементы */
+.accessible-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.accessible-nav-item {
+  position: relative;
+}
+
+.accessible-nav-link {
+  display: block;
+  padding: 0.75rem 1rem;
+  color: #374151;
+  text-decoration: none;
+  border-radius: 0.375rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.accessible-nav-link:hover {
+  background-color: #f3f4f6;
+  color: #1f2937;
+}
+
+.accessible-nav-link:focus {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+  background-color: #eff6ff;
+  color: #1e40af;
+}
+
+.accessible-nav-link.active {
+  background-color: #2563eb;
+  color: white;
+}
+
+/* Утилиты для экранных читалок */
+.announce-on-focus:focus::after {
+  content: attr(data-announce);
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* Улучшенные tooltip */
+.accessible-tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.accessible-tooltip-content {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #1f2937;
+  color: white;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  white-space: nowrap;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.accessible-tooltip:hover .accessible-tooltip-content,
+.accessible-tooltip:focus .accessible-tooltip-content {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Печать */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  .accessible-button {
+    background-color: transparent !important;
+    border: 1px solid #000 !important;
+    color: #000 !important;
+  }
+  
+  .accessible-nav-link {
+    color: #000 !important;
+    text-decoration: underline !important;
+  }
+}

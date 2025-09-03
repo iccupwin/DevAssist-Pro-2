@@ -1,0 +1,25 @@
+INFO:__main__:Database modules loaded successfully
+INFO:shared.database:Database tables created successfully
+INFO:__main__:Database tables created/verified
+INFO:__main__:Admin user already exists
+INFO:prompt_manager:PromptManager initialized with directory: F:\DevAssitPro\DevAssist-Pro\backend\prompts
+INFO:services.reports.core.pdf_generator:ReportLab successfully imported - PDF generation available
+INFO:     Will watch for changes in these directories: ['F:\\DevAssitPro\\DevAssist-Pro\\backend']
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [17928] using WatchFiles
+INFO:__mp_main__:Database modules loaded successfully
+INFO:shared.database:Database tables created successfully
+INFO:__mp_main__:Database tables created/verified
+INFO:__mp_main__:Admin user already exists
+INFO:prompt_manager:PromptManager initialized with directory: F:\DevAssitPro\DevAssist-Pro\backend\prompts
+INFO:services.reports.core.pdf_generator:ReportLab successfully imported - PDF generation available
+INFO:app:Database modules loaded successfully
+INFO:shared.database:Database tables created successfully
+INFO:app:Database tables created/verified
+INFO:app:Admin user already exists
+INFO:     Started server process [52868]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:watchfiles.main:4 changes detected
+INFO:watchfiles.main:24 changes detected
+INFO:watchfiles.main:4 changes detected

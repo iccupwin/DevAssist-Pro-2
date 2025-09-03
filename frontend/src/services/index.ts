@@ -9,7 +9,7 @@ export { default as fileUploadApi } from './fileUploadApi';
 export { httpClient } from './httpClient';
 export { httpClient as httpInterceptor } from './httpInterceptors';
 export { integrationService } from './integrationService';
-export { mockApiService } from './mockApiService';
+// mockApiService удален - используем только реальные API
 export { realApiService } from './realApiService';
 export { socketService } from './socketService';
 export { unifiedApiClient } from './unifiedApiClient';
@@ -20,8 +20,12 @@ export { queryClient } from './queryClient';
 export { documentProcessor } from './documentProcessor';
 export { pdfProcessor } from './pdfProcessor';
 
-// PDF Export Services
+// Report Export Services
 export { pdfExportService } from './pdfExportService';
+export { reactPdfExportService } from './reactPdfExportService';
+export { excelExportService } from './excelExportService';
+export { unifiedReportExportService } from './unifiedReportExportService';
+export { reportService } from './reportService';
 
 // Types and interfaces
 export type {

@@ -136,7 +136,7 @@ export const KPAnalyzerMain: React.FC = () => {
     try {
       await startAnalysis();
     } catch (error) {
-      console.error('Analysis failed:', error);
+      // Analysis failed
     }
   };
 
@@ -146,7 +146,7 @@ export const KPAnalyzerMain: React.FC = () => {
   };
 
   const handleNewAnalysis = () => {
-    console.log('🔄 Запуск нового анализа - полная очистка состояния');
+    // Starting new analysis - full state cleanup
     
     // Сначала сбрасываем хук (включая кэш)
     resetAnalyzer();
@@ -163,7 +163,7 @@ export const KPAnalyzerMain: React.FC = () => {
     // Очищаем текущий анализ в истории
     setCurrentAnalysisId(null);
     
-    console.log('✅ Состояние полностью очищено, готов к новому анализу');
+    // State fully cleared, ready for new analysis
   };
 
   const handleGenerateReport = () => {
@@ -177,7 +177,7 @@ export const KPAnalyzerMain: React.FC = () => {
         return;
       }
 
-      console.log('🔄 Начинаем генерацию PDF отчета...');
+      // Starting PDF report generation
 
       // Конвертируем результаты в правильный формат для PDF
       const convertedResults: KPAnalysisResult[] = analysisResults.map(result => ({
@@ -196,7 +196,7 @@ export const KPAnalyzerMain: React.FC = () => {
         analysisDate: result.analyzedAt || new Date().toISOString()
       }));
 
-      console.log('📋 Формирование структуры отчета...');
+      // Forming report structure
 
       // Генерируем PDF
       await kpPdfExportService.exportAnalysisReport(
@@ -210,11 +210,11 @@ export const KPAnalyzerMain: React.FC = () => {
         }
       );
 
-      console.log('✅ PDF отчет успешно сгенерирован');
+      // PDF report successfully generated
       alert('PDF отчет успешно сгенерирован и сохранен!');
 
     } catch (error) {
-      console.error('❌ Ошибка экспорта PDF:', error);
+      // PDF export error
       alert(`Ошибка экспорта PDF: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`);
     }
   };
@@ -241,33 +241,18 @@ export const KPAnalyzerMain: React.FC = () => {
     analysisDate: result.analyzedAt
   }));
 
-  // Логирование переходов для отладки
+  // State checking for transitions
   React.useEffect(() => {
-    console.log('🔄 Проверка состояния:', { 
-      hasResults, 
-      currentStep, 
-      resultsCount: analysisResults.length,
-      isProcessing 
-    });
+    // State check for component transitions
   }, [hasResults, currentStep, analysisResults.length, isProcessing]);
 
   // Синхронизируем состояние с хуком и автоматически переходим к результатам
   React.useEffect(() => {
-    console.log('📊 Состояние КП анализатора:', {
-      currentStep,
-      isProcessing,
-      hasResults,
-      resultsCount: analysisResults.length,
-      hasComparisonResult: !!comparisonResult,
-      comparisonResult,
-      tzLoaded: !!technicalSpec,
-      kpCount: commercialProposals.length,
-      progress: progress?.currentTask
-    });
+    // KP analyzer state tracking
 
     // Автоматический переход к результатам после завершения анализа
     if (hasResults && !isProcessing && currentStep !== 'results') {
-      console.log('🎯 Анализ завершен, автоматически переходим к результатам');
+      // Analysis completed, automatically transitioning to results
       setCurrentStep('results');
     }
   }, [currentStep, isProcessing, hasResults, analysisResults.length, comparisonResult, technicalSpec, commercialProposals.length, progress]);
@@ -283,7 +268,7 @@ export const KPAnalyzerMain: React.FC = () => {
         selectedModels
       );
       
-      console.log('📚 Анализ автоматически сохранен в историю:', analysisId);
+      // Analysis automatically saved to history
     }
   }, [hasResults, isProcessing, analysisResults.length, currentAnalysisId, convertedResults, comparisonResult, technicalSpec, commercialProposals, selectedModels, addToHistory]);
 
@@ -296,8 +281,13 @@ export const KPAnalyzerMain: React.FC = () => {
     setIsSidebarCollapsed(!isSidebarCollapsed);
   };
 
-  const handleLoadHistory = async (historyItem: any) => {
-    console.log('📖 Загружаем анализ из истории:', historyItem.id);
+  const handleLoadHistory = async (historyItem: {
+    id: string;
+    name: string;
+    results: KPAnalysisResult[];
+    comparisonResult: any;
+  }) => {
+    // Loading analysis from history
     
     setIsLoadingFromHistory(true);
     
@@ -314,20 +304,17 @@ export const KPAnalyzerMain: React.FC = () => {
         setIsLoadingFromHistory(false);
         setIsSidebarOpen(false);
         
-        console.log('✅ Исторический анализ загружен:', {
-          results: loadedData.results.length,
-          hasComparison: !!loadedData.comparisonResult
-        });
+        // Historical analysis loaded successfully
       }, 100); // Минимальная задержка для UX
       
     } catch (error) {
-      console.error('❌ Ошибка загрузки из истории:', error);
+      // Error loading from history
       setIsLoadingFromHistory(false);
     }
   };
 
   const handleDeleteHistory = (id: string) => {
-    if (confirm('Вы уверены, что хотите удалить этот анализ из истории?')) {
+    if (window.confirm('Вы уверены, что хотите удалить этот анализ из истории?')) {
       deleteFromHistory(id);
     }
   };
@@ -336,7 +323,7 @@ export const KPAnalyzerMain: React.FC = () => {
     const historyItem = history.find(item => item.id === id);
     if (historyItem) {
       try {
-        console.log('📄 Экспорт PDF для анализа:', id);
+        // PDF export for historical analysis
         
         // Используем данные из истории
         await kpPdfExportService.exportAnalysisReport(
@@ -350,11 +337,11 @@ export const KPAnalyzerMain: React.FC = () => {
           }
         );
         
-        console.log('✅ PDF для исторического анализа успешно сгенерирован');
+        // PDF for historical analysis successfully generated
         alert('Исторический отчет успешно экспортирован!');
         
       } catch (error) {
-        console.error('❌ Ошибка экспорта исторического PDF:', error);
+        // Historical PDF export error
         alert(`Ошибка экспорта PDF: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`);
       }
     }
@@ -378,13 +365,13 @@ export const KPAnalyzerMain: React.FC = () => {
       
       {/* Main Content */}
       <div className={`flex-1 flex flex-col transition-all duration-300 ${
-        isSidebarOpen && !isSidebarCollapsed ? 'lg:ml-80' : isSidebarOpen && isSidebarCollapsed ? 'lg:ml-16' : 'ml-0'
+        isSidebarOpen && !isSidebarCollapsed ? '' : isSidebarOpen && isSidebarCollapsed ? 'md:ml-16' : 'ml-0'
       }`}>
         {/* Top Bar */}
-        <div className="h-12 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex items-center px-4 gap-4">
+        <div className="h-12 md:h-14 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex items-center px-4 md:px-6 gap-4">
           <button
             onClick={handleToggleSidebar}
-            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors lg:hidden"
+            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors md:hidden"
           >
             <Menu className="w-5 h-5 text-gray-600 dark:text-gray-400" />
           </button>
@@ -399,7 +386,7 @@ export const KPAnalyzerMain: React.FC = () => {
           <div className="flex-1"></div>
           
           {/* Статус сайдбара */}
-          <div className="hidden lg:flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+          <div className="hidden md:flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
             <div className={`w-2 h-2 rounded-full ${
               isSidebarOpen ? 'bg-green-500' : 'bg-gray-400'
             }`}></div>
@@ -423,14 +410,14 @@ export const KPAnalyzerMain: React.FC = () => {
             />
           )}
 
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-8 py-6 md:py-8">
             
             {/* Заголовок */}
-            <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+            <div className="text-center mb-6 md:mb-8">
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-3 md:mb-4">
                 КП Анализатор
               </h1>
-              <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+              <p className="text-base md:text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto px-4">
                 Загрузите техническое задание и коммерческие предложения для их сравнительного анализа с помощью AI
               </p>
             </div>
@@ -439,7 +426,7 @@ export const KPAnalyzerMain: React.FC = () => {
             {currentStep === 'upload' && (
               <>
                 {/* Информационная карточка */}
-                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-8">
+                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 md:p-6 mb-6 md:mb-8">
                   <div className="flex items-start gap-3">
                     <AlertCircle className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
                     <div>
@@ -461,7 +448,7 @@ export const KPAnalyzerMain: React.FC = () => {
                 />
 
                 {/* Выбор модели */}
-                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-8">
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 md:p-6 mb-6 md:mb-8">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                       Выбор AI модели
@@ -470,7 +457,7 @@ export const KPAnalyzerMain: React.FC = () => {
                       🤖 Реальный AI анализ
                     </div>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Модель для анализа:
@@ -478,7 +465,7 @@ export const KPAnalyzerMain: React.FC = () => {
                       <select
                         value={selectedModels.analysis}
                         onChange={(e) => updateModelSelection('analysis', e.target.value)}
-                        className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                        className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-sm md:text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                       >
                         <option value="claude-3-5-sonnet">Claude 3.5 Sonnet</option>
                         <option value="claude-3-opus">Claude 3 Opus</option>
@@ -493,7 +480,7 @@ export const KPAnalyzerMain: React.FC = () => {
                       <select
                         value={selectedModels.comparison}
                         onChange={(e) => updateModelSelection('comparison', e.target.value)}
-                        className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                        className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-sm md:text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                       >
                         <option value="gpt-4o">GPT-4o</option>
                         <option value="claude-3-5-sonnet">Claude 3.5 Sonnet</option>
@@ -504,10 +491,10 @@ export const KPAnalyzerMain: React.FC = () => {
                 </div>
 
                 {/* Кнопка запуска анализа */}
-                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 md:p-6">
                   <div className="text-center">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                      <div className={`text-center p-4 rounded-lg border ${
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-6">
+                      <div className={`text-center p-3 md:p-4 rounded-lg border ${
                         technicalSpec 
                           ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800' 
                           : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
@@ -526,7 +513,7 @@ export const KPAnalyzerMain: React.FC = () => {
                         </div>
                       </div>
 
-                      <div className={`text-center p-4 rounded-lg border ${
+                      <div className={`text-center p-3 md:p-4 rounded-lg border ${
                         commercialProposals.length > 0 
                           ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800' 
                           : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
@@ -545,7 +532,7 @@ export const KPAnalyzerMain: React.FC = () => {
                         </div>
                       </div>
 
-                      <div className={`text-center p-4 rounded-lg border ${
+                      <div className={`text-center p-3 md:p-4 rounded-lg border ${
                         uploadedFiles.additionalFiles.length > 0 
                           ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800' 
                           : 'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700'
@@ -588,13 +575,13 @@ export const KPAnalyzerMain: React.FC = () => {
                       </div>
                     )}
                     
-                    <div className="flex gap-4 justify-center">
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                       <button
                         onClick={handleStartAnalysis}
                         disabled={!canProceedToAnalysis || isProcessing}
                         className={`
-                          inline-flex items-center gap-3 px-8 py-4 rounded-lg font-medium text-lg
-                          transition-all duration-200 
+                          inline-flex items-center gap-3 px-6 md:px-8 py-3 md:py-4 rounded-lg font-medium text-base md:text-lg
+                          transition-all duration-200 min-w-[200px] md:min-w-[250px] justify-center
                           ${canProceedToAnalysis && !isProcessing
                             ? 'bg-blue-600 text-white hover:bg-blue-700 transform hover:scale-105 shadow-lg hover:shadow-xl'
                             : 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed'
@@ -608,7 +595,7 @@ export const KPAnalyzerMain: React.FC = () => {
                       {hasResults && (
                         <button
                           onClick={handleNewAnalysis}
-                          className="inline-flex items-center gap-3 px-8 py-4 rounded-lg font-medium text-lg bg-green-600 text-white hover:bg-green-700 transform hover:scale-105 shadow-lg hover:shadow-xl transition-all duration-200"
+                          className="inline-flex items-center gap-3 px-6 md:px-8 py-3 md:py-4 rounded-lg font-medium text-base md:text-lg bg-green-600 text-white hover:bg-green-700 transform hover:scale-105 shadow-lg hover:shadow-xl transition-all duration-200 min-w-[200px] md:min-w-[250px] justify-center"
                         >
                           <Star className="w-6 h-6" />
                           Новый анализ

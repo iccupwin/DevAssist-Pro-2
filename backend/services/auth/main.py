@@ -375,86 +375,88 @@ async def confirm_email_verification(verify_data: EmailVerificationConfirm, db: 
         message="Email verified successfully"
     )
 
-# OAuth endpoints
-from .oauth import oauth_manager, GoogleOAuthProvider, MicrosoftOAuthProvider, YandexOAuthProvider
-from shared.schemas import OAuthLoginRequest, OAuthProvider as OAuthProviderEnum
+# OAuth endpoints - temporarily commented out to fix import error
+# from .oauth import oauth_manager, GoogleOAuthProvider, MicrosoftOAuthProvider, YandexOAuthProvider
+# from shared.schemas import OAuthLoginRequest, OAuthProvider as OAuthProviderEnum
 
-@app.get("/oauth/{provider}/authorize")
-async def oauth_authorize(provider: str, redirect_uri: str = None):
-    """Получение URL для OAuth авторизации"""
-    try:
-        auth_url = oauth_manager.get_authorization_url(provider)
-        return {"authorization_url": auth_url}
-    except Exception as e:
-        logger.error(f"OAuth authorize error: {str(e)}")
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
-        )
+# OAuth endpoints temporarily disabled
+# @app.get("/oauth/{provider}/authorize")
+# async def oauth_authorize(provider: str, redirect_uri: str = None):
+#     """Получение URL для OAuth авторизации"""
+#     try:
+#         auth_url = oauth_manager.get_authorization_url(provider)
+#         return {"authorization_url": auth_url}
+#     except Exception as e:
+#         logger.error(f"OAuth authorize error: {str(e)}")
+#         raise HTTPException(
+#             status_code=status.HTTP_400_BAD_REQUEST,
+#             detail=str(e)
+#         )
 
-@app.post("/oauth/login", response_model=LoginResponse)
-async def oauth_login(oauth_data: OAuthLoginRequest, db: Session = Depends(get_db)):
-    """OAuth вход"""
-    try:
-        # Обрабатываем OAuth callback
-        result = await oauth_manager.process_oauth_callback(
-            oauth_data.provider.value, 
-            oauth_data.code
-        )
-        
-        user_info = result["user_info"]
-        email = user_info["email"]
-        
-        if not email:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Email not provided by OAuth provider"
-            )
-        
-        # Ищем существующего пользователя
-        user = db.query(User).filter(User.email == email.lower()).first()
-        
-        # Если пользователя нет, создаем нового
-        if not user:
-            user_manager = UserManager(db)
-            # Генерируем случайный пароль для OAuth пользователей
-            random_password = user_manager.password_manager.generate_password()
-            
-            user = user_manager.create_user(
-                email=email,
-                password=random_password,
-                full_name=user_info.get("name", ""),
-                is_verified=True  # OAuth пользователи считаются верифицированными
-            )
-        
-        # Проверяем активность пользователя
-        if not user.is_active:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="User account is disabled"
-            )
-        
-        # Создаем токены
-        access_token = token_manager.create_access_token(
-            data={"sub": str(user.id), "email": user.email}
-        )
-        refresh_token = token_manager.create_refresh_token(user.id)
-        
-        return LoginResponse(
-            access_token=access_token,
-            refresh_token=refresh_token,
-            expires_in=settings.jwt_expire_minutes * 60,
-            user=UserSchema.model_validate(user)
-        )
-        
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"OAuth login error: {str(e)}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="OAuth login failed"
-        )
+# OAuth login endpoint temporarily disabled
+# @app.post("/oauth/login", response_model=LoginResponse)
+# async def oauth_login(oauth_data: OAuthLoginRequest, db: Session = Depends(get_db)):
+#     """OAuth вход"""
+#     try:
+#         # Обрабатываем OAuth callback
+#         result = await oauth_manager.process_oauth_callback(
+#             oauth_data.provider.value, 
+#             oauth_data.code
+#         )
+#         
+#         user_info = result["user_info"]
+#         email = user_info["email"]
+#         
+#         if not email:
+#             raise HTTPException(
+#                 status_code=status.HTTP_400_BAD_REQUEST,
+#                 detail="Email not provided by OAuth provider"
+#             )
+#         
+#         # Ищем существующего пользователя
+#         user = db.query(User).filter(User.email == email.lower()).first()
+#         
+#         # Если пользователя нет, создаем нового
+#         if not user:
+#             user_manager = UserManager(db)
+#             # Генерируем случайный пароль для OAuth пользователей
+#             random_password = user_manager.password_manager.generate_password()
+#             
+#             user = user_manager.create_user(
+#                 email=email,
+#                 password=random_password,
+#                 full_name=user_info.get("name", ""),
+#                 is_verified=True  # OAuth пользователи считаются верифицированными
+#             )
+#         
+#         # Проверяем активность пользователя
+#         if not user.is_active:
+#             raise HTTPException(
+#                 status_code=status.HTTP_401_UNAUTHORIZED,
+#                 detail="User account is disabled"
+#             )
+#         
+#         # Создаем токены
+#         access_token = token_manager.create_access_token(
+#             data={"sub": str(user.id), "email": user.email}
+#         )
+#         refresh_token = token_manager.create_refresh_token(user.id)
+#         
+#         return LoginResponse(
+#             access_token=access_token,
+#             refresh_token=refresh_token,
+#             expires_in=settings.jwt_expire_minutes * 60,
+#             user=UserSchema.model_validate(user)
+#         )
+#         
+#     except HTTPException:
+#         raise
+#     except Exception as e:
+#         logger.error(f"OAuth login error: {str(e)}")
+#         raise HTTPException(
+#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#             detail="OAuth login failed"
+#         )
 
 # Создание таблиц при запуске
 @app.on_event("startup")

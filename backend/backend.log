@@ -1,0 +1,61 @@
+INFO:__main__:Database modules loaded successfully
+INFO:shared.database:Database tables created successfully
+INFO:__main__:Database tables created/verified
+INFO:__main__:Admin user already exists
+INFO:prompt_manager:PromptManager initialized with directory: F:\DevAssitPro\DevAssist-Pro\backend\prompts
+INFO:services.documents.core.enhanced_ai_analyzer:Enhanced AI Analyzer initialized: use_real_api=True, fallback_mode=False
+INFO:services.reports.core.pdf_generator:ReportLab successfully imported - PDF generation available
+INFO:services.documents.core.enhanced_ai_analyzer:Enhanced AI Analyzer initialized: use_real_api=True, fallback_mode=False
+INFO:     Will watch for changes in these directories: ['F:\\DevAssitPro\\DevAssist-Pro\\backend']
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [40712] using WatchFiles
+INFO:__mp_main__:Database modules loaded successfully
+INFO:shared.database:Database tables created successfully
+INFO:__mp_main__:Database tables created/verified
+INFO:__mp_main__:Admin user already exists
+INFO:prompt_manager:PromptManager initialized with directory: F:\DevAssitPro\DevAssist-Pro\backend\prompts
+INFO:services.documents.core.enhanced_ai_analyzer:Enhanced AI Analyzer initialized: use_real_api=True, fallback_mode=False
+INFO:services.reports.core.pdf_generator:ReportLab successfully imported - PDF generation available
+INFO:services.documents.core.enhanced_ai_analyzer:Enhanced AI Analyzer initialized: use_real_api=True, fallback_mode=False
+INFO:app:Database modules loaded successfully
+INFO:shared.database:Database tables created successfully
+INFO:app:Database tables created/verified
+INFO:app:Admin user already exists
+INFO:     Started server process [41456]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:3 changes detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected
+INFO:watchfiles.main:1 change detected

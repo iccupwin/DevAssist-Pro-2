@@ -8,22 +8,12 @@ import {
   Settings,
   Globe,
   Shield,
-  Zap,
-  Database,
-  Mail,
-  Bell,
   Save,
   RefreshCw,
-  AlertTriangle,
   CheckCircle,
   XCircle,
   HardDrive,
-  Clock,
-  Key,
-  Users,
-  FileText,
-  Download,
-  Upload
+  FileText
 } from 'lucide-react';
 import { SystemSettings as SystemSettingsType } from '../../types/admin';
 import { Button } from '../ui/Button';
@@ -91,7 +81,7 @@ export const SystemSettings: React.FC<SystemSettingsProps> = ({
       setTimeout(() => setSaveStatus('idle'), 3000);
     } catch (error) {
       setSaveStatus('error');
-      console.error('Failed to save settings:', error);
+      // Failed to save settings
     } finally {
       setIsSaving(false);
     }

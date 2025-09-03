@@ -3,6 +3,8 @@
  * Интеграция с Anthropic Claude, OpenAI GPT, Google Gemini
  */
 
+import { ComparisonResult as KPComparisonResult } from '../../types/kpAnalyzer';
+
 interface AIAnalysisRequest {
   tzText: string;
   kpText: string;
@@ -86,7 +88,7 @@ export class RealAIService {
   /**
    * Сравнение результатов с помощью AI
    */
-  async compareResultsWithAI(request: ComparisonRequest): Promise<ComparisonResult> {
+  async compareResultsWithAI(request: ComparisonRequest): Promise<KPComparisonResult> {
     try {
       const prompt = this.buildComparisonPrompt(request.results);
       
@@ -102,7 +104,7 @@ export class RealAIService {
         throw new Error(`Неподдерживаемая модель: ${request.model}`);
       }
       
-      return this.parseComparisonResponse(aiResponse, request.results);
+      return this.parseComparisonResponse(aiResponse, request.results, request.model);
       
     } catch (error) {
       console.error('AI Comparison failed:', error);
@@ -334,7 +336,7 @@ ${resultsText}
   /**
    * Парсинг ответа AI для сравнения
    */
-  private parseComparisonResponse(aiResponse: string, results: AIAnalysisResult[]): ComparisonResult {
+  private parseComparisonResponse(aiResponse: string, results: AIAnalysisResult[], model: string): KPComparisonResult {
     try {
       const jsonMatch = aiResponse.match(/\{[\s\S]*\}/);
       if (!jsonMatch) {
@@ -345,11 +347,19 @@ ${resultsText}
       
       return {
         id: `comparison_${Date.now()}`,
-        results,
+        results: results as any, // Type conversion for now to avoid complex type mapping
         ranking: parsed.ranking || [],
+        summary: parsed.summary || 'Сравнение коммерческих предложений выполнено',
+        recommendations: parsed.recommendations || [],
+        riskAssessment: parsed.riskAssessment || 'Анализ рисков не выполнен',
+        bestChoice: parsed.bestChoice || results[0]?.fileName || 'Не определен',
+        comparisonMatrix: parsed.comparisonMatrix || [],
+        analyzedAt: new Date().toISOString(),
+        model: model,
         recommendation: parsed.recommendation || {
           winner: results[0]?.fileName || '',
-          reasoning: 'Автоматический выбор по наивысшему баллу'
+          reasoning: 'Автоматический выбор по наивысшему баллу',
+          alternatives: results.slice(1).map(r => r.fileName || 'Unnamed')
         }
       };
     } catch (error) {
