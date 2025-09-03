@@ -1,382 +1,433 @@
-# DevAssist Pro - Production Deployment Guide
+# DevAssist Pro Production Deployment Guide
+# Ubuntu 22.04 Server Setup
 
-## Ubuntu 22.04 Server Deployment
+🚀 **Complete production deployment guide for DevAssist Pro on Ubuntu 22.04 server (46.149.71.162)**
 
-**Target Server:** 46.149.71.162  
-**OS:** Ubuntu 22.04  
-**Deployment Mode:** Single Command Docker Monolith
+## 📋 Overview
 
----
+This guide provides step-by-step instructions for deploying DevAssist Pro in production mode with:
+- **Multi-container architecture**: Nginx + Frontend + Backend + PostgreSQL + Redis
+- **One-command deployment**: Automated setup script
+- **Production optimizations**: Security, performance, monitoring
+- **High availability**: Health checks, auto-restart, persistent storage
 
-## 🚀 Quick Start (One Command Deployment)
+## 🎯 Architecture
 
+```
+Ubuntu 22.04 Server (46.149.71.162:80)
+├── Nginx Reverse Proxy (Container)
+│   ├── Frontend Routes (/) → Frontend Container
+│   ├── API Routes (/api) → Backend Container  
+│   └── WebSocket (/ws) → Backend Container
+├── Frontend Container (React SPA)
+├── Backend Container (FastAPI)
+├── PostgreSQL Database Container
+└── Redis Cache Container
+```
+
+## 🔧 Prerequisites
+
+### System Requirements
+- **OS**: Ubuntu 22.04 LTS
+- **RAM**: Minimum 4GB, Recommended 8GB+
+- **Storage**: Minimum 20GB free space
+- **Network**: Port 80 and 443 open
+- **Access**: SSH access with sudo privileges
+
+### Required Software (Auto-installed by script)
+- Docker Engine 20.10+
+- Docker Compose v2
+- curl, wget, openssl
+- UFW firewall (optional)
+
+## 🚀 Quick Deployment (One Command)
+
+### Step 1: Clone and Setup
 ```bash
-# Clone and deploy
+# On Ubuntu 22.04 server
 git clone <repository-url>
 cd DevAssist-Pro
+
+# Make deployment script executable
+chmod +x deploy-production.sh
+```
+
+### Step 2: Configure Environment
+```bash
+# Copy and edit environment file
+cp .env.production.example .env.production
+
+# Update required values:
+nano .env.production
+```
+
+**Required Updates in .env.production:**
+```bash
+# Update these API keys (REQUIRED)
+ANTHROPIC_API_KEY=your_real_anthropic_key
+OPENAI_API_KEY=your_real_openai_key  
+GOOGLE_API_KEY=your_real_google_key
+
+# Passwords will be auto-generated securely
+```
+
+### Step 3: Deploy
+```bash
+# Single command deployment
 ./deploy-production.sh deploy
 ```
 
----
+**That's it!** 🎉 The script will:
+- Install Docker if needed
+- Configure firewall
+- Generate secure passwords
+- Build and start all services
+- Perform health checks
+- Setup auto-restart on reboot
 
-## 📋 Prerequisites
-
-### System Requirements
-- Ubuntu 22.04 LTS
-- Minimum 2GB RAM
-- 10GB free disk space
-- Root or sudo access
-- Internet connection
-
-### Network Requirements
-- Port 80 open (HTTP)
-- Port 443 open (HTTPS, optional)
-- SSH access (port 22)
-
----
-
-## 📁 Project Structure
+## 📁 File Structure
 
 ```
 DevAssist-Pro/
+├── docker-compose.production.yml    # Main production config
+├── .env.production                  # Environment variables
+├── deploy-production.sh             # One-command deployment
 ├── frontend/
-│   ├── Dockerfile.prod          # Production frontend build
-│   └── nginx.frontend.conf      # Frontend nginx config
-├── backend/
-│   ├── api_gateway/
-│   └── Dockerfile               # Backend service
+│   └── Dockerfile.prod             # Frontend production build
 ├── nginx/
-│   └── default.conf            # Main reverse proxy config
-├── docker-compose.monolith.yml # Production compose file
-├── deploy-production.sh        # One-command deployment
-├── env.production.example      # Environment template
-└── README-PRODUCTION-UBUNTU.md # This file
+│   └── default.conf                # Nginx reverse proxy config
+├── backend/
+│   └── Dockerfile.monolith         # Backend container config
+└── README-PRODUCTION-UBUNTU.md     # This guide
 ```
 
----
+## 🔐 Security Configuration
 
-## 🔧 Configuration Files
+### Automatic Security Features
+- **Firewall**: UFW configured for ports 22, 80, 443
+- **Secrets**: Auto-generated secure passwords
+- **CORS**: Configured for production domain
+- **Headers**: Security headers via Nginx
+- **Network**: Isolated Docker network
 
-### 1. Frontend Production Build
-**File:** `frontend/Dockerfile.prod`
-- Multi-stage React build
-- Nginx static file serving
-- Production optimizations
-- Health checks
-
-### 2. Nginx Reverse Proxy
-**File:** `nginx/default.conf`
-- API proxy (`/api/` → Backend:8000)
-- WebSocket proxy (`/ws/` → Backend:8000)
-- Static files (`/` → Frontend:80)
-- Rate limiting and security headers
-
-### 3. Docker Compose
-**File:** `docker-compose.monolith.yml`
-- PostgreSQL database
-- Redis cache
-- Backend API gateway
-- Frontend build
-- Nginx reverse proxy
-
----
-
-## ⚙️ Environment Configuration
-
-### 1. Copy Environment Template
+### Manual Security Steps
 ```bash
-cp env.production.example .env.production
+# 1. Update system packages
+sudo apt update && sudo apt upgrade -y
+
+# 2. Configure SSH (recommended)
+sudo nano /etc/ssh/sshd_config
+# Set: PermitRootLogin no
+# Set: PasswordAuthentication no (if using keys)
+sudo systemctl restart ssh
+
+# 3. Setup SSL certificate (Let's Encrypt)
+sudo apt install certbot python3-certbot-nginx
+sudo certbot --nginx -d yourdomain.com
 ```
 
-### 2. Update Required Variables
+## 🔍 Service Management
+
+### Common Commands
 ```bash
-# API Keys (REQUIRED)
-ANTHROPIC_API_KEY=your_actual_anthropic_key
-OPENAI_API_KEY=your_actual_openai_key
-GOOGLE_API_KEY=your_actual_google_key
+# Check status
+docker compose -f docker-compose.production.yml ps
 
-# Security (Auto-generated by script)
-JWT_SECRET=auto_generated_32_char_secret
-POSTGRES_PASSWORD=auto_generated_password
-REDIS_PASSWORD=auto_generated_password
+# View logs
+docker compose -f docker-compose.production.yml logs -f
+
+# Restart services
+docker compose -f docker-compose.production.yml restart
+
+# Stop services
+docker compose -f docker-compose.production.yml down
+
+# Update and restart
+git pull
+docker compose -f docker-compose.production.yml up -d --build
 ```
 
----
-
-## 🐳 Deployment Process
-
-### Automated Deployment (Recommended)
+### Individual Service Commands
 ```bash
-# Check system readiness
-./deploy-production.sh check
+# Backend logs
+docker compose -f docker-compose.production.yml logs -f app
 
-# Deploy to production
-./deploy-production.sh deploy
+# Frontend logs  
+docker compose -f docker-compose.production.yml logs -f frontend
+
+# Database logs
+docker compose -f docker-compose.production.yml logs -f postgres
+
+# Nginx logs
+docker compose -f docker-compose.production.yml logs -f nginx
 ```
 
-### Manual Deployment
+## 🏥 Health Checks & Monitoring
+
+### Service Health Endpoints
+- **Overall**: `http://46.149.71.162/health`
+- **Frontend**: `http://46.149.71.162/`
+- **API**: `http://46.149.71.162/api/health`
+- **Documentation**: `http://46.149.71.162/api/docs`
+
+### Manual Health Checks
 ```bash
-# 1. Install Docker (if needed)
-sudo apt update
-sudo apt install docker.io docker-compose-plugin
+# Check all services
+./deploy-production.sh health
 
-# 2. Configure environment
-cp env.production.example .env.production
-# Edit .env.production with your API keys
+# Check individual containers
+docker compose -f docker-compose.production.yml ps
 
-# 3. Deploy services
-docker compose -f docker-compose.monolith.yml --env-file .env.production up -d --build
+# Check logs for errors
+docker compose -f docker-compose.production.yml logs --tail=100
+
+# Test endpoints
+curl -f http://46.149.71.162/health
+curl -f http://46.149.71.162/api/health
 ```
 
----
-
-## 🌐 Service Access
-
-After successful deployment:
-
-| Service | URL | Description |
-|---------|-----|-------------|
-| Frontend | http://46.149.71.162/ | React application |
-| API | http://46.149.71.162/api/ | Backend API |
-| Health | http://46.149.71.162/health | Service health check |
-| WebSocket | ws://46.149.71.162/ws/ | Real-time connections |
-
----
-
-## 📊 Service Architecture
-
-```
-Ubuntu Server (46.149.71.162:80)
-│
-├── Nginx Reverse Proxy
-│   ├── Frontend Static Files (/)
-│   ├── API Proxy (/api → Backend:8000)
-│   ├── WebSocket Proxy (/ws → Backend:8000)
-│   └── Health Check (/health)
-│
-├── Docker Network (172.20.0.0/16)
-│   ├── Frontend Container (nginx:1.25-alpine)
-│   ├── Backend Container (python:3.11-slim)
-│   ├── PostgreSQL Container (postgres:15-alpine)
-│   └── Redis Container (redis:7-alpine)
-│
-└── Persistent Volumes
-    ├── postgres_data (Database storage)
-    ├── redis_data (Cache storage)
-    ├── backend_uploads (File uploads)
-    └── backend_reports (Generated reports)
-```
-
----
-
-## 🔍 Management Commands
-
-### Service Status
+### System Resources
 ```bash
-# Check all containers
-docker compose -f docker-compose.monolith.yml ps
+# Check disk usage
+df -h
 
-# Check service health
+# Check memory usage
+free -h
+
+# Check Docker resource usage
+docker system df
+docker stats
+```
+
+## 💾 Data Persistence & Backup
+
+### Persistent Volumes
+```bash
+# List volumes
+docker volume ls | grep devassist
+
+# Backup database
+docker compose -f docker-compose.production.yml exec postgres pg_dump -U devassist_user devassist_pro > backup.sql
+
+# Backup uploaded files
+docker run --rm -v devassist_app_data:/source -v $(pwd):/backup alpine tar czf /backup/app_data_backup.tar.gz -C /source .
+```
+
+### Restore from Backup
+```bash
+# Restore database
+docker compose -f docker-compose.production.yml exec -T postgres psql -U devassist_user devassist_pro < backup.sql
+
+# Restore files
+docker run --rm -v devassist_app_data:/target -v $(pwd):/backup alpine tar xzf /backup/app_data_backup.tar.gz -C /target
+```
+
+## 🔄 Updates & Maintenance
+
+### Application Updates
+```bash
+# 1. Pull latest code
+git pull origin main
+
+# 2. Update environment if needed
+nano .env.production
+
+# 3. Rebuild and restart
+docker compose -f docker-compose.production.yml down
+docker compose -f docker-compose.production.yml up -d --build
+
+# 4. Verify deployment
 ./deploy-production.sh health
 ```
 
-### Logs and Monitoring
+### System Maintenance
 ```bash
-# View all logs
-docker compose -f docker-compose.monolith.yml logs -f
+# Update Ubuntu packages
+sudo apt update && sudo apt upgrade -y
 
-# View specific service logs
-docker compose -f docker-compose.monolith.yml logs -f frontend
-docker compose -f docker-compose.monolith.yml logs -f api-gateway
-docker compose -f docker-compose.monolith.yml logs -f postgres
+# Clean Docker resources
+docker system prune -f
+docker volume prune -f
+
+# Check disk space
+df -h
 ```
 
-### Service Control
-```bash
-# Stop all services
-./deploy-production.sh stop
-
-# Restart all services
-./deploy-production.sh restart
-
-# Manual service control
-docker compose -f docker-compose.monolith.yml stop
-docker compose -f docker-compose.monolith.yml start
-docker compose -f docker-compose.monolith.yml restart
-```
-
----
-
-## 🛠 Troubleshooting
+## 🐛 Troubleshooting
 
 ### Common Issues
 
-#### 1. Port Already in Use
+#### 1. Services Won't Start
 ```bash
-# Check what's using port 80
-sudo netstat -tulpn | grep :80
-sudo fuser -k 80/tcp
-```
+# Check container status
+docker compose -f docker-compose.production.yml ps
 
-#### 2. Docker Permission Denied
-```bash
-# Add user to docker group
-sudo usermod -aG docker $USER
-newgrp docker
-```
-
-#### 3. Service Not Starting
-```bash
-# Check container logs
-docker compose -f docker-compose.monolith.yml logs [service-name]
+# Check logs for errors
+docker compose -f docker-compose.production.yml logs
 
 # Check system resources
+free -h
 df -h
-free -m
+```
+
+#### 2. Frontend Not Loading
+```bash
+# Check nginx configuration
+docker compose -f docker-compose.production.yml exec nginx nginx -t
+
+# Check frontend container
+docker compose -f docker-compose.production.yml logs frontend
+
+# Test direct container access
+curl -f http://localhost:3000/
+```
+
+#### 3. API Not Responding
+```bash
+# Check backend logs
+docker compose -f docker-compose.production.yml logs app
+
+# Test backend directly
+curl -f http://localhost:8000/health
+
+# Check database connection
+docker compose -f docker-compose.production.yml exec postgres pg_isready -U devassist_user
 ```
 
 #### 4. Database Connection Issues
 ```bash
-# Check database container
-docker compose -f docker-compose.monolith.yml exec postgres pg_isready -U devassist_user
+# Check postgres container
+docker compose -f docker-compose.production.yml ps postgres
+
+# Check database logs
+docker compose -f docker-compose.production.yml logs postgres
 
 # Test database connection
-docker compose -f docker-compose.monolith.yml exec postgres psql -U devassist_user -d devassist_pro -c "SELECT 1;"
+docker compose -f docker-compose.production.yml exec postgres psql -U devassist_user -d devassist_pro -c "SELECT 1;"
 ```
 
-### Health Check URLs
+#### 5. Permission Issues
 ```bash
-# Test all endpoints
-curl http://46.149.71.162/health
-curl http://46.149.71.162/api/health
-curl http://46.149.71.162/
+# Fix Docker permissions
+sudo usermod -aG docker $USER
+newgrp docker
+
+# Fix file permissions
+sudo chown -R $USER:$USER .
 ```
+
+### Debug Mode
+```bash
+# Enable debug logging
+echo "DEBUG=true" >> .env.production
+
+# Restart with debug
+docker compose -f docker-compose.production.yml restart app
+
+# View detailed logs
+docker compose -f docker-compose.production.yml logs -f app
+```
+
+## 🔧 Advanced Configuration
+
+### Custom Domain Setup
+```bash
+# 1. Update DNS A record to point to 46.149.71.162
+# 2. Update environment file
+sed -i 's/46.149.71.162/yourdomain.com/g' .env.production
+
+# 3. Update nginx configuration
+sed -i 's/46.149.71.162/yourdomain.com/g' nginx/default.conf
+
+# 4. Setup SSL
+sudo certbot --nginx -d yourdomain.com
+
+# 5. Restart services
+docker compose -f docker-compose.production.yml restart nginx
+```
+
+### Performance Tuning
+```bash
+# Increase worker processes in .env.production
+echo "WORKERS=8" >> .env.production
+
+# Optimize PostgreSQL
+echo "POSTGRES_SHARED_BUFFERS=256MB" >> .env.production
+echo "POSTGRES_EFFECTIVE_CACHE_SIZE=1GB" >> .env.production
+
+# Restart services
+docker compose -f docker-compose.production.yml restart
+```
+
+### Load Balancing (Multiple Servers)
+```bash
+# For high availability, deploy on multiple servers:
+# 1. Setup each server with same configuration
+# 2. Use external load balancer (nginx, HAProxy, AWS ALB)
+# 3. Use external database (AWS RDS, managed PostgreSQL)
+# 4. Use shared storage for uploaded files (AWS S3, NFS)
+```
+
+## 📊 Monitoring & Logging
+
+### Log Management
+```bash
+# Setup log rotation
+sudo nano /etc/logrotate.d/docker-containers
+
+# Configure centralized logging (optional)
+# Use ELK stack, Splunk, or cloud logging services
+```
+
+### Metrics Collection
+```bash
+# Setup Prometheus monitoring (optional)
+# Monitor Docker metrics, application metrics
+# Create Grafana dashboards
+```
+
+## 🆘 Support & Maintenance
+
+### Getting Help
+- **Documentation**: This README and CLAUDE.md
+- **Issues**: Check logs and troubleshooting section
+- **Updates**: Follow git repository for updates
+
+### Regular Maintenance Schedule
+- **Daily**: Monitor logs and resource usage
+- **Weekly**: Check for security updates
+- **Monthly**: Full backup and restore test
+- **Quarterly**: Performance review and optimization
 
 ---
 
-## 🔒 Security Considerations
+## ✅ Deployment Checklist
 
-### 1. Firewall Configuration
-```bash
-# UFW firewall setup (done automatically by script)
-sudo ufw allow ssh
-sudo ufw allow 80/tcp
-sudo ufw allow 443/tcp
-sudo ufw enable
-```
+Before going live, ensure:
 
-### 2. Environment Security
-- Store API keys securely
-- Use strong database passwords
-- Regular security updates
-- Monitor access logs
+- [ ] All API keys configured in .env.production
+- [ ] DNS pointing to 46.149.71.162
+- [ ] SSL certificate installed (for HTTPS)
+- [ ] Firewall configured correctly
+- [ ] Backup strategy implemented
+- [ ] Monitoring setup
+- [ ] Health checks passing
+- [ ] Performance tested
+- [ ] Security review completed
 
-### 3. SSL/HTTPS Setup (Optional)
-```bash
-# Install Certbot for Let's Encrypt
-sudo apt install certbot python3-certbot-nginx
+## 🚀 Post-Deployment
 
-# Get SSL certificate
-sudo certbot --nginx -d 46.149.71.162
-```
+After successful deployment:
 
----
-
-## 📈 Performance Optimization
-
-### 1. System Monitoring
-```bash
-# Monitor system resources
-htop
-docker stats
-
-# Monitor disk usage
-df -h
-du -sh /var/lib/docker/
-```
-
-### 2. Log Management
-```bash
-# Configure log rotation
-sudo nano /etc/docker/daemon.json
-{
-  "log-driver": "json-file",
-  "log-opts": {
-    "max-size": "10m",
-    "max-file": "3"
-  }
-}
-```
-
-### 3. Database Optimization
-```bash
-# PostgreSQL performance tuning
-docker compose -f docker-compose.monolith.yml exec postgres psql -U devassist_user -d devassist_pro
-# Run: VACUUM ANALYZE;
-```
+1. **Test all functionality** through the web interface
+2. **Setup monitoring** and alerting
+3. **Document any customizations** made
+4. **Train team members** on deployment and maintenance
+5. **Setup automated backups**
+6. **Create incident response plan**
 
 ---
 
-## 💾 Backup and Recovery
+**🎉 Congratulations! DevAssist Pro is now running in production on Ubuntu 22.04!**
 
-### 1. Database Backup
-```bash
-# Create database backup
-docker compose -f docker-compose.monolith.yml exec postgres pg_dump -U devassist_user devassist_pro > backup_$(date +%Y%m%d).sql
-
-# Restore database backup
-docker compose -f docker-compose.monolith.yml exec -T postgres psql -U devassist_user devassist_pro < backup_20241220.sql
-```
-
-### 2. Volume Backup
-```bash
-# Backup all volumes
-docker run --rm -v devassist_postgres_data:/data -v $(pwd):/backup alpine tar czf /backup/postgres_backup.tar.gz /data
-
-# Restore volume
-docker run --rm -v devassist_postgres_data:/data -v $(pwd):/backup alpine tar xzf /backup/postgres_backup.tar.gz -C /
-```
-
----
-
-## 🆘 Support and Maintenance
-
-### Regular Maintenance Tasks
-1. **Weekly:** Check logs and system resources
-2. **Monthly:** Update Docker images and system packages
-3. **Quarterly:** Review security configurations
-4. **As needed:** Database backups and cleanup
-
-### Update Deployment
-```bash
-# Pull latest code
-git pull origin main
-
-# Rebuild and deploy
-./deploy-production.sh deploy
-```
-
-### Emergency Procedures
-```bash
-# Quick restart (minimal downtime)
-docker compose -f docker-compose.monolith.yml restart
-
-# Full rebuild (more downtime, fresh start)
-docker compose -f docker-compose.monolith.yml down
-docker compose -f docker-compose.monolith.yml up -d --build
-```
-
----
-
-## 📞 Support Information
-
-- **Repository:** [DevAssist Pro GitHub](https://github.com/your-repo/devassist-pro)
-- **Documentation:** This README file
-- **Logs Location:** `docker compose -f docker-compose.monolith.yml logs`
-- **Configuration:** `.env.production` file
-
----
-
-**Last Updated:** December 2024  
-**Version:** 1.0 Production Ready  
-**Target Environment:** Ubuntu 22.04 Server
+For any issues or questions, refer to the troubleshooting section above or check the application logs.
